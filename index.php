@@ -1,13 +1,3 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FIONA SITE COMPUTER</title>
-
-    <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
 
@@ -43,7 +33,7 @@
    // what is the current project name?
    $project = getUserVariable( $user_name, "project_name");
    if ($project === FALSE) {
-      $project = "ABCD";
+      $project = "HBCD";
    }
    echo('<script type="text/javascript"> project_name = "' . $project . '";</script>');
 
@@ -57,9 +47,8 @@
    }
 
 
-   // PCGC
-   // For each $permissions: "SiteABCD", "SitePCGC"
-   // get the site name: "ABCD", "PCGC"
+   // For each $permissions: "SiteHBCD", "SitePCGC"
+   // get the site name: "HBCD", "PCGC"
    // and create and array of $sites
    $sites = array();
    foreach ($permissions as $perm) {
@@ -334,10 +323,13 @@
 	 margin-bottom: 10px;
      }
      .status0 {
-	 background: linear-gradient(to right, white, white 80%, red);
+	 background: linear-gradient(to right, white, white 80%, lightgreen);
      }
      .status1 {
 	 background: linear-gradient(to right, white, white 80%, green);
+     }
+     .status2 {
+	 background: linear-gradient(to right, white, white 80%, red);
      }
      .unknown-type {
        color: yellow !important;
@@ -355,7 +347,7 @@
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
       <header class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
         <div class="mdl-layout__header-row">
-          <span class="mdl-layout-title hostname" title="Flash I/O Network Appliance">&nbsp;&nbsp;ABCD's FIONA</span>
+          <span class="mdl-layout-title hostname" title="Flash I/O Network Appliance">&nbsp;&nbsp;HBCD's FIONA</span>
 	  <nav class="mdl-navigation mdl-menu--top-right">
 	    <a class="mdl-navigation__link" style="color: gray;">User: <?php echo($user_name); ?></a>
 	  </nav>
@@ -466,14 +458,14 @@
 </label>
 
 <label for="receive-mpps" id="receive-mpps-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-  <input type="checkbox" id="receive-mpps" class="mdl-checkbox__input" checked />
+  <input type="checkbox" id="receive-mpps" class="mdl-checkbox__input" checked disabled readonly/>
   <span class="mdl-checkbox__label">auto-pull DICOM</span>
 </label>
 
 <label for="anonymize" id="anonymize-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-  <input type="checkbox" id="anonymize" class="mdl-checkbox__input" disabled />
+  <input type="checkbox" id="anonymize" class="mdl-checkbox__input" checked disabled readonly />
   <span class="mdl-checkbox__label">anonymize files</span>
-</label>
+</label >
             </div>
           </div>
           <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
@@ -501,8 +493,8 @@
             Change Password
         </div>
 	<form>
-          <input class="mdl-textfield__input" type="password" id="password-field1" placeholder="*******" autofocus><br/>
-          <input class="mdl-textfield__input" type="password" id="password-field2" placeholder="type again">
+          <input class="mdl-textfield__input" type="password" autocomplete="new-password" id="password-field1" placeholder="*******" autofocus><br/>
+          <input class="mdl-textfield__input" type="password" id="password-field2" autocomplete="new-password" placeholder="type again">
 	</form>
     </div>
     <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
@@ -592,31 +584,46 @@ loading configuration file...
     <div class="row">
       <div class="mdl-cell mdl-cell--12-col"  id="identify-section">
 	<h4>Identify your imaging session</h4>
+
         <div class="form-group">
-          <label for="session-participant" class="control-label">Participant (pGUID in REDCap)</label><br/>
-          <select class="form-control select2-list" id="session-participant">
-	    <option></option>
-	  </select>
+           <div class="mdl-cell mdl-cell--12-col"  id="imaging-info-text"></div>
         </div>
-	
         <div class="form-group">
-          <label for="session-name" class="control-label">Event name (baseline or 2-year or 4-year)</label><br/>
-          <select class="form-control" id="session-name"></select>
+              <label for="session-participant" class="control-label" id="session-participant-label">Participant (PSCID_CANDID_VISIT)</label><br/>
+              <select class="form-control select2-list" id="session-participant">
+	         <option></option>
+	      </select>
+             <input class="form-control" id="new-session-age" hidden>
+             <input class="form-control" id="new-session-sex" hidden>
+             <input class="form-control" id="modify-participant-name" value="0" hidden>
         </div>
-	
+           
+        
+        <div class="class="mdl-dialog__actions mdl-dialog__actions--full-width">
+             <label for="session-participant" class="control-label" id="new-session-participant-label">New Participant (PSCID_CANDID_VISIT)</label><br/>
+             <input class="form-control" id="new-session-participant">
+        </div>
+       	
+       
         <div class="form-group">
-          <label for="session-run" class="control-label">Imaging Session Type</label><br/>
+          <label for="session-run" class="control-label" id="session-run-label">Imaging Session Type</label><br/>
           <select class="form-control" id="session-run">
-            <option value="SessionA1" title="T1, rsFMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs)">A1 (T1, rsFMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs))</option>
-            <option value="SessionA2" title="3 fMRI tasks">A2 (3 fMRI tasks)</option>
-            <option value="SessionB1" title="T1, 3 fMRI tasks">B1 (T1, 3 fMRI tasks)</option>
-            <option value="SessionB2" title="rsfMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs)">B2 (rsfMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs))</option>
-            <option value="SessionC" title="Combined scan">C (Combined scan)</option>
+            <option value="SessionC" title="A Complete Session: T2, T1, rsFMRI, DWI, b1map, qMRI and FieldMaps ">SessionC: A Complete Session (T2, T1, rsFMRI, DWI, b1map, qMRI and FieldMaps)</option>
+            <option value="SessionA" title="Part 1 of two part sessions: T1 or T2 plus others,">SessionA: Part 1 of two part sessions (T1 or T2 plus others)</option>
+            <option value="SessionB" title="Part 2 of two part sessions: T1 or T2 plus others">SessionB: Part 2 of two part sessions: (T1 or T2 plus others)</option>
             <option value="SessionPHANTOM" title="Phantom scan">P (Phantom scan)</option>
           </select>
         </div>
-      </div>
-    </div>
+        
+        <div class="row">
+           <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+              <button type="button" class="mdl-button" id="imaging-info-dialog-cancel">Cancel Checking</button>
+              <button type="button" class="mdl-button" id="imaging-info-recheck">Re-Check Imaging information</button>
+            </div>
+        </div>
+
+    </div>    
+
     <div class="row">
       <div class="mdl-cell mdl-cell--12-col">
         <div id="detected-scans-summary"></div>
@@ -677,16 +684,15 @@ loading information...
     </div>
 </dialog>
 
-
 <dialog class="mdl-dialog" id="modal-about">
     <div class="mdl-dialog__content">
         <div style="font-size: 22pt; margin-bottom: 20px;">
             Flash-based Input/Output Network Appliance
         </div>
         <div>
-	  <p>
-	    Learn more about this project by visiting <a href="https://abcd-workspace.ucsd.edu">abcd-workspace.ucsd.edu</a>.
-	  </p>
+          <p>
+            Learn more about this project by visiting <a href="https://abcd-workspace.ucsd.edu">abcd-workspace.ucsd.edu</a>.
+          </p>
         </div>
     </div>
     <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
@@ -732,7 +738,7 @@ loading information...
     <script src="js/md5-min.js" type="text/javascript"></script>
     <script type="text/javascript">
 
-      // PCGC
+     // PCGC
       // ABCD is the default project name
       var projname = project_name;
 
@@ -762,7 +768,7 @@ loading information...
           return;
         }
         // user name should not be part of password
-	if (password.toLowerCase().indexOf(user_name.toLowerCase()) != -1) {
+        if (password.toLowerCase().indexOf(user_name.toLowerCase()) != -1) {
           alert("Error: username should not be part of the password.");
           return;
         }
@@ -783,18 +789,20 @@ loading information...
           return;
         }
 
-        hash = hex_md5(password);
+       hash = hex_md5(password);
         hash2 = hex_md5(password2);
         if (hash !== hash2) {
           alert("Error: The two passwords are not the same, please type again.");
           return; // do nothing
         }
         jQuery.getJSON('/php/getUser.php?action=changePassword&value=' + user_name + '&value2=' + hash, function(data) {
-	    alert("Success: you have changed the password for user " + user_name);
+            alert("Success: you have changed the password for user " + user_name);
         }).fail(function() {
-	    alert("Error: an error was returned trying to set your new password (" + user_name + ")");
+            alert("Error: an error was returned trying to set your new password (" + user_name + ")");
         });
       }
+
+
 
 // make sure that we list if a scan has been send previously (when and under what pGUID)
 // do this for all participants in the open-study-info that are currently visible on screen, cache the results
@@ -803,166 +811,170 @@ var sendInformationQueue = [];
 function updateSendInformation() {
     // get all currently visible entries
     function checkVisible(elm) {
-	var style = window.getComputedStyle(elm);
-	if (style.display === 'none')
-	    return false;
-	var rect = elm.getBoundingClientRect();
-	var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
-	return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
+        var style = window.getComputedStyle(elm);
+        if (style.display === 'none')
+            return false;
+        var rect = elm.getBoundingClientRect();
+        var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+        return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
     }
     // todo: we get this call a lot, each time there we get values for another series. Would be better to delay the render - not a big issue
     function renderResult(studyinstanceuid) {
-	if (sendInformationCache[studyinstanceuid].status == "transferred") {
-	    // find the right entry on screen
-	    var a = null;
-	    jQuery('#list-of-subjects').children().each(function(i,v) {
-		if (jQuery(v).attr('studyinstanceuid') == studyinstanceuid) {
-		    a = v;
-		}
-	    });
-	    if (a !== null) {
+        if (sendInformationCache[studyinstanceuid].status == "transferred") {
+            // find the right entry on screen
+            var a = null;
+            jQuery('#list-of-subjects').children().each(function(i,v) {
+                if (jQuery(v).attr('studyinstanceuid') == studyinstanceuid) {
+                    a = v;
+                }
+            });
+            if (a !== null) {
             jQuery(a).find('a i.unknown-type').removeClass('unknown-type').addClass('transferred-type');
-		    jQuery(a).find('a div.detail-information').remove();
-		    jQuery(a).find('a').append("<div class='detail-information'>" + sendInformationCache[studyinstanceuid].event + " " + sendInformationCache[studyinstanceuid].pGUID + " (" + sendInformationCache[studyinstanceuid].date.format('MMM Do YYYY') + ")" );
-	    }
-	}
+                    jQuery(a).find('a div.detail-information').remove();
+                    jQuery(a).find('a').append("<div class='detail-information'>" + sendInformationCache[studyinstanceuid].event + " " + sendInformationCache[studyinstanceuid].pGUID + " (" + sendInformationCache[studyinstanceuid].date.format('MMM Do YYYY') + ")" );
+            }
+        }
     }
-    jQuery.each(jQuery('.open-study-info'), function(i,a) {
-	if (checkVisible(jQuery(a)[0])) {
-	    var studyinstanceuid = jQuery(a).attr('studyinstanceuid');
-	    // do we have an entry in the cache for this already?
-	    if (typeof sendInformationCache[studyinstanceuid] == 'undefined') {
-		// we will get a value for this at some point (don't request this a second time)
-		sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
+  jQuery.each(jQuery('.open-study-info'), function(i,a) {
+        if (checkVisible(jQuery(a)[0])) {
+            var studyinstanceuid = jQuery(a).attr('studyinstanceuid');
+            // do we have an entry in the cache for this already?
+            if (typeof sendInformationCache[studyinstanceuid] == 'undefined') {
+                // we will get a value for this at some point (don't request this a second time)
+                sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
 
-		// get the data for this studyinstanceuid
-		(function(studyinstanceuid) { // make studyinstanceuid a local variable in the scope
-		    var options = {
-			"action": "getStudy",
-			"study": studyinstanceuid,
-			"project": projname,
+                // get the data for this studyinstanceuid
+                (function(studyinstanceuid) { // make studyinstanceuid a local variable in the scope
+                    var options = {
+                        "action": "getStudy",
+                        "study": studyinstanceuid,
+                        "project": projname,
                         "skipComplianceReRun": 1
-		    };
-		    // get a list of the series for this study
-		    jQuery.getJSON('/php/existingData.php', options, function(data) {
-			dataSec1 = {};
-			dataSec2 = {};
-			dataSec3 = {};
-			var keys = Object.keys(data);
-			for (var i = 0; i < keys.length; i++) {			    
-			    var value = data[keys[i]];
-			    if (Array.isArray(value)) {
-				dataSec3[keys[i]] = value;
-			    } else if (typeof value === 'object') {
-				dataSec2[keys[i]] = value;
-			    } else if (typeof value === 'string') {
-				dataSec1[keys[i]] = value;
-			    } /* else {
-				alert("Error: No existing data, perhaps protocol compliance check was not run.");
-			    } */
-			}
-			// we are looking for the data in dataSec2+dataSec3 (series that have been detected)
-			// we need to call fileStatus.php for them to find out which once are in DAIC
-			var allFilePaths = [];
-			for (var k in dataSec2) {
-			    if (dataSec2[k] === null || typeof dataSec2[k]['file'] == 'undefined') {
-				// if there is no 'file' it can still be in a key one down
-				var keys = Object.keys(dataSec2[k]);
-				for (var j = 0; j < keys.length; j++) {
-				    if (typeof dataSec2[k][keys[j]]['file'] !== 'undefined') {
-					for (var i = 0; i < dataSec2[k][keys[j]]['file'].length; i++) {
-					    if (typeof dataSec2[k][keys[j]]['file'][i]['path'] !== 'undefined' && dataSec2[k][keys[j]]['file'][i]['path'] !== "") {
-						allFilePaths.push(dataSec2[k][keys[j]]['file'][i]['path']);
-					    }
-					}
-				    }
-				}
-				continue;
-			    }
-			    for (var i = 0; i < dataSec2[k]['file'].length; i++) {
-				if (typeof dataSec2[k]['file'][i]['path'] !== 'undefined' && dataSec2[k]['file'][i]['path'] !== "") {
-				    allFilePaths.push(dataSec2[k]['file'][i]['path']);
-				}
-			    }
-			}
-			if ( allFilePaths.length == 0 ) {
-			    // don't ask for this studyinstanceuid again
-			    sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
-			}
-			for (var i = 0; i < allFilePaths.length; i++) {
-			    filePath = allFilePaths[i]; // for each file path search and return if its transferred, in transit, or readyToSend, if its transferred extract the pGUID and date
-			    jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(studyinstanceuid) {
-				// return a function that knows about our series Instance UID variable
-				return function(data) {
-				    // now add the information returned to the sendInformationCache[studyinstanceuid]
-				    // we get back data here that looks like this:
-				    //      $val[] = array( "ok" => 1, "message" => "readyToSend", "filename" => $qv[0], "filemtime" => $qv[1] );
-				    //      $val[] = array( "ok" => 1, "message" => "transit", "filename" => $qv[0], "filemtime" => $qv[1] );
-				    //      $val[] = array( "ok" => 1, "message" => "transferred", "filename" => $qv[0], "filemtime" => $qv[1] );
-				    if (data.length == 0) {
-					sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
-					return;
-				    }
-				    var sendAsGUID = "";
-				    var sendWhen = "";
-				    var sendWhat = "";
-				    var sendEvent = "";
-				    for (var i = 0; i < data.length; i++) {
-					// find the newest transferred dataset
-					if (data[i].message == "transferred") {
-					    // found one!
-					    if (sendWhen == "") { // first time
-						sendWhen   = data[i].filemtime;
-						if (data[i].filename.split("/")[3].split("_")[0] == "NDAR") {
-						    sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,2).join("_");
-						    sendEvent = data[i].filename.split("/")[3].split("_").slice(2,4).join("_");
-						} else {
-						    sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,1);
-						    sendEvent = data[i].filename.split("/")[3].split("_").slice(1,3).join("_");
-						}
-						sendWhat   = data[i].filename;
-					    } else {
-						// not the first time, is this a later date? Use the latest data for all send operations ( January 21 2018 14:45:10 )
-						var date1 = moment(sendWhen, 'MMMM D YYYY H:m:s');
-						var date2 = moment(data[i].filemtime, 'MMMM D YYYY H:m:s');
-						if ( moment().diff(date1, 'minutes') > moment().diff(date2, 'minutes') ) {
-						    sendWhen   = data[i].filemtime;
-						    if (data[i].filename.split("/")[3].split("_")[0] == "NDAR") {
-							sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,2).join("_");
-							sendEvent = data[i].filename.split("/")[3].split("_").slice(2,4).join("_");
-						    } else {
-							sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,1);
-							sendEvent = data[i].filename.split("/")[3].split("_").slice(1,3).join("_");
-						    }
-						    
-						    sendWhat   = data[i].filename;
-						} // otherwise we have an old send for this study
-					    }
-					}
-				    }
-				    if (sendWhen !== "") {
-					var date = moment(sendWhen, 'MMMM D YYYY H:m:s');
-					sendInformationCache[studyinstanceuid] = { 'status': 'transferred', 'pGUID': sendAsGUID, 'date': date, 'filename': sendWhat, 'event': sendEvent };
-					renderResult(studyinstanceuid);
-				    }
-				};
-			    })(studyinstanceuid) );
-			}
-		    });
-		})(studyinstanceuid);		
-	    } else {
-		// if we have an entry already show it
-		renderResult(studyinstanceuid);
-	    }
-	}
+                    };
+                    // get a list of the series for this study
+                    jQuery.getJSON('/php/existingData.php', options, function(data) {
+                        dataSec1 = {};
+                        dataSec2 = {};
+                        dataSec3 = {};
+                        var keys = Object.keys(data);
+                        for (var i = 0; i < keys.length; i++) {
+                            var value = data[keys[i]];
+                            if (Array.isArray(value)) {
+                                dataSec3[keys[i]] = value;
+                            } else if (typeof value === 'object') {
+                                dataSec2[keys[i]] = value;
+                            } else if (typeof value === 'string') {
+                                dataSec1[keys[i]] = value;
+                            } /* else {
+                                alert("Error: No existing data, perhaps protocol compliance check was not run.");
+                            } */
+                        }
+                        // we are looking for the data in dataSec2+dataSec3 (series that have been detected)
+                        // we need to call fileStatus.php for them to find out which once are in DAIC
+                        var allFilePaths = [];
+                        for (var k in dataSec2) {
+                            if (dataSec2[k] === null || typeof dataSec2[k]['file'] == 'undefined') {
+                                // if there is no 'file' it can still be in a key one down
+                                var keys = Object.keys(dataSec2[k]);
+                                for (var j = 0; j < keys.length; j++) {
+                                    if (typeof dataSec2[k][keys[j]]['file'] !== 'undefined') {
+                                        for (var i = 0; i < dataSec2[k][keys[j]]['file'].length; i++) {
+                                            if (typeof dataSec2[k][keys[j]]['file'][i]['path'] !== 'undefined' && dataSec2[k][keys[j]]['file'][i]['path'] !== "") {
+                                                allFilePaths.push(dataSec2[k][keys[j]]['file'][i]['path']);
+                                            }
+                                        }
+                                    }
+                                }
+                                continue;
+                            }
+                            for (var i = 0; i < dataSec2[k]['file'].length; i++) {
+                                if (typeof dataSec2[k]['file'][i]['path'] !== 'undefined' && dataSec2[k]['file'][i]['path'] !== "") {
+                                    allFilePaths.push(dataSec2[k]['file'][i]['path']);
+                                }
+                            }
+                        }
+                        if ( allFilePaths.length == 0 ) {
+                            // don't ask for this studyinstanceuid again
+                            sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
+                        }
+                        for (var i = 0; i < allFilePaths.length; i++) {
+                            filePath = allFilePaths[i]; // for each file path search and return if its transferred, in transit, or readyToSend, if its transferred extract the pGUID and date
+                            jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(studyinstanceuid) {
+                                // return a function that knows about our series Instance UID variable
+                                return function(data) {
+                                    // now add the information returned to the sendInformationCache[studyinstanceuid]
+                                    // we get back data here that looks like this:
+                                    //      $val[] = array( "ok" => 1, "message" => "readyToSend", "filename" => $qv[0], "filemtime" => $qv[1] );
+                                    //      $val[] = array( "ok" => 1, "message" => "transit", "filename" => $qv[0], "filemtime" => $qv[1] );
+                                    //      $val[] = array( "ok" => 1, "message" => "transferred", "filename" => $qv[0], "filemtime" => $qv[1] );
+                                    if (data.length == 0) {
+                                        sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
+                                        return;
+                                    }
+                                    var sendAsGUID = "";
+                                    var sendWhen = "";
+                                    var sendWhat = "";
+                                    var sendEvent = "";
+                                    for (var i = 0; i < data.length; i++) {
+                                        // find the newest transferred dataset
+                                        if (data[i].message == "transferred") {
+                                            // found one!
+                                            if (sendWhen == "") { // first time
+                                                sendWhen   = data[i].filemtime;
+                                                if (data[i].filename.split("/")[3].split("_")[0] == "NDAR") {
+                                                    sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,2).join("_");
+                                                    sendEvent = data[i].filename.split("/")[3].split("_").slice(2,4).join("_");
+                                                } else {
+                                                    sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,1);
+                                                    sendEvent = data[i].filename.split("/")[3].split("_").slice(1,3).join("_");
+                                                }
+                                                sendWhat   = data[i].filename;
+                                            } else {
+                                                // not the first time, is this a later date? Use the latest data for all send operations ( January 21 2018 14:45:10 )
+                                                var date1 = moment(sendWhen, 'MMMM D YYYY H:m:s');
+                                                var date2 = moment(data[i].filemtime, 'MMMM D YYYY H:m:s');
+                                                if ( moment().diff(date1, 'minutes') > moment().diff(date2, 'minutes') ) {
+                                                    sendWhen   = data[i].filemtime;
+                                                    if (data[i].filename.split("/")[3].split("_")[0] == "NDAR") {
+                                                        sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,2).join("_");
+                                                        sendEvent = data[i].filename.split("/")[3].split("_").slice(2,4).join("_");
+                                                    } else {
+                                                        sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,1);
+                                                        sendEvent = data[i].filename.split("/")[3].split("_").slice(1,3).join("_");
+                                                    }
+
+                                                    sendWhat   = data[i].filename;
+                                                } // otherwise we have an old send for this study
+                                            }
+                                        }
+                                    }
+                                    if (sendWhen !== "") {
+                                        var date = moment(sendWhen, 'MMMM D YYYY H:m:s');
+                                        sendInformationCache[studyinstanceuid] = { 'status': 'transferred', 'pGUID': sendAsGUID, 'date': date, 'filename': sendWhat, 'event': sendEvent };
+                                        renderResult(studyinstanceuid);
+                                    }
+                                };
+                            })(studyinstanceuid) );
+                        }
+                    });
+                })(studyinstanceuid);
+            } else {
+                // if we have an entry already show it
+                renderResult(studyinstanceuid);
+            }
+        }
     });
 
 }
 
+
+
 var subjectData = [];
 var scrollTimer, lastScrollFireTime = 0; // for handling the scroll event (throdle)
+
+
 function loadSubjects() {
-    // 
+    //
     // hidepattern
     //
     console.log("loadSubjects");
@@ -970,18 +982,18 @@ function loadSubjects() {
     jQuery('#view-name').text('Subjects');
     // PCGC
     jQuery.getJSON('/php/subjects.php', {'project': projname }, function(data) {
-        
+
          // we should re-sort the participants list and have them first sorted by most recent and secondly by name
          // use the initial sorting order for the participant names
-	 // color the fields that belong together
-	 var lightTag = false;
+         // color the fields that belong together
+         var lightTag = false;
          for (var i = data.length-1; i > 0; i--) {
-	     lightTag = !lightTag;
+             lightTag = !lightTag;
              var name1 = data[i].PatientName;
              var name2 = data[i].PatientID;
-	     data[i].lightTag = (lightTag?"1":"0");
-             if ((name1+name2).toLowerCase().indexOf('phantom') > -1 || (name1+name2).toLowerCase().indexOf('geservice') > -1 || 
-    	         (name1+name2).toLowerCase().indexOf('technical') > -1 || 
+             data[i].lightTag = (lightTag?"1":"0");
+             if ((name1+name2).toLowerCase().indexOf('phantom') > -1 || (name1+name2).toLowerCase().indexOf('geservice') > -1 ||
+                 (name1+name2).toLowerCase().indexOf('technical') > -1 ||
                  (name1+name2).toLowerCase().indexOf('qa') > -1 || (name1+name2).toLowerCase().indexOf('test') > -1)
                  continue; // don't resort Phantom scans
 
@@ -990,7 +1002,7 @@ function loadSubjects() {
              for (var j = i-1; j >= 0; j--) {
                  if ((data[j].PatientName.length > 0 && data[j].PatientName == name1) || (data[j].PatientID.length > 0 && data[j].PatientID == name2)) {
                      var tmp = data.splice(j,1);
-		     tmp[0].lightTag = (lightTag?"1":"0");
+                     tmp[0].lightTag = (lightTag?"1":"0");
                      data.splice(i-1, 0, tmp[0]);
                      count++;
                  }
@@ -999,48 +1011,49 @@ function loadSubjects() {
          }
 
         subjectData = data; // we can re-use those
-	    for (var i = 0; i < data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
-	        shortname = shortenName( shortname );
-		// if we have a hidepattern use it to not display some participants
+                shortname = shortenName( shortname );
+                // if we have a hidepattern use it to not display some participants
 //console.log("hidepattern: " + hidepattern);
-		if (typeof hidepattern !== "undefined") {
-		   if (shortname.match(new RegExp(hidepattern)) !== null) {
+                if (typeof hidepattern !== "undefined") {
+                   if (shortname.match(new RegExp(hidepattern)) !== null) {
 //console.log("filter out " + shortname);
-		      continue; // skip this item
+                      continue; // skip this item
                    }
-		}
-            
-	        jQuery('#list-of-subjects').prepend('<div class="data open-study-info tag-' + data[i].lightTag + '" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons unknown-type" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
-	    }
-        
+                }
+
+                jQuery('#list-of-subjects').prepend('<div class="data open-study-info tag-' + data[i].lightTag + '" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons unknown-type" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
+            }
+
         // if an element is in view get the detailed information for the last send for it
         updateSendInformation();
-        
-	    jQuery('.demo-drawer').on("scroll", function() {
-	        var minScrollTime = 200;
-	        var now = new Date().getTime();
-	        
-	        if (!scrollTimer) {
-		        if (now - lastScrollFireTime > (3 * minScrollTime)) {
-		            // processScroll();   // fire immediately on first scroll
-		            updateSendInformation();
-		            lastScrollFireTime = now;
-		        }
-		        scrollTimer = setTimeout(function() {
-		            scrollTimer = null;
-		            lastScrollFireTime = new Date().getTime();
-		            // processScroll();
-		            updateSendInformation();
-		        }, minScrollTime);
-	        }
-	    });
+
+            jQuery('.demo-drawer').on("scroll", function() {
+                var minScrollTime = 200;
+                var now = new Date().getTime();
+
+                if (!scrollTimer) {
+                        if (now - lastScrollFireTime > (3 * minScrollTime)) {
+                            // processScroll();   // fire immediately on first scroll
+                            updateSendInformation();
+                            lastScrollFireTime = now;
+                        }
+                        scrollTimer = setTimeout(function() {
+                            scrollTimer = null;
+                            lastScrollFireTime = new Date().getTime();
+                            // processScroll();
+                            updateSendInformation();
+                        }, minScrollTime);
+                }
+            });
         jQuery(window).on('resize', function() {
-		    updateSendInformation();
+                    updateSendInformation();
         });
-	    // also on search we need to updateSendInformation
+            // also on search we need to updateSendInformation
     });
 }
+
 function shortenName( name ) {
    var l = 21;
    if (name !== null && name.length > l) {
@@ -1049,6 +1062,7 @@ function shortenName( name ) {
    }
    return name;
 }
+
 var studyData = [];
 function loadStudies() {
     jQuery('#list-of-subjects').find('.data').remove();
@@ -1056,29 +1070,29 @@ function loadStudies() {
     // PCGC
     jQuery.getJSON('/php/series.php', {'project': projname }, function(data) {
         studyData = data;
-	// sort those by date
+        // sort those by date
 
-	// here we get all series below each study, need a tree view, get rid of stuff already on display
+        // here we get all series below each study, need a tree view, get rid of stuff already on display
         // create a nested list for bonsai
-	str = "<ul id=\"study-list-bonsai\" class=\"data\">";
+        str = "<ul id=\"study-list-bonsai\" class=\"data\">";
         var studies = Object.keys(data);
         for (var i = 0; i < studies.length; i++) {
             if (typeof data[studies[i]][0] === 'undefined' || data[studies[i]][0] === null) {
                continue;
             }
-	    str = str + "<li title=\""+data[studies[i]][0]['PatientName']+"\">" + data[studies[i]][0]['PatientName'] + "-" + data[studies[i]][0]['PatientID'] + "<ul>";
+            str = str + "<li title=\""+data[studies[i]][0]['PatientName']+"\">" + data[studies[i]][0]['PatientName'] + "-" + data[studies[i]][0]['PatientID'] + "<ul>";
             var seriesList = data[studies[i]];
-	    seriesList.sort(function(a,b) { 
-		if ( parseInt(a['SeriesNumber']) == parseInt(b['SeriesNumber'])) {
-		    return 0;
-		}
-		if ( parseInt(a['SeriesNumber']) < parseInt(b['SeriesNumber'])) {
-		    return -1;
-		}
-		return 1;
-	    });
+            seriesList.sort(function(a,b) {
+                if ( parseInt(a['SeriesNumber']) == parseInt(b['SeriesNumber'])) {
+                    return 0;
+                }
+                if ( parseInt(a['SeriesNumber']) < parseInt(b['SeriesNumber'])) {
+                    return -1;
+                }
+                return 1;
+            });
             for (var j = 0; j < seriesList.length; j++) {
-		str = str + "<li class=\"open-series-info\" key=\"" + studies[i] + "\" entry=\""+ j +"\" title=\""+ seriesList[j]['SeriesDescription'] + "\">" + seriesList[j]['SeriesNumber'] + " " + shortenName(seriesList[j]['SeriesDescription']) + "</li>";
+                str = str + "<li class=\"open-series-info\" key=\"" + studies[i] + "\" entry=\""+ j +"\" title=\""+ seriesList[j]['SeriesDescription'] + "\">" + seriesList[j]['SeriesNumber'] + " " + shortenName(seriesList[j]['SeriesDescription']) + "</li>";
             }
             str = str + "</ul></li>";
         }
@@ -1088,19 +1102,21 @@ function loadStudies() {
     });
 }
 
+
+
 // load the list of scans from the scanner
 function loadScanner() {
     jQuery('#list-of-subjects').find('.data').remove();
     jQuery('#view-name').text("Scanner");
     // PCGC
     jQuery.getJSON('/php/scanner.php', {'project': projname }, function(data) {
-	str = "<ul id=\"scanner-list-bonsai\" class=\"data\">";
-	for (var i = 0; i < data.length; i++) {
-	   var na = data[i].PatientName + "-" + data[i].PatientID;
+        str = "<ul id=\"scanner-list-bonsai\" class=\"data\">";
+        for (var i = 0; i < data.length; i++) {
+           var na = data[i].PatientName + "-" + data[i].PatientID;
            na = shortenName(na);
-	   str = str + "<li><span title=\"" + data[i].PatientName + "-" + data[i].PatientID + "\">" + na + "</span><br/><small style=\"padding-top: -10px;\">"+data[i].StudyDate+" "+data[i].StudyTime+"</small>&nbsp;&nbsp;<button style=\"margin-top: -20px;\" class=\"mdl-button mdl-js-button mdl-button--icon pull-study\" study=\""+data[i].StudyInstanceUID+"\" title=\"Downlaod to FIONA\"><i class=\"material-icons\">touch_app</i></button><ul>";
-	   for (var j = 0; j < data[i].Series.length; j++) {
-	      str = str + "<li class=\"open-scanner-series-info\" key=\"" + data[i].Series[j].SeriesInstanceUID + "\" title=\""+data[i].Series[j].SeriesDescription + " [" + data[i].Series[j].ImagesInAcquisition +"]\">" + shortenName(data[i].Series[j].SeriesDescription) + "</li>";
+           str = str + "<li><span title=\"" + data[i].PatientName + "-" + data[i].PatientID + "\">" + na + "</span><br/><small style=\"padding-top: -10px;\">"+data[i].StudyDate+" "+data[i].StudyTime+"</small>&nbsp;&nbsp;<button style=\"margin-top: -20px;\" class=\"mdl-button mdl-js-button mdl-button--icon pull-study\" study=\""+data[i].StudyInstanceUID+"\" title=\"Downlaod to FIONA\"><i class=\"material-icons\">touch_app</i></button><ul>";
+           for (var j = 0; j < data[i].Series.length; j++) {
+              str = str + "<li class=\"open-scanner-series-info\" key=\"" + data[i].Series[j].SeriesInstanceUID + "\" title=\""+data[i].Series[j].SeriesDescription + " [" + data[i].Series[j].ImagesInAcquisition +"]\">" + shortenName(data[i].Series[j].SeriesDescription) + "</li>";
            }
            str = str + "</ul></li>";
         }
@@ -1114,11 +1130,13 @@ function loadScanner() {
 var rp1 = "";
 var rp2 = "";
 var rp3 = "";
+
+
 function loadSystem() {
     //jQuery('#system-load').children().remove();
     jQuery.getJSON('/php/stats.php', function(data) {
         jQuery('.hostname').text(data.hostname);
-	//var load=d3.select(document.getElementById('system-load'));
+        //var load=d3.select(document.getElementById('system-load'));
         if (rp1 == "") {
             jQuery('#system-load').children().remove();
             rp1 = radialProgress(document.getElementById('system-load'))
@@ -1126,9 +1144,9 @@ function loadSystem() {
                 .diameter(150)
                 .value(data.load_avg * 100)
                 .render();
-	} else {
+        } else {
             rp1.value(data.load_avg * 100).render();
-	}
+        }
         if (rp2 == "") {
             jQuery('#system-space').children().remove();
             rp2 = radialProgress(document.getElementById('system-space'))
@@ -1136,9 +1154,9 @@ function loadSystem() {
                 .diameter(150)
                 .value(100-data.disk_free_percent)
                 .render();
-	} else {
+        } else {
             rp2.value(100-data.disk_free_percent).render();
-	}
+        }
         if (rp3 == "") {
             jQuery('#system-memory').children().remove();
             rp3 = radialProgress(document.getElementById('system-memory'))
@@ -1146,9 +1164,9 @@ function loadSystem() {
                 .diameter(150)
                 .value(100-data.memory_free_percent)
                 .render();
-	} else {
+        } else {
             rp3.value(100-data.memory_free_percent).render();
-	}
+        }
     });
     jQuery.get('/php/startstop.php?project=' + projname, function(data) {
         console.log('change checked to reflect system status ' + data);
@@ -1164,11 +1182,11 @@ function loadSystem() {
         } else {
            document.querySelector('#receive-mpps-label').MaterialCheckbox.check();
         }
-        if (vals[2] == "0") {
-           document.querySelector('#anonymize-label').MaterialCheckbox.uncheck();
-        } else {
-           document.querySelector('#anonymize-label').MaterialCheckbox.check();
-        }
+        //if (vals[2] == "0") {
+        //   document.querySelector('#anonymize-label').MaterialCheckbox.uncheck();
+        //} else {
+        //   document.querySelector('#anonymize-label').MaterialCheckbox.check();
+       // }
     });
     //jQuery('#calendar-loc').fullCalendar('refetchEvents');
 }
@@ -1209,50 +1227,53 @@ function setTimeline(view) {
 
 }
 
+
+
 function createCalendar() {
     jQuery('#calendar-loc').fullCalendar('destroy');
     var cal = jQuery('#calendar-loc').fullCalendar({
-	header: {
-	    left: 'prev,next today',
-	    center: 'title',
-	    right: 'month,agendaWeek,agendaDay'
-	},
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+        },
         defaultView: 'month', // only month is working here, would be good to switch to agendaDay instead
         timezone: 'America/Los_Angeles',
-	eventSources: [ { url: "php/events.php", data: { project: projname }, color: '#dddddd', textColor: 'black' } ],
-	eventResize: function(calEvent, jsEvent, view) {
-	    alert("eventResize: function(calEvent, jsEvent, view)");
+        eventSources: [ { url: "php/events.php", data: { project: projname }, color: '#dddddd', textColor: 'black' } ],
+        eventResize: function(calEvent, jsEvent, view) {
+            alert("eventResize: function(calEvent, jsEvent, view)");
             if (!updateEvent(calEvent)) {
-		jQuery('#calendar-loc').fullCalendar('refetchEvents');                 
+                jQuery('#calendar-loc').fullCalendar('refetchEvents');
             }
-	},
-	viewRender: function(view) {
-	   console.log("ViewRender for calendar called");
-	   try { 
+        },
+        viewRender: function(view) {
+           console.log("ViewRender for calendar called");
+           try {
               //setTimeline(view);
            } catch( err ) {}
         },
-	eventAfterRender: function(event, element, view) {
-	    var title = event['title'];
-	    var colored = false;
-	    // change the background based on the type of event
+        eventAfterRender: function(event, element, view) {
+            var title = event['title'];
+            var colored = false;
+            // change the background based on the type of event
             m = title.match(/NDAR_INV[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]/);
-	    if (m !== null) {
-		jQuery(element).css('background-color', '#a1d99b');
-		colored = true;
-	    }
-	    m = title.match(/ABCDPhantom/);
-	    if (m !== null) {
-		jQuery(element).css('background-color', '#a6bddb');
-		colored = true;
-	    }
-	    if (!colored) {
-		jQuery(element).css('background-color', '#fff7bc');		
-	    }
+            if (m !== null) {
+                jQuery(element).css('background-color', '#a1d99b');
+                colored = true;
+            }
+            m = title.match(/ABCDPhantom/);
+            if (m !== null) {
+                jQuery(element).css('background-color', '#a6bddb');
+                colored = true;
+            }
+            if (!colored) {
+                jQuery(element).css('background-color', '#fff7bc');
+            }
         },
     });
-    
+
 }
+
 
 function changeSystemStatus() {
    var a = jQuery('#receive-dicom')[0].checked ? 1:0;
@@ -1262,7 +1283,7 @@ function changeSystemStatus() {
 }
 
 function displayHeaderSection(data) {
-         
+
          if (data["status"] == null) {
              console.log("ERROR: displayHeaderSection: status not found");
          }
@@ -1333,16 +1354,17 @@ function displayHeaderSection(data) {
          jQuery('#header-section').append(str);
 }
 
+
 function displayDetectedScans(data, StudyInstanceUID) {
-  
+
          var keys = Object.keys(data);
          console.log("displayDetectedScans: keys: " + keys);
          jQuery('#detected-scans').children().remove();
-         
+
          var str = "<ul>";
          for (var i = 0; i < keys.length; i++) {
              var value = data[keys[i]];
-             
+
              // check if this is a series or a block of series
              if (typeof value !== 'undefined' && value !== null && value["file"] == null) {
 
@@ -1350,7 +1372,7 @@ function displayDetectedScans(data, StudyInstanceUID) {
                  // iterate through the JSON objects contained within this block.
                  var keys2 = Object.keys(value);
                  console.log("displayDetectedScans: keys2: " + keys2);
-
+                 console.log("displayDetectedScans: status value: " + value["status"]);
                  str = str.concat("<li class=\"status" + value["status"] + "\">");
                  str = str.concat("<div class='SeriesName'>" + keys[i] + "</div>");
                  str = str.concat("<div class='message'>" + value["message"] + "</div>");
@@ -1364,7 +1386,7 @@ function displayDetectedScans(data, StudyInstanceUID) {
                          // found a series inside a block
                          str = str.concat(displaySeries(value2, keys2[j], StudyInstanceUID));
                      }
-                 } 
+                 }
                  str = str.concat("</ul>");
 
              } else {
@@ -1377,10 +1399,10 @@ function displayDetectedScans(data, StudyInstanceUID) {
 }
 
 function displaySeries(series, seriesName, StudyInstanceUID) {
-         
+
          if (series === null || series["status"] === null) {
              console.log("ERROR: displaySeries: status not found");
-	     return;
+             return;
          }
 
          if (series["SeriesNumber"] == null) {
@@ -1415,51 +1437,53 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
 console.log("GOT transferStatus as : " + transferStatus + " from : " + filePath);
          }
 
-         var str = "";
+        var str = "";
+        console.log("displaySeries: status value: " + series["status"]);
          str = str.concat("<li class=\"status"+series["status"]+"\">");
          str = str.concat("<div class='SeriesName'>" + seriesName + "</div>");
          str = str.concat("<div class='message'><p>" + series["message"] + "</p></div>");
          var id = "transferStatus"+createUUID();
          str = str.concat("<div id=\""+id+"\" class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
-         if (typeof series["SeriesNumber"] != 'undefined') { 
+         if (typeof series["SeriesNumber"] != 'undefined') {
            str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + (series["SeriesNumber"]==null?"":series["SeriesNumber"]) + "</div>");
          }
-console.log('transferStatus: ' + transferStatus);				  
+console.log('transferStatus: ' + transferStatus);
 //         if (transferStatus == "/quarantine/" && project_name == "ABCD") { // this might be ok for ABCD, but not for other projects
 //             str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
   //       }
          str = str.concat("</li>");
          str = str.concat("");
          //jQuery('#detected-scans').append(str);
-         
+
          // update transfer status based on what fileStatus.php returns for this series (acquired, readytosend, transit, transfer)
          console.log(" display Series filepath :" + filePath);
          jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(ids) {
              // return a function that knows about our series Instance UID variable
              return function(data) {
-	         if (data.length == 0) {
-		     jQuery('#'+id).text("TransferStatus: FILE_NOT_FOUND_ERROR");
+                 if (data.length == 0) {
+                     jQuery('#'+id).text("TransferStatus: FILE_NOT_FOUND_ERROR");
                  }
-		 for (var i = 0; i < data.length; i++) {
-	             console.log("series instance uid: " + id + "  " + data[i].message + " " + data[i].filename);
-	             var fname = data[i].filename.replace(/^.*[\\\/]/, '').split("_");
-		     if (fname.length > 2)
-			 fname = fname.slice(0,2).join("_");
-		     else
-			 fname = "unknown";
-		     jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path, " + data[i].filemtime + ")</span>");
-		     // here we would also need to add the button - if it does not exist yet
-		     console.log("Display Series:  TransferStatus: " + data[i].message + " filename as " + data[i].filename  + " filemTime as : " + data[i].filemtime );
-		     if (data[i].message == "readyToSend" && jQuery('#'+id).parent().find('button').length === 0 ) {
-			 //jQuery('#'+id).parent().append("Should show send button here " + data[i].filename);
-			 jQuery('#'+id).parent().append("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + data[i].filename + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button>");
-		     }
+                 for (var i = 0; i < data.length; i++) {
+                     console.log("series instance uid: " + id + "  " + data[i].message + " " + data[i].filename);
+                     var fname = data[i].filename.replace(/^.*[\\\/]/, '').split("_");
+                     if (fname.length > 2)
+                         fname = fname.slice(0,2).join("_");
+                     else
+                         fname = "unknown";
+                     jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path, " + data[i].filemtime + ")</span>");
+                     // here we would also need to add the button - if it does not exist yet
+                     console.log("Display Series:  TransferStatus: " + data[i].message + " filename as " + data[i].filename  + " filemTime as : " + data[i].filemtime );
+                     if (data[i].message == "readyToSend" && jQuery('#'+id).parent().find('button').length === 0 ) {
+                         //jQuery('#'+id).parent().append("Should show send button here " + data[i].filename);
+                         jQuery('#'+id).parent().append("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + data[i].filename + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button>");
+                     }
                  }
              };
            })(id)
          );
          return str;
 }
+
 
 function createUUID() {
     // http://www.ietf.org/rfc/rfc4122.txt
@@ -1476,6 +1500,8 @@ function createUUID() {
     return uuid;
 }
 
+
+
 function displayAdditionalScans(data, StudyInstanceUID) {
 
          var str = "";
@@ -1486,7 +1512,7 @@ function displayAdditionalScans(data, StudyInstanceUID) {
 
          var item;
          if (typeof data["AdditionalSeries"] == 'undefined') {
-	         return;
+                 return;
          }
          var array = data["AdditionalSeries"];
          for (var i = 0; i < array.length; i++) {
@@ -1499,29 +1525,94 @@ function displayAdditionalScans(data, StudyInstanceUID) {
          jQuery('#detected-scans').append(str);
      }
 
-// get valid session names                                                                                                                                                                  
-function getSessionNamesFromREDCap() {
-    jQuery.getJSON('/php/getRCEvents.php?project=' + projname, function(data) {
-        jQuery('#session-name').children().remove();
-	jQuery('#session-name').append("<option></option>");
-        for (var i = 0; i < data.length; i++) {
-            val = "";
-            //if (i == 1) {
-            //    val = "selected=\"selected\"";
-            //}
-            jQuery('#session-name').append("<option " + val + " value=\"" + data[i].unique_event_name + "\">" + data[i].event_name + "</option>");
-        }
-        getParticipantNamesFromREDCap();
+
+function getSessionNamesFromREDCap(patientname, studydate) {
+        jQuery.getJSON('/php/getLorisEvents.php?project=' + projname, function(data) {
+console.log(data)
+       
+        getParticipantNamesFromLoris(patientname, studydate);
     });
 }
+var no_match = false;
 
-function getParticipantNamesFromREDCap() {
-    jQuery.getJSON('/php/getParticipantNamesFromREDCap.php?project=' + projname, function(data) {
-	jQuery('#session-participant').select2({
-	    dropdownParent: jQuery('#modal-study-info'),
-	    placeholder: 'Select a REDCap participant',
-	    data: data.map(function(v,i) { return { id:v, text:v }; })
-	});
+function getParticipantNamesFromLoris(patientname, studydate) {
+    year =  studydate.slice(0,4);
+    month = studydate.slice(4,6);
+    day = studydate.substr(6,7);
+    console.log('year='+ year +' month='+ month+ ' day='+ day );
+    studydateNew = year+"-"+month+"-"+day;
+    console.log('i='+ patientname+ ' s='+ studydateNew );
+    //convert studydate from 20220916 to 2022-09-16
+    jQuery.getJSON('/php/getParticipantNamesFromLoris.php?i='+patientname+ '&s='+ studydateNew, function(data) {
+
+
+console.log("getParticipantNamesFromLoris **** "+projname);
+console.log(data);
+        //for (var i = 0; i < data.length; i++) {
+        //    val = "";
+        //    if (i == 0) {
+                val = "selected=\"selected\"";
+        //    }
+        jQuery('#session-participant').append("<option " + val + " value=\"" + data[0] + "\">" + data[0] + "</option>");
+        jQuery('#session-participant').value = data[0] 
+        // }
+        
+        jQuery('#imaging-info-text').text(JSON.stringify("A match is found in PII/LORIS database!"));
+        jQuery('#imaging-info-text').css({'background-color':'lightgreen'});
+
+console.log(data[0]);
+        
+        if(data[0][0].includes("Unknown") == true || data[0][0].includes("Invalid") == true || data[0][0].includes("LORIS") == true 
+           || data[0].includes("Incomplete") == true || data[0].includes("does not match")) {
+            no_match = true;          
+            
+            jQuery('#imaging-info-text').text(JSON.stringify(data[0]) + "Please review the information and re-enter the correct" );
+            jQuery('#imaging-info-text').css({'background-color':'PaleVioletRed'});
+            jQuery('#session-participant').hide();
+            jQuery('#session-run').hide();
+            jQuery('#session-participant-label').hide();
+            jQuery('#session-run-label').hide();
+
+            jQuery('#new-session-participant-label').show();
+            jQuery('#new-session-participant').show();
+            jQuery('#imaging-info-dialog-cancel').show();
+            jQuery('#imaging-info-recheck').show();
+            
+            jQuery('#study-info-dialog-sendall').attr("disabled", true);
+
+        } else {
+            jQuery('#new-session-participant-label').hide();
+            jQuery('#new-session-participant').hide();
+            jQuery('#imaging-info-dialog-cancel').hide();
+            jQuery('#imaging-info-recheck').hide();
+       
+            jQuery('#session-participant').show();
+            //jQuery('#session-name').show();
+            jQuery('#session-run').show();
+            jQuery('#session-participant-label').show();
+            //jQuery('#session-name-label').show();
+            jQuery('#session-run-label').show();
+   
+            // data[1] contains sex_sacndate_age as following "M_2022-10-13_044W"
+            const lorisArray = data[1].split("_"); 
+            sex_loris = lorisArray[0];
+            scan_date_loris = lorisArray[1];
+            age_loris = lorisArray[2];
+            jQuery('#new-session-age').val(sex_loris);
+            jQuery('#new-session-sex').val(age_loris);
+
+console.log(jQuery('#modify-participant-name').val());
+console.log(jQuery('#new-session-age').val());
+console.log(jQuery('#new-session-sex').val());
+            jQuery('#study-info-dialog-sendall').removeAttr("disabled");
+        }
+		
+
+//	jQuery('#session-participant').select2({
+//	    dropdownParent: jQuery('#modal-study-info'),
+//	    placeholder: 'Select a HBCD participant',
+//	    data: data.map(function(v,i) { return { id:v, text:v }; })
+//	});
     }).fail(function(jqxhr, textStatus, error) {
         alert("could not get participants names - not JSON? " + error);
     });
@@ -1751,9 +1842,9 @@ jQuery(document).ready(function() {
     jQuery('#receive-mpps-label').change(function() {
        changeSystemStatus();
     });
-    jQuery('#anonymize-label').change(function() {
-       changeSystemStatus();
-    });
+    //jQuery('#anonymize-label').change(function() {
+    //   changeSystemStatus();
+    //});
 
     var dialog = document.querySelector('#modal-series-info');
     if (!dialog.showModal) {
@@ -1818,6 +1909,10 @@ jQuery(document).ready(function() {
     });
 
     var studyinstanceuid;
+    var seriesinstanceuid;
+    var PatientName;
+    var studydate;
+
     jQuery('#list-of-subjects').on('click', '.open-study-info', function() {
         console.log("clicked on study: ");
 
@@ -1830,17 +1925,18 @@ jQuery(document).ready(function() {
         var dialog = document.querySelector('#modal-study-info');
         dialog.showModal();
         jQuery('#session-participant').val(null);
-	jQuery('#session-name').val(null);			     
+	//jQuery('#session-name').val(null);			     
 	jQuery('#session-run').val(null);
 
-	// get list of valid participant names from our database	
-        getSessionNamesFromREDCap();	 	
 
         studyinstanceuid  = jQuery(this).attr('studyinstanceuid');
         seriesinstanceuid = jQuery(this).attr('seriesinstanceuid');
         console.log("studyinstanceuid: " + studyinstanceuid);
         console.log("seriesinstanceuid: " + seriesinstanceuid);
+
+
 	jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
+
         jQuery(this).addClass('mark');
 
         // to fix incomplete series bug:  send button appear while tgz file in quarantine folder is still transfereing data.
@@ -1888,12 +1984,33 @@ jQuery(document).ready(function() {
                     alert("Error: No existing data, perhaps protocol compliance check was not run.");
                 }
             }
+            patientname=dataSec1.PatientName;
+            studydate=dataSec1.StudyDate;
+
+
+            console.log("patient name: " + patientname);
+            console.log("study date: " + studydate);
+	    // get list of valid participant names from our database	
+            getSessionNamesFromREDCap(patientname, studydate);
+            
             console.log(dataSec1);
+	
             displayHeaderSection(dataSec1);
             displayDetectedScans(dataSec2, studyinstanceuid);
             displayAdditionalScans(dataSec3, studyinstanceuid);
+            console.log("#list-of-subjects: On click: " + dataSec1["status"])
+
+            if (dataSec1["status"] == 0) {
+                //jQuery('#study-info-dialog-sendall').removeAttr("disabled");
+               alert("Please review the series in RED, the file count is less than the slice in the dicom header, you may need to re-push the seriese from the source"); 
+            } 
+                //else {
+                //jQuery('#study-info-dialog-sendall').attr("disabled", true);
+                //}
 
         });
+        console.log(jQuery('#session-participant').val());
+
 
     });
 
@@ -2119,17 +2236,21 @@ jQuery(document).ready(function() {
        dialog.close();     
     });
     jQuery('#study-info-dialog-sendall').click(function() {
+       
        jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        // check if we are allowed to send yet
        if (jQuery('#session-participant').val() == "" || 
            jQuery('#session-participant').val() == null || 
-           jQuery('#session-name').val() == null || 
-           jQuery('#session-name').val() == "" || 
+         //  jQuery('#session-name').val() == null || 
+         //  jQuery('#session-name').val() == "" || 
            jQuery('#session-run').val() == "" ||
            jQuery('#session-run').val() == null) {
    	  alert("Please select a valid (screened) participant, an event name, and a session type before uploading data!");
 	  return;
        }	
+
+       var suid =  "";
+       var tripleId = "";
 
        var buttons = jQuery('#detected-scans .send-series-button');
        jQuery.each(buttons, function(index, value) {
@@ -2138,28 +2259,52 @@ jQuery(document).ready(function() {
           var filename = jQuery(value).attr('filename');
 	  if ( jQuery('#session-participant').val() == "" || 
 	       jQuery('#session-participant').val() == null || 
-               jQuery('#session-name').val() == "" || 
-               jQuery('#session-name').val() == null || 
+           //    jQuery('#session-name').val() == "" || 
+           //    jQuery('#session-name').val() == null || 
                jQuery('#session-run').val() == "" ||
                jQuery('#session-run').val() == null) {
 		alert("Please select a valid (screened) participant, an event name, and a session type before uploading data");
 		return;
           }
+         suid = StudyInstanceUID;
+         tripleId = jQuery('#modify-participant-name').val();
+
+         console.log(jQuery('#modify-participant-name').val())
+         console.log(jQuery('#new-session-age').val())
+         console.log(jQuery('#new-session-sex').val())
+
 				
           var options = {
              "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
-	     "redcap_event_name": jQuery('#session-name').val(),
              "run": jQuery('#session-run').val(),
+             "modify_participant_name" : jQuery('#modify-participant-name').val(),
+             "sex" : jQuery('#new-session-sex').val(),
+             "age" : jQuery('#new-session-age').val(),
 	     "project": projname
           };
           jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
-              // alert(JSON.stringify(data));
+              //alert(JSON.stringify(data));
 	      // collect the different messages before sending them
           });
        });
 
        alert('Sending ' + buttons.length + ' series to the DAIC.');
+       
+       var options = {
+             "tripleId" : jQuery('#session-participant').val(),
+             "suid": suid,
+             "run": jQuery('#session-run').val(),
+             "modify_participant_name" : jQuery('#modify-participant-name').val(),
+             "age" : jQuery('#new-session-age').val(),
+             "sex" : jQuery('#new-session-sex').val(),
+             "project": projname
+       };
+       jQuery.getJSON('/php/packRawData.php', options, function(data) {
+              alert(JSON.stringify(data));
+              // collect the different messages before sending them
+       });
+
        var dialog = document.querySelector('#modal-study-info');
        jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        dialog.close();
@@ -2178,7 +2323,7 @@ jQuery(document).ready(function() {
          // alert("send-series-button: StudyInstanceUID: " + StudyInstanceUID + " SeriesInstanceUID: " + SeriesInstanceUID);
 	 if (jQuery('#session-participant').val() == "" || 
              jQuery('#session-participant').val() == null || 
-             jQuery('#session-name').val() == null || 
+           //  jQuery('#session-name').val() == null || 
              jQuery('#session-run').val() == null) {
 		alert("Please select a valid (screened) participant before uploading data");
 		return;
@@ -2187,7 +2332,7 @@ jQuery(document).ready(function() {
          var options = {
              "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
-	     "redcap_event_name": jQuery('#session-name').val(),
+	    // "redcap_event_name": jQuery('#session-name').val(),
              "run": jQuery('#session-run').val(),
              "project": projname
          };
@@ -2201,7 +2346,60 @@ jQuery(document).ready(function() {
          var dialog = document.querySelector('#modal-series-info');
          dialog.close();     
      });
-         
+     
+
+     jQuery('#imaging-info-dialog-cancel').click(function() {
+       var dialog = document.querySelector('#modal-study-info');
+       jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
+       dialog.close();
+     });
+
+     jQuery('#imaging-info-recheck').click(function() {
+       jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
+       // check if we are allowed to send yet
+       if (jQuery('#new-session-participant').val() == "" ||
+           jQuery('#new-session-participant').val() == null ) {
+           alert("Please enter a PSCID_CANDID_VISIT for re-checking!");
+           return;
+       } else {
+           var input = jQuery('#new-session-participant').val().split('_');
+           if (input.length != 3) {
+              alert("Please enter information with this format PSCID_CANDID_VISIT for re-checking!");
+              return;
+           }
+       }
+
+        var options = {
+             "pscid": input[0],
+             "candid" : input[1],
+             "visit": input[2],
+             "site": sites[0],
+             "project": projname
+          };
+          
+        jQuery.getJSON('/php/getLorisEvents.php?project=' + projname, function(data) {
+           //jQuery('#session-name').children().remove();
+           //jQuery('#session-name').append("<option></option>");
+
+        console.log(data)
+
+           for (var i = 0; i < data.length; i++) {
+               val = "";
+               if (i == 0) {
+                  val = "selected=\"selected\"";
+               }
+           //    jQuery('#session-name').append("<option " + val + " value=\"" + data[i] + "\">" + data[i] + "</option>");
+           }
+           console.log("in re-echking " + studydate + " " + jQuery('#new-session-participant').val())
+           getParticipantNamesFromLoris(jQuery('#new-session-participant').val(), studydate);
+           // set the modify-participant name flag
+           jQuery('#modify-participant-name').val(1);
+     
+       }); 
+   });
+
+        
+
 });
 
 </script>

@@ -14,7 +14,7 @@ SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 DATADIR=`cat /data/config/config.json | jq -r ".DATADIR"`
 # if datadir has not be set in config
 if [ "$DATADIR" == "null" ]; then
-   echo "no datadir set in config file, assume ABCD default directory /data/"
+   echo "no datadir set in config file, assume HBCD default directory /data/"
    DATADIR="/data"
 fi
 
@@ -25,9 +25,9 @@ pipe=/tmp/.processSingleFilePipe
 
 projname="$2"
 if [ -z "$projname" ]; then
-    projname="ABCD"
+    projname="HBCD"
 else
-    if [ "$projname" != "ABCD" ]; then
+    if [ "$projname" != "HBCD" ]; then
 	DATADIR=`cat /data/config/config.json | jq -r ".SITES.${projname}.DATADIR"`
 	port=`cat /data/config/config.json | jq -r ".SITES.${projname}.DICOMPORT"`
 	pidfile=${SERVERDIR}/.pids/storescpd${projname}.pid
@@ -91,8 +91,8 @@ case $1 in
         echo $pid > $pidfile
         ;;
     'stop')
-        #/usr/bin/pkill -F $pidfile
-        /usr/bin/pkill -u processing "storescpFIONA .*${port}"
+        /usr/bin/pkill -F $pidfile
+        #/usr/bin/pkill -u processing "storescpFIONA .*${port}"
         RETVAL=$?
         # [ $RETVAL -eq 0 ] && rm -f $pidfile
         [ $RETVAL = 0 ] && rm -f ${pidfile}

@@ -3,7 +3,7 @@ FIONA Site Component for Data Capture
 
 [![RRID:SCR_016012](/images/rrid.svg)](https://scicrunch.org/resolver/SCR_016012)
 
-Simple system to capture MR images and k-space data from medical image systems. Imaging data is received from an MRI scanner, anonymized and uploaded to a centralized storage server. The ABCD project is using this software at its 21 data collection sites. The systems name is derived from a NSF funded project creating a Flash-memory based Input/Output Network Appliance (http://qi.ucsd.edu/news-article.php?id=2342&go=newer). This hardware platform is running the FIONASITE software that provides a web-interface to automate the data review (image viewer), to integrate with the centralized electronic data record for assigning anonymized id's and to forward the data to the central archive.
+Simple system to capture MR images and k-space data from medical image systems. Imaging data is received from an MRI scanner, anonymized and uploaded to a centralized storage server. The HBCD project is using this software at its 21 data collection sites. The systems name is derived from a NSF funded project creating a Flash-memory based Input/Output Network Appliance (http://qi.ucsd.edu/news-article.php?id=2342&go=newer). This hardware platform is running the FIONASITE software that provides a web-interface to automate the data review (image viewer), to integrate with the centralized electronic data record for assigning anonymized id's and to forward the data to the central archive.
 
 ![Web Interface](/images/webinterface.png "Web Interface")
 
@@ -68,11 +68,11 @@ Configuration
 ```
 
 #### Multiple projects on FIONA
-With the latest version of FIONA more than one project can now be hosted on FIONA. Additionally to the default location /data/ a number of further directories - one per new project - can be specified. For example your second project might be called ABCDF. Your configuration file contain one more key with a section for each additional scanner connection:
+With the latest version of FIONA more than one project can now be hosted on FIONA. Additionally to the default location /data/ a number of further directories - one per new project - can be specified. For example your second project might be called HBCDF. Your configuration file contain one more key with a section for each additional scanner connection:
 
 ```
     "SITES": {
-        "ABCDE": {
+        "HBCDE": {
             "DICOMIP":        "<IP of this computer as seen by the scanner>",
             "DICOMPORT":      "<Port number that receives DICOM data (4006)>",
             "DICOMAETITLE":   "<Application Entity Title of this system <site>FIONA>",
@@ -96,14 +96,14 @@ With the latest version of FIONA more than one project can now be hosted on FION
 
 The content of this git repository should be placed in the website directory of your system:
 ```
-cd /var/www/html/ &&  git clone https://github.com/ABCD-STUDY/FIONASITE.git
+cd /var/www/html/ &&  git clone https://github.com/HBCD-STUDY/FIONASITE.git
 ```
 
 In order to provide secure access to the web-interface for data transfer the following permission levels are supported:
 
 #### Permission level "abcd-data-entry"
 
-Default user level that allows for ABCD data uploads.
+Default user level that allows for HBCD data uploads.
 
 #### User "admin"
 
@@ -122,7 +122,7 @@ The admin component of the web-interface provides access to a role-based account
 Debug
 ======
 
-Use a vagrant setup such as https://github.com/ABCD-STUDY/abcd-dev.git for debugging and development (requires developer permissions).
+Use a vagrant setup such as https://github.com/HBCD-STUDY/abcd-dev.git for debugging and development (requires developer permissions).
 
 Processing containers inside FIONA use the DAIC Invention system which is docker based and provides a web interface that allows users to define a docker container, change its content and specify for which events the container will be started. The list of events currently supported is:
 

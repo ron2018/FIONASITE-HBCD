@@ -15,7 +15,7 @@ if (isset($config['LOCALTIMEZONE'])) {
 if (isset($_GET['project'])) {
    $project = $_GET['project'];
 }  
-if ($project == "ABCD") {
+if ($project == "HBCD") {
    $project = "";
 }
 
@@ -49,12 +49,8 @@ if (isset($_GET['id_redcap']) && $_GET['id_redcap'] != "") {
     echo ("{ \"ok\": 0, \"message\": \"id_redcap not set\" }");
     return;
 }
-if (isset($_GET['redcap_event_name']) && $_GET['redcap_event_name'] != "") {
-    $redcap_event_name = $_GET['redcap_event_name'];
-} else {
-    echo ("{ \"ok\": 0, \"message\": \"redcap_event_name not set\" }");
-    return;
-}
+
+
 if (isset($_GET['run']) && $_GET['run'] != "") {
     $run = $_GET['run'];
 } else {
@@ -62,38 +58,77 @@ if (isset($_GET['run']) && $_GET['run'] != "") {
     return;
 }
 
+if (isset($_GET['modify_participant_name']) && $_GET['modify_participant_name'] != "") {
+    $modify_participant_name = $_GET['modify_participant_name'];
+} else {
+    echo ("{ \"ok\": 0, \"message\": \"modify_participant_name not set\" }");
+    return;
+}
+
+if (isset($_GET['sex']) && $_GET['sex'] != "") {
+    $sex = $_GET['sex'];
+} else {
+    echo ("{ \"ok\": 0, \"message\": \"sex not set\" }");
+    return;
+}
+
+if (isset($_GET['age']) && $_GET['age'] != "") {
+    $age = $_GET['age'];
+} else {
+    echo ("{ \"ok\": 0, \"message\": \"age not set\" }");
+    return;
+}
+
 $path_info = pathinfo($filename);
+file_put_contents($log, date(DATE_ATOM)." Sending this file(s) to UCSD:  " .$path_info['filename']." \n", FILE_APPEND);
+file_put_contents($log, date(DATE_ATOM)." Check if we need to modify the dicom  " . $modify_participant_name . " with Sex: ".$sex. "  and Age :".$age." \n", FILE_APPEND);
+
+   
+
 
 $f = glob('/data'.$project.'/quarantine/'.$path_info['filename'].'.*');
 $oksessions = array();
 $failedsessions = array();
 foreach($f as $fi) {
-  $path_parts = pathinfo($fi);
-  $destination = '/data'.$project.'/outbox';
-  if ($need_to_anonymize) {
-     file_put_contents($log, date(DATE_ATOM)." Move file to " . $destination . " now ".$fi." (header: ".$id_redcap."_".$redcap_event_name."_".$run.")\n", FILE_APPEND); 
-     $destination = '/data'.$project.'/outbox_anonymize';
-     if (!is_dir($destination)) {
-        // try to create the directory
-	mkdir($destination);
-	if (!is_dir($destination)) {
-	   file_put_contents($log, date(DATE_ATOM)." Error creating " . $destination . " directory. Permission problem?\n", FILE_APPEND);
-           echo("{ \"message\": \"Error, could not create directory: ".$destination."\" }");
-	   return; // quit here
-	}
-     }
-  } else {
-     file_put_contents($log, date(DATE_ATOM)." Move file to " . $destination . " now ".$fi." (header: ".$id_redcap."_".$redcap_event_name."_".$run.")\n", FILE_APPEND); 
-  }
-  $prefix = $id_redcap."_".$redcap_event_name."_".$run;
-  $ok = rename($fi, $destination.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
-  if (!$ok) {
-     $failedsessions[] = $prefix. " " . $fi;
-  } else {
-     $oksessions[] = $prefix. " " . $fi;
-  }
+   $path_parts = pathinfo($fi);
+   $destination = '/data'.$project.'/outbox';
+   if ( $modify_participant_name == 1) {
+ 
+      echo (" Start modifying $filename");
+      file_put_contents($log, date(DATE_ATOM)." We need to modify the dicom for " . $id_redcap . " \n", FILE_APPEND);
+      $command=escapeshellcmd("python /var/www/html/php/modifyDicomsShell.py --tripleId=".$id_redcap." --sex=".$sex." --age=".$age." --filename=".$filename);
+      file_put_contents($log, date(DATE_ATOM)." python /var/www/html/php/modifyDicomsShell.py --tripleId=".$id_redcap." --sex=".$sex." --age=".$age." --filename=".$filename.")\n", FILE_APPEND);
+      $output=exec($command);
+      # need handle the exception if modify dicoms are not ok
+      file_put_contents($log, date(DATE_ATOM)." modifyDicoms.py run results: ".$output." \n", FILE_APPEND);
+      
+   }
+   file_put_contents($log, date(DATE_ATOM)." Move file to " . $destination . " now ".$fi." (header: ".$id_redcap."_".$run.")\n", FILE_APPEND); 
+   $prefix = $id_redcap."_".$run;
+   $ok=rename($fi, $destination.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
+   if (!$ok) {
+       $failedsessions[] = $prefix. " " . $fi;
+   } else {
+         $oksessions[] = $prefix. " " . $fi;
+   }
 }
-echo ("{ \"ok\": 1, \"ok_series\": \"".implode(",",$oksessions)."\", \"failed_series\": \"".implode(",", $failedsessions)."\" }");
+
+// call to pack the raw data
+//$suid=explode ("_", $filename)[0];
+//echo ("SUID :".$suid);
+
+//$command=escapeshellcmd("/var/www/html/server/bin/packRawDicomFiles.sh ".$id_redcap." ".$suid);
+//$output=exec($command);
+
+//if (!$output){
+// $rawdatapack = $suid." raw data pack filed !";
+//} else {
+// $rawdatapack = $suid." raw data packed Sucessfully !";
+//}
+
+
+$output="{ \"ok\": 1, \"ok_series\": \"".implode(",",$oksessions)."\", \"failed_series\": \"".implode(",", $failedsessions)."\"}";
+echo ($output);
 
 return;
 

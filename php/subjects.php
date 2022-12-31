@@ -11,8 +11,10 @@
      $projname = $_GET['project'];
   }
 
+#$projname='HBCD';
+
   $d = 'raw';
-  if ($projname != "ABCD" && $projname != "") {
+  if ($projname != "HBCD" && $projname != "") {
       $d = 'raw'.$projname;
   }
   $results = scandir($d);

@@ -4,7 +4,7 @@ $project = "";
 if (isset($_GET['project'])) {
    $project = $_GET['project'];
 }
-if ($project == "ABCD") {
+if ($project == "HBCD") {
   $project = "";
 }
 $config = json_decode(file_get_contents('config.json'), TRUE);

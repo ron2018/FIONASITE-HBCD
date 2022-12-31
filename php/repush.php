@@ -60,7 +60,7 @@ if (!$user_name) {
 	        return;
             }
 	    $project = $firstjob[1];
-	    if ($project == "ABCD") {
+	    if ($project == "HBCD") {
                 $project = "";
             }
 

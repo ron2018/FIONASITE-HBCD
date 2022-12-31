@@ -32,7 +32,7 @@ endpoint=`cat /data/config/config.json | jq -r ".DAICSERVER"`
 if [ "$project" != "" ]; then
     endpoint=`cat /data/config/config.json | jq -r ".SITES.${project}.DAICSERVER"`
 fi
-echo "Endpoint selected: $endpoint"
+echo "Endpoint selected: $endpoint for user:  $user"
 
 #
 # connect to abcd-workspace.ucsd.edu using keyless ssh access
@@ -95,7 +95,7 @@ sendAllFiles () {
   echo "`date`: copy done (${dur}sec)" >> $log  
 
   # delete the folder with the md5sums again
-  rm -Rf -- "$d"
+  #rm -Rf -- "$d"
 
   # just in case we end up with tgz files without an .md5sum files in this directory - calculate md5sum for those
   find "$pfiles" -type f -mtime +5 -name "*.tgz" -print0 | while read -d $'\0' file

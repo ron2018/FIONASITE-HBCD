@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Create a daemon process that listens to send messages and reads a DICOM file,
 extracts the header information and creates a Study/Series symbolic link structure.
@@ -37,13 +36,13 @@ class Daemon:
                     http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
                     """
                     try:
-                                pid = os.fork()
-                                if pid > 0:
-                                            # exit first parent
-                                            sys.exit(0)
+                        pid = os.fork()
+                        if pid > 0:
+                            # exit first parent
+                            sys.exit(0)
                     except OSError as e:
-                                sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
-                                sys.exit(1)
+                            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+                            sys.exit(1)
 
                     # decouple from parent environment
                     os.chdir("/")
@@ -52,10 +51,10 @@ class Daemon:
                 
                     # do second fork
                     try:
-                                pid = os.fork()
-                                if pid > 0:
-                                            # exit from second parent
-                                            sys.exit(0)
+                        pid = os.fork()
+                        if pid > 0:
+                           # exit from second parent
+                           sys.exit(0)
                     except OSError as e:
                                 sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
                                 sys.exit(1)
@@ -205,6 +204,20 @@ class ProcessSingleFile(Daemon):
                     else:
                             print("Warning: no %s/classifyRules.json file could be found" % os.path.dirname(os.path.abspath(__file__)))
 
+                    #add enhanded dicom rules here
+                    #self.classify_rules_enhanced = 0
+                    #self.rulesFile_enhanced = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, 'classifyRules_Enhanced.json'])
+                    #if os.path.exists(self.rulesFile_enhanced):
+                    #        with open(self.rulesFile_enhanced,'r') as f:
+                    #                self.classify_rules_enhanced = json.load(f)
+                    #        # we should resolve dependencies between rules, this could introduce a problem with termination,
+                    #        # Todo: add a check to the program to make sure that the rules are ok
+                    #        # we need to be able to reference a specific rule (id tag?)
+                    #        self.classify_rules_enhanced = self.resolveClassifyRules(self.classify_rules_enhanced)
+                            
+                    #else:
+                    #        print("Warning: no %s/classifyRules.json file could be found" % os.path.dirname(os.path.abspath(__file__)))
+
         def resolveClassifyRules(self, classify_rules ):
                 # add recursively rules back until no more changes can be done
                 for attempt in range(100):
@@ -245,6 +258,10 @@ class ProcessSingleFile(Daemon):
                 # a value can be a tag (array of string length 1) or a tag (array of string length 2) or a specific index into a tag (array of string length 3)
                 v = ''
                 taghere = True
+                #logging.info("resolveValue :" + str(len(tag)))
+                #logging.info(tag)
+                #logging.info(dataset[0x5200,0x9230][0][0x18,0x9226][0][0x21,0x1178].value)
+
                 if len(tag) == 1:
                         if not tag[0] in data:
                                 if not tag[0] in dataset:
@@ -263,10 +280,24 @@ class ProcessSingleFile(Daemon):
                                 taghere = False
                         else:
                                 v = dataset[int(tag[0],0), int(tag[1],0)].value[int(tag[2],0)]
+                elif len(tag) == 4: 
+                        #Philip
+                        if not ( int(tag[0],0), int(tag[1],0) ) in dataset:
+                                taghere = False
+                        else:
+                                v = str(dataset[int(tag[0],0), int(tag[1],0)][0][int(tag[2],0), int(tag[3],0)].value)
+                elif len(tag) == 6:
+                        if not ( int(tag[0],0), int(tag[1],0) ) in dataset:
+                                taghere = False
+                        else :
+                                v = str(dataset[int(tag[0],0), int(tag[1],0)][0][int(tag[2],0), int(tag[3],0)][0][int(tag[4],0), int(tag[5],0)].value)
                 else:
                         raise ValueError('Error: tag with unknown structure, should be 1, 2, or 3 entries in array')
                         print("Error: tag with unknown structure, should be 1, 2, or 3 entries in array")
                         logging.error("Error: tag with unknown structure, should be 1, 2, or 3 entries in array")
+
+                #logging.info("retrun value **** " + str(v))
+
                 return taghere, v
 
         def _null_truncate(self, s):
@@ -464,6 +495,10 @@ class ProcessSingleFile(Daemon):
                         print("Warning: no classify rules found in %s, ClassifyType tag will be empty" % self.rulesFile)
                         logging.info("Warning: no classify rules found in %s, ClassifyType tag will be empty" % self.rulesFile)
                         return classifyTypes
+                if 'SharedFunctionalGroupsSequence' in dataset:
+                    #self.classify_rules = self.classify_rules_enhanced
+                    logging.info('*********** Enhanced Rule')
+                
                 for rule in range(len(self.classify_rules)):
                         t = self.classify_rules[rule]['type']
                         # if we check on the series level all rules have to be true for every image in the series (remove at the end)
@@ -471,22 +506,40 @@ class ProcessSingleFile(Daemon):
                         if ('check' in self.classify_rules[rule]) and (self.classify_rules[rule]['check'] == "SeriesLevel"):
                                 seriesLevelCheck = True
                         ok = True
+                        
+                        #logging.info(rule)
+                        #logging.info(self.classify_rules[rule])
+                        #logging.info("number of rules:" + str(len(self.classify_rules[rule]['rules'])))
+
                         for entry in range(len(self.classify_rules[rule]['rules'])):
                                 r = self.classify_rules[rule]['rules'][entry]
+
+                                #logging.info(r)
+
                                 # we could have a negated rule here
                                 def isnegate(x): return x
                                 if ('negate' in r) and (r['negate'] == "yes"):
                                         def isnegate(x): return not x
                                 # check if this regular expression matches the current type t
                                 taghere = True
+                                if 'SharedFunctionalGroupsSequence' in dataset:
+                                    logging.info(str(dataset[0x5200,0x9230][0][0X18,0X9226][0][0x21,0x1178].value))
                                 try:
+                                        #logging.info("First Resolve")
+
                                         taghere, v = self.resolveValue(r['tag'],dataset,data)
                                 except ValueError:
                                         continue
                                 # the 'value' could in some cases be a tag, that would allow for relative comparisons in the classification
                                 v2 = r['value']
+                                #logging.info("First V1 value ****")
+                                #logging.info(v)
+
                                 taghere2 = True
                                 try:
+                                 #       logging.info("Second  Resolve")
+                                 #       logging.info(v2)
+
                                         taghere2, v2 = self.resolveValue(v2,dataset,data)
                                 except ValueError:
                                         v2 = r['value']
@@ -496,15 +549,26 @@ class ProcessSingleFile(Daemon):
                                 if not "operator" in r:
                                         r["operator"] = "regexp"  # default value
                                 op = r["operator"]
+                                #logging.info(op)
+                                #logging.info(v)
+                                #logging.info(v2)
+                                #logging.info(taghere)
                                 if op == "notexist":
-                                        if isnegate(tagthere):
+                                        if isnegate(taghere):
                                            ok = False
                                            break
                                 elif  op == "regexp":
-                                        pattern = re.compile(v2)
+                                        try: 
+                                            pattern = re.compile(v2)
+                                            #logging.info(pattern)
+                                        except re.error:
+                                            pass
+
+
                                         vstring = v
+
                                         if not isinstance(v, str):
-                                                vstring = str(v)
+                                            vstring = str(v)
                                         #if isinstance(v, (int, float)):
                                         #       #print "v is : ", v, " and v2 is: ", v2
                                         #       vstring = str(v)
@@ -514,8 +578,10 @@ class ProcessSingleFile(Daemon):
                                                         ok = False
                                                         break
                                         except TypeError:
+                                                logging.info("pattern: %s, vstring: %s (of type: %s)" % (v2, vstring, type(str(vstring)).__name__))
                                                 print ("pattern: %s, vstring: %s (of type: %s)" % (v2, vstring, type(str(vstring)).__name__))
                                                 print ("%s" % pattern.search(vstring))
+                                                pass
                                                 
                                 elif op == "==":
                                         try:
@@ -546,7 +612,7 @@ class ProcessSingleFile(Daemon):
                                         except ValueError:
                                           pass
                                 elif op == "exist":
-                                        if isnegate(not tagthere):
+                                        if isnegate(not taghere):
                                            ok = False
                                            break
                                 elif op == "contains":
@@ -577,12 +643,12 @@ class ProcessSingleFile(Daemon):
                                 else:
                                         ok = False
                                         break
-
                         # ok nobody failed, this is it
                         if ok:
                                 classifyTypes = classifyTypes + list(set([t]) - set(classifyTypes))
                         if seriesLevelCheck and not ok and (t in classifyTypes):
                                 classifyTypes = [y for y in classifyTypes if y != t]
+                        #logging.info(classifyTypes)
                 return classifyTypes
                                 
         def run(self):
@@ -632,7 +698,7 @@ class ProcessSingleFile(Daemon):
                                 # if we are in abcd the path should look like /data/site/archive/<something>
                                 # if we are in another project the path looks like /dataPCGC/site/archive/<something>
                                 datadir = self.datadir
-                                logging.info(dicomdir)
+                                #logging.info(dicomdir)
                                 #print 'DEBUG: dicomdir: ', dicomdir
                                 #print 'DEBUG: datadir: ', datadir
                                 #print 'DEBUG: self.projname ', self.projname
@@ -655,19 +721,22 @@ class ProcessSingleFile(Daemon):
                                         logging.error('Not a DICOM file: %s' % response)
                                         continue
                                 # Ignore secondary captures etc., we don't need them and they could contain
+                                # logging.info(dataset)
+                                #logging.info(dataset.Modality)
+
                                 # patient information burned in.
-                                #try:
-                                #        if dataset.Modality != "MR":
-                                #                # We want to remove this image again, don't keep it on our drive.
-                                #                # Even better would be to not accept them in storescp.
-                                #                logging.error('Non-MR modality DICOM image (%s) detected in %s, file will be removed' % (dataset.Modality, response))
-                                #                try:
-                                #                        os.remove(response)
-                                #                except OSError:
-                                #                        pass
-                                #                continue
-                                #except:
-                                #        pass
+                                try:
+                                        if dataset.Modality != "MR":
+                                                # We want to remove this image again, don't keep it on our drive.
+                                                # Even better would be to not accept them in storescp.
+                                                logging.error('Non-MR modality DICOM image (%s) detected in %s, file will be removed' % (dataset.Modality, response))
+                                                try:
+                                                        os.remove(response)
+                                                except OSError:
+                                                        pass
+                                                continue
+                                except:
+                                        pass
                                 # if we have a Siemens file get the CSA header structure as well
 
                                 ptag_img = { }
@@ -680,7 +749,7 @@ class ProcessSingleFile(Daemon):
                                 # - SIEMENS MEDCOM HEADER, MedCom Header Info
                                 # - SIEMENS MEDCOM OOG, MedCom OOG Info (MEDCOM Object Oriented Graphics)
                                 # Pydicom identifies it as "CSA Image Header Info"
-                                for tag in ( (0x0029, 0x1010), (0x0029, 0x1210), (0x0029, 0x1110) ):
+                                for tag in ( (0x0029, 0x1010), (0x0029, 0x1210), (0x0029, 0x1110),(5200,9229), (0x5200, 0x9230) ):
                                         tag_data = self._get(dataset, tag, None)
                                         if tag_data:
                                                 break
@@ -774,6 +843,9 @@ class ProcessSingleFile(Daemon):
                                 # lets store some data in a series specific file
                                 fn3 = os.path.join(outdir, dataset.StudyInstanceUID, dataset.SeriesInstanceUID) + ".json"
                                 data = { 'IncomingConnection': { 'AETitleCaller': aetitlecaller, 'AETitleCalled': aetitlecalled, 'CallerIP': callerip } }
+
+                                #logging.info(data)
+
                                 #try:
                                 #        data['CSAHeaderImg'] = ptag_img
                                 #except:
@@ -848,8 +920,8 @@ class ProcessSingleFile(Daemon):
                                         pass
                                 try:
                                         data['StudyDescription'] = str(dataset.StudyDescription)
-                                except Exception as ex:
-                                        logging.error('Error: could not read the StudyDescription %s %s' % (dataset.StudyDescription, type(ex).__name__))
+                                except:
+                                      #  logging.error('Error: could not read the StudyDescription %s %s' % (dataset.StudyDescription, type(ex).__name__))
                                         pass
                                 try:
                                         data['StationName'] = dataset.StationName
@@ -863,7 +935,7 @@ class ProcessSingleFile(Daemon):
                                         data['SequenceName'] = str(dataset[0x18,0x24].value)
                                 except:
                                         pass
-				try:
+                                try:
                                         data['ScanOptions'] = str(dataset[0x18,0x22].value)
                                 except:
                                         pass
@@ -871,10 +943,28 @@ class ProcessSingleFile(Daemon):
                                         data['EchoTime'] = str(dataset.EchoTime)
                                 except:
                                         pass
+                                
+                                try:
+                                        data['EchoTime'] = str(dataset[0x5200,0x9230][0][0x18,0x9114][0][0x18,0x9082].value)
+                                except:
+                                        pass
+
                                 try:
                                         data['RepetitionTime'] = str(dataset.RepetitionTime)
                                 except:
                                         pass
+
+                                #enhanced dicom
+                                try:
+                                        data['RepetitionTime'] = str(dataset[0x5200,0x9229][0][0x18,0x9112][0][0x18,0x80].value)
+                                except:
+                                        pass
+
+                                try:
+                                        data['PhaseEncodingSteps'] = str(dataset[0x5200,0x9229][0][0x18,0x9112][0][0x18,0x91].value)
+                                except:
+                                        pass
+
                                 try:
                                         data['SeriesNumber'] = str(dataset.SeriesNumber)
                                 except:
@@ -919,6 +1009,12 @@ class ProcessSingleFile(Daemon):
                                         data['ActiveCoils'] = str(dataset[0x51,0x100f].value)
                                 except:
                                         pass
+                                # enhanced dicom
+                                try:
+                                        data['ActiveCoils'] = str(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x114f].value)
+                                except:
+                                        pass
+
                                 try:
                                         data['Private0019_105a'] = str(dataset[0x19,0x105a].value)
                                 except:
@@ -949,7 +1045,28 @@ class ProcessSingleFile(Daemon):
                                         data['StudyTime'] = str(dataset[0x08,0x30].value)
                                 except:
                                         pass
-                                data['NumFiles'] = str(0)
+
+                                try:
+                                         data['PhaseEncodingDirectionPositive'] = str(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x111c].value)
+                                except:
+                                        pass
+
+                                try:
+                                         data['Private0021_104F'] = str(dataset[0x0021,0x104F].value)
+                                except:
+                                        pass
+                                try:
+                                         data['Private0020_0105'] = str(dataset[0x0020,0x0105].value)
+                                except:
+                                        pass
+                                try:
+                                         data['Private0019_109C'] = str(dataset[0x0019,0x109C].value)
+                                except:
+                                        pass
+                                try:
+                                         data['Private0019_10B3'] = str(dataset[0x0019,0x10B3].value)
+                                except:
+                                        pass
                                 try:
                                          data['Private0019_10BB'] = str(dataset[0x0019,0x10BB].value)
                                 except:
@@ -1061,7 +1178,9 @@ class ProcessSingleFile(Daemon):
                                 if not 'ClassifyType' in data:
                                         data['ClassifyType'] = []
                                 data['StudyInstanceUID'] = dataset.StudyInstanceUID
-                                data['NumFiles'] = str( int(data['NumFiles']) + 1 )
+                                data['NumFiles'] = str(0)
+                                
+                                #data['NumFiles'] = str( int(data['NumFiles']) + 1 )
                                 # add new types as they are found (this will create all type that map to any of the images in the series)
                                 data['ClassifyType'] = self.classify(dataset, data, data['ClassifyType'])
                                 #data['ClassifyType'] = data['ClassifyType'] + list(set(self.classify(dataset, data)) - set(data['ClassifyType']))
@@ -1087,6 +1206,7 @@ class ProcessSingleFile(Daemon):
 # There are two files that make this thing work, one is the .pid file for the daemon
 # the second is the named pipe in /tmp/.processSingleFile
 #  Hauke,    July 2015               
+#  Modify by Ron Yang for HBCD and enhanced DICOM Sept 2022
 if __name__ == "__main__":
         projname = ''
         if (sys.argv[1] != "send") and (len(sys.argv) == 3):
@@ -1107,7 +1227,7 @@ if __name__ == "__main__":
                 datadir = settings['SITES'][projname]['DATADIR'].encode("utf-8")
                 #print ("DEBUG: datadir: ", datadir)
         except KeyError:
-                print("Could not read local config files DATADIR value for project \"%s\" in %s, assume ABCD default: %s" % (projname, configFilename, datadir))
+                print("Could not read local config files DATADIR value for project \"%s\" in %s, assume HBCD default: %s" % (projname, configFilename, datadir))
                 pass
 
         pidfilename = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '../.pids/processSingleFile' , projname , '.pid' ])

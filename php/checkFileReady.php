@@ -15,7 +15,7 @@ if (isset($_GET['project'])) {
     $project = $_GET['project'];
 }
 
-if ($project == "ABCD") {
+if ($project == "HBCD") {
     $project = "";
 }
 

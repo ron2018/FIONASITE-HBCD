@@ -16,7 +16,7 @@ $project = "";
 if (isset($_GET['project'])) {
    $project = $_GET['project'];
 }
-if ($project == "ABCD") {
+if ($project == "HBCD") {
    $project = "";
 }
 
@@ -181,7 +181,7 @@ $baselineDate = date_create_from_format('Y-m-d H:i', $result['baselineDate']);
 //echo ($baselineDate->format('m/d/Y') . " " . $result['baselineDate']);
 $event_name = '';
 if ($baselineDate === False) {
-   // if we are not in the ABCD project we might not get a baselineDate, assume in this case that we are in the baseline event (PCGC)
+   // if we are not in the HBCD project we might not get a baselineDate, assume in this case that we are in the baseline event (PCGC)
    $event_name = 'baseline_year_1_arm_1';
 } else {
    $event_name = getEventName( $baselineDate->format('m/d/Y'), $now, $events );

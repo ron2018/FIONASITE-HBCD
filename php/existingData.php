@@ -25,7 +25,7 @@ if (isset($_GET['project'])) {
     return;
 }
 
-if ($project == "ABCD") {
+if ($project == "HBCD") {
    // default project setting
    $project = "";
 } 

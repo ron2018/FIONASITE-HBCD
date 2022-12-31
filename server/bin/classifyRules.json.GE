@@ -1,0 +1,507 @@
+[
+  { "type" : "GE",
+    "id" : "GEBYMANUFACTURER",
+    "description" : "This scan is from GE",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^GE MEDICAL"
+      }
+    ]  
+  },
+  { "type" : "SIEMENS",
+    "id" : "SIEMENSBYMANUFACTURER",
+    "description" : "This scan is from SIEMENS",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^SIEMENS"
+      }
+    ]  
+  },
+  { "type" : "PHILIPS",
+    "id" : "PHILIPSBYMANUFACTURER",
+    "description" : "This scan is from Philips",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^Philips"
+      }
+    ]  
+  },
+  {
+      "type" : "mosaic",
+      "description": "Siemens Mosaic format",
+      "id" : "MOSAIC",
+      "rules": [
+          {
+	     "tag": [ "0x08", "0x08" ],
+             "value": "MOSAIC",
+	     "operator": "contains"
+          },
+	  {
+	     "rule": "SIEMENSBYMANUFACTURER"
+	  }
+      ]
+  },
+  {
+      "type" : "original",
+      "description": "original Image format (not derived)",
+      "id" : "ORIGINAL",
+      "rules": [
+          {
+	     "tag": [ "0x08", "0x08" ],
+             "value": "ORIGINAL",
+	     "operator": "contains"
+          }
+      ]
+  },
+  {
+      "type" : "localizer",
+      "description": "A localizer scan, has been classified before as axial, sagittal and coronal",
+      "rules": [
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "axial" ,
+	      "operator": "contains"
+	  },
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "coronal",
+	      "operator": "contains"
+	  },
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "sagittal",
+	      "operator": "contains"
+	  }
+      ]
+  },
+  { "type" : "HBCD-T1",
+    "description" : "A T1 weighted image from GE with HBCD resolution",
+    "rules" : [
+      {
+	"rule" : "GEBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 320, 300, 0"
+      },{ 
+        "tag": [ "0x19", "0x109c"],
+        "value": "^.*mprage_promo"
+      },{ 
+	"tag": [ "0x18", "0x22" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "FILTERED_GEMS"}
+    ]
+  },
+  { "type" : "HBCD-T1-ND",
+    "description" : "A T1 weighted image from GE with HBCD resolution",
+    "rules" : [
+      {
+	"rule" : "GEBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 320, 300, 0"
+      },{ 
+        "tag": [ "0x19", "0x109c"],
+        "value": "^.*mprage_promo"
+      },{ 
+	"tag": [ "0x18", "0x22" ],
+        "operator": "contains",
+        "value": "FILTERED_GEMS"      
+}
+    ]
+  },
+  { "type" : "HBCD-T1",
+    "description" : "A T1 weighted image from GE with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "GEBYMANUFACTURER"
+      },{
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 320, 300, 0"
+      },{
+        "tag": [ "0x19", "0x109c"],
+        "value": "^.*efgre3d"
+      },{
+        "tag": [ "0x18", "0x22" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "FILTERED_GEMS"}
+    ]
+  },
+  { "type" : "HBCD-T1-ND",
+    "description" : "A T1 weighted image from GE with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "GEBYMANUFACTURER"
+      },{
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 320, 300, 0"
+      },{
+        "tag": [ "0x19", "0x109c"],
+        "value": "^.*efgre3d"
+      },{
+        "tag": [ "0x18", "0x22" ],
+        "operator": "contains",
+        "value": "FILTERED_GEMS"
+      }
+    ]
+  },
+  {
+      "type" : "HBCD-dMRI",
+      "id" : "GEDTI",
+      "description": "GE based MMIL DTI format",
+      "rules": [
+          {"rule": "GEBYMANUFACTURER"
+	  },{
+	     "tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "2916"
+      }
+	  
+      ]
+  },
+  {
+      "type" : "HBCD-dMRI",
+      "id" : "GEDTI",
+      "description": "GE based MMIL DTI format for DV26",
+      "rules": [
+          {"rule": "GEBYMANUFACTURER"
+	  },{
+	     "tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "6699"
+      }
+	  
+      ]
+  },
+  {
+      "type" : "HBCD-dMRI",
+      "id" : "GEDTI",
+      "description": "GE based MMIL DTI format for DV29/RX28",
+      "rules": [
+          {"rule": "GEBYMANUFACTURER"
+	  },{
+	     "tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "6612"
+      },{ 
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "ORIG"
+      }  
+      ]
+  },
+  {
+      "type" : "HBCD-Diffusion-FM",
+      "description": "GE based DTI field map",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "189"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-Diffusion-FM",
+      "description": "GE based DTI field map",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "16929"
+      },{ 
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "REV_POL"
+      } 
+      ]
+  },
+  {
+      "type" : "HBCD-Diffusion-FM",
+      "description": "GE based DTI field map for DV26",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "648"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-FM-fMRI",
+      "description": "Field Maps for HBCD fMRI scan",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/epi_pepolar"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "112, 0, 0, 112"
+      },{ 
+        "tag": [ "0x19", "0x10b3" ],
+        "value": "2.000000"
+      },{ 
+        "tag": [ "0x21", "0x104f" ],
+        "value": "76"
+      },{ 
+        "tag": [ "0x20", "0x105" ],
+        "operator": "==",
+        "value": "4"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-Diffusion-QA",
+      "description": "QA for diffusion on GE scanners",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "297"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-Diffusion-QA",
+      "description": "QA for diffusion on GE scanners for DV26",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "810"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-fBIRN-QA",
+      "description": "GE fBIRN QA (non-Multiband)",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "epi_pepolar$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "64, 0, 0, 64"
+      },
+      { 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "6000"
+      },{ 
+        "tag": [ "0x18", "0x80" ],
+        "value": "2000"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-Coil-QA",
+      "description": "GE phantom coil scan",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/efgre3d"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 32, 32, 0"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "4224"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-Coil-QA",
+      "description": "GE phantom coil scan",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/efgre3d"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 32, 32, 0"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "924"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-fMRI-PA",
+      "description": "GE HBCD rsfMRI",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "112, 0, 0, 112"
+      },{ 
+        "tag": [ "0x19", "0x105a" ],
+        "value": "450225248.0"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-MB-fMRI-QA",
+      "description": "GE HBCD fMRI MultiBand QA",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "3750"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-MB-fMRI-QA",
+      "description": "GE HBCD fMRI MultiBand QA for DV26",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "22500"
+      }
+      ]
+  },
+  { 
+    "type" : "HBCD-T2-ND",
+    "description" : "A Normalized T2 weighted image from GE with HBCD resolution",
+    "rules" : [
+      {
+	  "rule" : "GEBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 320, 300, 0"
+      },{ 
+        "tag": [ "0x19", "0x109c"],
+        "value": "Cube"
+      },
+      { 
+        "tag": [ "0x19", "0x109e"],
+        "value": "3DFSE"
+      },{ 
+       "tag": [ "0x18", "0x22" ],
+        "operator": "contains",
+        "value": "FILTERED_GEMS"
+      }
+    ]
+  },{ 
+    "type" : "HBCD-T2",
+    "description" : "A T2 weighted image from GE with HBCD resolution",
+    "rules" : [
+      {
+	  "rule" : "GEBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 320, 300, 0"
+      },{ 
+        "tag": [ "0x19", "0x109c"],
+        "value": "Cube"
+      }, 
+      { 
+        "tag": [ "0x19", "0x109e"],
+        "value": "3DFSE"
+      },{ 
+       "tag": [ "0x18", "0x22" ],
+        "operator": "contains",
+	"negate": "yes", 
+        "value": "FILTERED_GEMS"
+      }
+    ]
+  },
+  { 
+    "type" : "HBCD-qMRI",
+    "description" : "A GE based qMRI for HBCD",
+    "rules" : [
+      {
+	  "rule" : "GEBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 176, 176, 0"
+      },{ 
+        "tag": [ "0x19", "0x109a"],
+        "value": "305030144.0"
+      }
+    ]
+ }
+
+
+]
+

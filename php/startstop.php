@@ -3,7 +3,7 @@
   if (isset($_GET['project'])) {
      $project = $_GET['project'];
   }
-  if ($project == "ABCD") { // default project is just /data/
+  if ($project == "HBCD") { // default project is just /data/
      $project = "";
   }
 

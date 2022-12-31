@@ -67,11 +67,11 @@ if (array_key_exists($_SESSION["logged"],$USERS)) {
     <div class="span3">
       <form action="login.php" method="post" id="login-form">
          <input type="hidden" name="ac" value="log">
-         <input type="hidden" name="pw" id="pw">
+         <input type="hidden" name="pw" id="pw" autocomplete="on">
          <input type="hidden" name="url" id="url" value="<?php echo $_GET['url']; ?>">
          <input type="text" name="username" placeholder="user" class="span3" autofocus/>
       </form>
-      <input id="pw-field" type="password" name="password" placeholder="********" onkeypress="handleKeyPress(event, this.form)" class="span3"><br/>
+      <input id="pw-field" type="password" name="password" autocomplete="on" placeholder="********" onkeypress="handleKeyPress(event, this.form)" class="span3"><br/>
       <div align="right">
          <input type="submit" class="btn" value="Login" form="login-form" class="span3"/><br>
          <!-- <a href="/applications/User/requestLogin.php" class="small">request access</a> /<a href="/applications/User/newPassword.php" class="small">send new password</a> -->
