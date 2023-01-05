@@ -15,7 +15,7 @@ if (isset($config['LOCALTIMEZONE'])) {
 
 if (isset($_GET['project'])) {
    $project = $_GET['project'];
-}  
+}
 if ($project == "HBCD") {
    $project = "";
 }
@@ -75,8 +75,6 @@ if (isset($_GET['age']) && $_GET['age'] != "") {
 file_put_contents($log, date(DATE_ATOM)." Pack this suid(s) to UCSD:  " .$suid." \n", FILE_APPEND);
 file_put_contents($log, date(DATE_ATOM)." Check if we need to modify the dicom  " . $modify_participant_name . " with Sex: ".$sex. "  and Age :".$age." \n", FILE_APPEND);
 echo (" Pack this suid(s) to UCSD:  " .$suid);
-
-array_push($suidList, "{tripleId:".$tripleId.",SUID:".$suid.",run:".$run."}");
 
 file_put_contents($suidlists, $tripleId.",".$suid.",".$run."\n", FILE_APPEND);
 

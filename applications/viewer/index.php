@@ -14,7 +14,7 @@
   <link href="css/bootstrap.min.css" rel="stylesheet">
 
   <!-- UI CSS -->
-  <link href="css/jquery-ui.min.css" rel="stylesheet">  
+  <link href="css/jquery-ui.min.css" rel="stylesheet">
 
   <!-- Cornerstone Base CSS -->
   <link href="css/cornerstone.min.css" rel="stylesheet">
@@ -57,7 +57,7 @@
         <ul class="nav navbar-nav navbar-right">
           <!-- <li><a id="help" href="#" class="button hidden-xs">Help</a></li>
           <li><a id="about" href="#" class="button hidden-xs">About</a></li> -->
-          <a class="navbar-brand" href="http://abcdstudy.org"><image src="images/logo@2x.png" style="margin-top: -20px;" width=280/></a>
+          <a class="navbar-brand" href="http://hbcdstudy.org"><image src="images/HBCD_logo.png" style="margin-top: -20px;" width=280/></a>
         </ul>
       </div>
     </nav>
@@ -87,14 +87,14 @@
                   <th># Images</th>
                 </tr>
               </thead>
-              
+
               <tbody id="studyListData">
                 <!-- Table rows get populated from the JSON studyList manifest -->
               </tbody>
             </table>
           </div>
           <div style="margin-bottom: 20px;">
-            <i style="margin: 20px;">A service provided by the Data Analysis and Informatics Core of ABCD.</i>
+            <i style="margin: 20px;">A service provided by the HBCD Data Coordinating Center of HBCD.</i>
           </div>
         </div>
       </div>
