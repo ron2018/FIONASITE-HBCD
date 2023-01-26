@@ -15,52 +15,58 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Query LORIS API to get the right participant's infomration")
     parser.add_argument('--tripleId', help="should be triplet consists of TIOKH0015_273095_V02", required=True)
+    parser.add_argument('--run', help="should be Session name", required=True)
     parser.add_argument('--sex', help="Sex data from Loris", required=True)
     parser.add_argument('--age', help="Age data from Loris", required=True)
+    parser.add_argument('--dob', help="de-idenfied DOB  data from Loris", required=True)
     parser.add_argument('--filename', help="filename in quarention folder", required=True)
     return parser.parse_args()
 
 
 args = parse_arguments()
-print(args)
+#print(args)
 
 filename = shlex.quote(args.filename)
 tripleId = shlex.quote(args.tripleId)
 sex = shlex.quote(args.sex)
 age = shlex.quote(args.age)
-print(filename, tripleId,sex,age)
+dob = shlex.quote(args.dob)
+run = shlex.quote(args.run)
+
+#print(filename, tripleId,sex,age)
 
 UIDs = filename.split("_")
 SUID = UIDs[0]
 SeUID = UIDs[1].replace(".tgz","")
-print("SUID : ", SUID, " SeUID : ", SeUID)
+#print("SUID : ", SUID, " SeUID : ", SeUID)
 
 try:
-    proc = subprocess.run(["/bin/cp", "/data/quarantine/"+filename,  "/data/site/temp/"], shell=False)
+    proc = subprocess.run(["/bin/cp", "/data/quarantine/"+filename+".tgz",  "/data/site/temp/"], shell=False)
     if proc.returncode < 0:
         print("Child was terminated by signal", -proc, file=sys.stderr)
     else:
         print("Child returned", proc, file=sys.stderr)
 except OSError as e:
-    print("Copy file x"/data/quarantine/"+filename failed:", e, file=sys.stderr)
+    print("Copy file /data/quarantine/"+filename+".tgz failed:", e, file=sys.stderr)
 
 try:
-    proc = subprocess.run(["/bin/tar","-xvf", "/data/site/temp/"+filename, "-C", "/data/site/temp/"], shell=False)
+    proc = subprocess.run(["/bin/tar","-xvf", "/data/site/temp/"+filename+".tgz", "-C", "/data/site/temp/"], shell=False)
     if proc.returncode < 0:
         print("Child was terminated by signal", -proc, file=sys.stderr)
     else:
         print("Child returned", proc, file=sys.stderr)
 except OSError as e:
-    print("Untar file /data/site/temp/"+filename + " failed:", e, file=sys.stderr)
+    print("Untar file /data/site/temp/"+filename + ".tgz failed:", e, file=sys.stderr)
 
 
-if args.tripleId:
+if tripleId:
     
     try:
         command2 = 'dcmodify -i "(0010,0010)='+ tripleId + '" -nb ' + "/data/site/temp/" + SUID + "/" + SeUID + '/*'
         os.system(command2)
         command3 = 'dcmodify -i "(0010,0020)='+ tripleId + '" -nb ' + "/data/site/temp/" + SUID + "/" + SeUID + '/*'
         os.system(command3)
+        print ("De-identify Patient Name for this folder: %s", tripleId)
     except OSError as e:
         print("dcmodify PatientID or Name for /data/site/temp/"+filename + " failed:", e, file=sys.stderr)
 
@@ -69,7 +75,7 @@ if args.tripleId:
     #proc = subprocess.run(["/usr/local/bin/dcmodify","-i '(0010,0020)="+ tripleId + "' -nb", "/data/site/temp/" + SUID +  "/" + SeUID + "/*"], shell=True)
     #print(proc)
     #print("Anonymize Patient Name for this folder: %s", tripleId)
-if args.age:
+if age:
     try: 
 
         command4 = 'dcmodify -i "(0010,1010)='+ age + '" -nb ' + "/data/site/temp/" + SUID + "/" + SeUID + '/*'
@@ -79,8 +85,8 @@ if args.age:
 
 
     #proc = subprocess.run(["/usr/local/bin/dcmodify","-i","'(0010,1010)="+ age +"'", "-nb","/data/site/temp/" + SUID +  "/" + SeUID + "/*"], shell=True)
-    print("Anonymize Patient Age for this folder: %s", age)
-if args.sex:
+    #print("Anonymize Patient Age for this folder: %s", age)
+if sex:
     try:
 
         command5 = 'dcmodify -i "(0010,0040)='+ sex + '" -nb ' + "/data/site/temp/" + SUID + "/" + SeUID + '/*'
@@ -88,7 +94,13 @@ if args.sex:
     except OSError as e:
         print("dcmodify PatientSex for /data/site/temp/"+filename + " failed:", e, file=sys.stderr)
     #proc = subprocess.run(["/usr/local/bin/dcmodify","-i","'(0010,0040)="+ sex +"'" , "-nb", "/data/site/temp/" + SUID +  "/" + SeUID + "/*"], shell=False)
-    print("Anonymize Patient Age for this folder: %s", sex)
+if dob:
+    try:
+
+        command6 = 'dcmodify -i "(0010,0030)='+ dob + '" -nb ' + "/data/site/temp/" + SUID + "/" + SeUID + '/*'
+        os.system(command6)
+    except OSError as e:
+        print("dcmodify DOB for /data/site/temp/"+filename + " failed:", e, file=sys.stderr)
 
 
 # Change the json also.
@@ -102,20 +114,14 @@ try:
         json_data["PatientAge"] = age
 
     with open("/data/site/temp/" + SUID + "/" + SeUID + ".json", "w") as outfile:
-        json.dump(json_data, outfile)
+        json.dump(json_data, outfile, indent=4)
 except ValueError:
     print("Modify json file for /data/site/temp/"+filename + " failed:", e, file=sys.stderr)
 
 
-#command6 = "cd /data/site/temp/ && /bin/tar cvfz " + filename + " ./" + SUID + " && rm -rf ./" + SUID
-#print(command6)
-#os.system(command6)
-
-#proc = subprocess.run(["/bin/mv", "/data/site/temp/"+filename,"/data/quarantine/"], shell=False)
-#print(proc)
 
 try:
-    proc = subprocess.run(["/var/www/html/server/bin/tempFileToQuarentine.sh",SUID,SeUID], shell=False)
+    proc = subprocess.run(["/var/www/html/server/bin/tempFileToQuarentine.sh",SUID,SeUID,tripleId+"_"+run], shell=False)
     if proc.returncode < 0:
         print("Child was terminated by signal", -proc, file=sys.stderr)
     else:

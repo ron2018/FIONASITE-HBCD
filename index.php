@@ -595,6 +595,7 @@ loading configuration file...
 	      </select>
              <input class="form-control" id="new-session-age" hidden>
              <input class="form-control" id="new-session-sex" hidden>
+             <input class="form-control" id="new-session-dob" hidden>
              <input class="form-control" id="modify-participant-name" value="0" hidden>
         </div>
            
@@ -1563,7 +1564,8 @@ console.log(data);
 console.log(data[0]);
         
         if(data[0][0].includes("Unknown") == true || data[0][0].includes("Invalid") == true || data[0][0].includes("LORIS") == true 
-           || data[0].includes("Incomplete") == true || data[0].includes("does not match")) {
+           || data[0][0].includes("Incomplete") == true || data[0].includes("does not match") == true 
+           || data[0][0].includes("PSCID_DCCID_VISIT") == true ) {
             no_match = true;          
             
             jQuery('#imaging-info-text').text(JSON.stringify(data[0]) + "Please review the information and re-enter the correct" );
@@ -1579,6 +1581,8 @@ console.log(data[0]);
             jQuery('#imaging-info-recheck').show();
             
             jQuery('#study-info-dialog-sendall').attr("disabled", true);
+            jQuery('#session-name').hide();
+            jQuery('#session-name-label').hide();
 
         } else {
             jQuery('#new-session-participant-label').hide();
@@ -1587,23 +1591,26 @@ console.log(data[0]);
             jQuery('#imaging-info-recheck').hide();
        
             jQuery('#session-participant').show();
-            //jQuery('#session-name').show();
+            jQuery('#session-name').show();
             jQuery('#session-run').show();
             jQuery('#session-participant-label').show();
-            //jQuery('#session-name-label').show();
+            jQuery('#session-name-label').show();
             jQuery('#session-run-label').show();
+console.log(data[1]);
    
-            // data[1] contains sex_sacndate_age as following "M_2022-10-13_044W"
+            // data[1] contains sex_dob_age as following "M_2022-10-13_044W"
             const lorisArray = data[1].split("_"); 
             sex_loris = lorisArray[0];
-            scan_date_loris = lorisArray[1];
             age_loris = lorisArray[2];
+            dob_loris = lorisArray[1];
             jQuery('#new-session-age').val(sex_loris);
             jQuery('#new-session-sex').val(age_loris);
+            jQuery('#new-session-dob').val(dob_loris);
 
 console.log(jQuery('#modify-participant-name').val());
 console.log(jQuery('#new-session-age').val());
 console.log(jQuery('#new-session-sex').val());
+console.log(jQuery('#new-session-dob').val());
             jQuery('#study-info-dialog-sendall').removeAttr("disabled");
         }
 		
@@ -2272,6 +2279,7 @@ jQuery(document).ready(function() {
          console.log(jQuery('#modify-participant-name').val())
          console.log(jQuery('#new-session-age').val())
          console.log(jQuery('#new-session-sex').val())
+         console.log(jQuery('#new-session-dob').val())
 
 				
           var options = {
@@ -2281,6 +2289,7 @@ jQuery(document).ready(function() {
              "modify_participant_name" : jQuery('#modify-participant-name').val(),
              "sex" : jQuery('#new-session-sex').val(),
              "age" : jQuery('#new-session-age').val(),
+             "dob" : jQuery('#new-session-dob').val(),
 	     "project": projname
           };
           jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {

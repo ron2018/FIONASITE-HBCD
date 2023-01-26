@@ -79,33 +79,41 @@ if (isset($_GET['age']) && $_GET['age'] != "") {
     return;
 }
 
+if (isset($_GET['dob']) && $_GET['dob'] != "") {
+    $dob = $_GET['dob'];
+} else {
+    echo ("{ \"ok\": 0, \"message\": \"dob not set\" }");
+    return;
+}
+
 $path_info = pathinfo($filename);
 file_put_contents($log, date(DATE_ATOM)." Sending this file(s) to UCSD:  " .$path_info['filename']." \n", FILE_APPEND);
-file_put_contents($log, date(DATE_ATOM)." Check if we need to modify the dicom  " . $modify_participant_name . " with Sex: ".$sex. "  and Age :".$age." \n", FILE_APPEND);
-
-   
+file_put_contents($log, date(DATE_ATOM)." Check if we need to modify the dicom  " . $modify_participant_name . " with Sex: ".$sex. "  and Age :".$age." and DOB ".$dob." \n", FILE_APPEND);
 
 
-$f = glob('/data'.$project.'/quarantine/'.$path_info['filename'].'.*');
+$f = glob('/data'.$project.'/quarantine/'.$path_info['filename'].'*');
 $oksessions = array();
 $failedsessions = array();
 foreach($f as $fi) {
    $path_parts = pathinfo($fi);
    $destination = '/data'.$project.'/outbox';
-   if ( $modify_participant_name == 1) {
- 
-      echo (" Start modifying $filename");
-      file_put_contents($log, date(DATE_ATOM)." We need to modify the dicom for " . $id_redcap . " \n", FILE_APPEND);
-      $command=escapeshellcmd("python /var/www/html/php/modifyDicomsShell.py --tripleId=".$id_redcap." --sex=".$sex." --age=".$age." --filename=".$filename);
-      file_put_contents($log, date(DATE_ATOM)." python /var/www/html/php/modifyDicomsShell.py --tripleId=".$id_redcap." --sex=".$sex." --age=".$age." --filename=".$filename.")\n", FILE_APPEND);
-      $output=exec($command);
-      # need handle the exception if modify dicoms are not ok
-      file_put_contents($log, date(DATE_ATOM)." modifyDicoms.py run results: ".$output." \n", FILE_APPEND);
-      
+   if ( $modify_participant_name == 1 ) {
+      if ( $path_parts['extension'] == "tgz") {
+
+         echo (" Start modifying $filename");
+         file_put_contents($log, date(DATE_ATOM)." We need to modify the dicom for " . $id_redcap . " \n", FILE_APPEND);
+         $command=escapeshellcmd("python /var/www/html/php/modifyDicoms.py --tripleId=".$id_redcap." --run=".$run." --sex=".$sex." --age=".$age." --dob=".$dob." --filename=".$path_parts['filename']);
+         $output = exec($command);
+         # need handle the exception if modify dicoms are not ok
+         file_put_contents($log, date(DATE_ATOM).$command."\n", FILE_APPEND);
+         file_put_contents($log, date(DATE_ATOM)." modifyDicoms.py run results: ".$output." \n", FILE_APPEND);
+      }
+       
+   } else {
+      file_put_contents($log, date(DATE_ATOM)." Move file to " . $destination . " now ".$fi." (header: ".$id_redcap."_".$run.")\n", FILE_APPEND); 
+      $prefix = $id_redcap."_".$run;
+      $ok=rename($fi, $destination.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
    }
-   file_put_contents($log, date(DATE_ATOM)." Move file to " . $destination . " now ".$fi." (header: ".$id_redcap."_".$run.")\n", FILE_APPEND); 
-   $prefix = $id_redcap."_".$run;
-   $ok=rename($fi, $destination.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
    if (!$ok) {
        $failedsessions[] = $prefix. " " . $fi;
    } else {
