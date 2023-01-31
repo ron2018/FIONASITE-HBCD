@@ -1,0 +1,64 @@
+{
+  "GE": {
+    "T1": 204,
+    "T2": 204,
+    "FM-fMRI": 76,
+    "HBCD-fMRI": 261,
+    "HBCD-dMRI": 87,
+    "qMRI": 128,
+    "LocSVS": 12,
+    "B1": 32
+  },
+  "SIEMENS": {
+    "T1": 208,
+    "T2": 208,
+    "FM-fMRI": 76,
+    "ABCD-rsfMRI": 383,
+    "ABCD-nBack-fMRI": 370,
+    "ABCD-SST-fMRI": 445,
+    "ABCD-MID-fMRI": 411,
+    "ABCD-DTI": 103,
+    "ABCD-Diffusion-FM-PA": 1,
+    "ABCD-fMRI-SST-FM-PA": 1,
+    "ABCD-nBack-FM-PA": 1,
+    "ABCD-fMRI-MID-FM-PA": 1,
+    "ABCD-rsfMRI-FM-PA": 1,
+    "LocSVS": 12,
+    "B1": 46
+  },
+  "SIEMENS-ENHANCED": {
+    "T1": 1,
+    "T2": 1,
+    "FM-fMRI": 2,
+    "ABCD-rsfMRI": 383,
+    "ABCD-nBack-fMRI": 370,
+    "ABCD-SST-fMRI": 445,
+    "ABCD-MID-fMRI": 411,
+    "ABCD-DTI": 103,
+    "ABCD-Diffusion-FM-PA": 1,
+    "ABCD-fMRI-SST-FM-PA": 1,
+    "ABCD-nBack-FM-PA": 1,
+    "ABCD-fMRI-MID-FM-PA": 1,
+    "ABCD-rsfMRI-FM-PA": 1,
+    "LocSVS": 1,
+    "B1": 1
+  },
+  "PHILIPS": {
+    "T1": 208,
+    "T2": 208,
+    "FM-fMRI": 76,
+    "HBCD-fMRI": 76,
+    "HBCD-dMRI": 87,
+    "qMRI": 128,
+    "B1": 220
+  },
+  "PHILIPS-ENHANCED": {
+    "T1": 2,
+    "T2": 2,
+    "FM-fMRI": 76,
+    "HBCD-fMRI": 19836,
+    "HBCD-dMRI": 2,
+    "qMRI": 2,
+    "B1": 2
+  }
+}

@@ -286,6 +286,9 @@
         "tag": [ "0X18","0X9005" ],
         "value": "epse2d1_140"
       },{
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "103"
+      },{
        "tag": [ "SeriesDescription" ],
         "operator": "contains",
         "negate": "yes",
