@@ -325,6 +325,7 @@ if __name__ == "__main__":
     t1_block["status"] =1
     t2_block["status"] = 1
 
+    print(dti_runcounter, fmdti_runcounter)
     if dti_runcounter == fmdti_runcounter: 
          dti_block["status"] = 1
          dti_block["message"] = "Compliant ABCD-DTI component was found"
@@ -332,12 +333,13 @@ if __name__ == "__main__":
          dti_block["status"] = 0
          dti_block["message"] = "Compliant ABCD-DTI component was not found, A compliant DTI component should include a DTI field map followed by the DTI acquisition"
 
+    print(midfmri_runcounter, fmMIDfmri_runcounter)
     if midfmri_runcounter == fmMIDfmri_runcounter: 
          mid_fmri_block["status"] = 1
          mid_fmri_block["message"] = "Compliant ABCD MID fMRI task was found."
     else: 
-         dti_block["status"] = 0
-         dti_block["message"] = "Compliant ABCD MID fMRI task  component was not found, A compliant MID fMRI component should include a MID fMRI field map followed by the MID fMRI acquisition"
+         mid_fmri_block["status"] = 0
+         mid_fmri_block["message"] = "Compliant ABCD MID fMRI task  component was not found, A compliant MID fMRI component should include a MID fMRI field map followed by the MID fMRI acquisition"
 
     if sstfmri_runcounter == fmSSTfmri_runcounter: 
          sst_fmri_block["status"] = 1
@@ -353,6 +355,8 @@ if __name__ == "__main__":
          nback_fmri_block["status"] = 0
          nback_fmri_block["message"] = "Compliant nBack fMRI task was not found. A compliant nBack fMRI task component should include a fMRI field map followed by the nBack fMRI task acquisition"
 
+
+    print(rsfmri_runcounter, fmrestfMRI_runcounter)
 
     if rsfmri_runcounter == fmrestfMRI_runcounter: 
          rsfmri_block["status"] = 1
