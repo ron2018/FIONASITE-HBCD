@@ -87,6 +87,8 @@ if __name__ == "__main__":
     sst_fmri_block = {}
     nback_fmri_block = {}
     rsfmri_block = {}
+    fmAPfmri_block = {}
+    fmPAfmri_block = {}
 
     t1_runcounter = 1
     t2_runcounter = 1
@@ -102,13 +104,11 @@ if __name__ == "__main__":
     bmri_runcounter = 1
     sstfmri_runcounter = 1 
     midmri_runcounter = 1
-    fmdti_runcounter = 1 
-    fmMIDfmri_runcounter = 1 
-    fmnBackfmri_runcounter = 1 
-    midmri_runcounter = 1 
-    fmrestfMRI_runcounter = 1 
+    fmAPdti_runcounter = 1 
+    fmPAdti_runcounter = 1 
+    fmAPfmri_runcounter = 1 
+    fmPAfmri_runcounter = 1 
     nBackfmri_runcounter = 1 
-    fmSSTfmri_runcounter = 1 
     for filename in os.listdir(datadir):
         if SUID in filename and '.json' in filename and filename != 'scp_'+SUID+'.json':
             print(filename)
@@ -151,6 +151,7 @@ if __name__ == "__main__":
             dict3["size"] = os.path.getsize(os.path.join(datadir,filename))
             list3.append(dict3)
             dict2["file"] = list3
+            
             if len(data["ClassifyType"]) > 2:
                 logging.info(data["ClassifyType"][2])
                 #depending on serise to imcrement the run counter
@@ -236,51 +237,42 @@ if __name__ == "__main__":
                     midmri_runcounter = midfmri_runcounter + 1
 
                 #Field Map
-                elif 'ABCD-Diffusion-FM-PA' in data["ClassifyType"][2] or 'ABCD-Diffusion-FM-PA' in data["ClassifyType"][1] :
+                elif  'ABCD-Diffusion-FM-PA' in data["ClassifyType"][2] :
                     if int(filecounts["ABCD-Diffusion-FM-PA"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("ABCD-Diffusion-FM-PA Set the dict2[status] = 0")
                             dict2["status"] = 0
                             compliance_found = 0
-                    dti_block[data["ClassifyType"][2] + '_run_' + str(fmdti_runcounter)] = copy.deepcopy(dict2)
-                    fmdti_runcounter = fmdti_runcounter + 1
+                    dti_block[data["ClassifyType"][2] + '_run_' + str(fmPAdti_runcounter)] = copy.deepcopy(dict2)
+                    fmPAdti_runcounter = fmPAdti_runcounter + 1
+                #Field Map
+                elif  'ABCD-Diffusion-FM-AP' in data["ClassifyType"][2] :
+                    if int(filecounts["ABCD-Diffusion-FM-AP"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("ABCD-Diffusion-FM-PA Set the dict2[status] = 0")
+                            dict2["status"] = 0
+                            compliance_found = 0
+                    dti_block[data["ClassifyType"][2] + '_run_' + str(fmAPdti_runcounter)] = copy.deepcopy(dict2)
+                    fmAPdti_runcounter = fmAPdti_runcounter + 1
 
-                elif 'ABCD-fMRI-MID-FM-PA' in data["ClassifyType"][2]:
-                    if int(filecounts["ABCD-fMRI-MID-FM-PA"]) > int(data["NumFiles"]):
+                elif 'ABCD-fMRI-FM-PA' in data["ClassifyType"][2]:
+                    if int(filecounts["ABCD-fMRI-FM-PA"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("restfMRI Set the dict2[status] = 0")
                             dict2["status"] = 0
                             compliance_found = 0
 
-                    mid_fmri_block[data["ClassifyType"][2] + '_run_' + str(fmMIDfmri_runcounter)] = copy.deepcopy(dict2)
-                    fmMIDfmri_runcounter = fmMIDfmri_runcounter + 1
-                elif 'ABCD-fMRI-SST-FM-PA' in data["ClassifyType"][2]:
-                    if int(filecounts["ABCD-fMRI-SST-FM-PA"]) > int(data["NumFiles"]):
+                    fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)] = copy.deepcopy(dict2)
+                    fmPAfmri_runcounter = fmPAfmri_runcounter + 1
+                elif 'ABCD-fMRI-FM-AP' in data["ClassifyType"][2]:
+                    if int(filecounts["ABCD-fMRI-FM-AP"]) > int(data["NumFiles"]):
                             # it is incomplete series
-                            print("FMSSTfMRI Set the dict2[status] = 0")
+                            print("restfMRI Set the dict2[status] = 0")
                             dict2["status"] = 0
                             compliance_found = 0
 
-                    sst_fmri_block[data["ClassifyType"][2] + '_run_' + str(fmSSTfmri_runcounter)] = copy.deepcopy(dict2)
-                    fmSSTfmri_runcounter = fmSSTfmri_runcounter + 1
-                elif 'ABCD-fMRI-nBack-FM-PA' in data["ClassifyType"][2]:
-                    if int(filecounts["ABCD-fMRI-nBack-FM-PA"]) > int(data["NumFiles"]):
-                            # it is incomplete series
-                            print("SST_fMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
-                            compliance_found = 0
-
-                    nback_fmri_block[data["ClassifyType"][2] + '_run_' + str(fmnBackfmri_runcounter)] = copy.deepcopy(dict2)
-                    fmnBackfmri_runcounter = fmnBackfmri_runcounter + 1
-                elif 'ABCD-rsfMRI-FM-PA' in data["ClassifyType"][2]:
-                    if int(filecounts["ABCD-rsfMRI-FM-PA"]) > int(data["NumFiles"]):
-                            # it is incomplete series
-                            print("ABCD-rsfMRI-FM-PA Set the dict2[status] = 0")
-                            dict2["status"] = 0
-                            compliance_found = 0
-
-                    rsfmri_block[data["ClassifyType"][2] + '_run_' + str(fmrestfMRI_runcounter)] = copy.deepcopy(dict2)
-                    fmrestfMRI_runcounter = fmrestfMRI_runcounter + 1
+                    fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)] = copy.deepcopy(dict2)
+                    fmAPfmri_runcounter = fmAPfmri_runcounter + 1
                 elif 'FM-fMRI' in data["ClassifyType"][2]:
                     logging.debug(str(filecounts["FM-fMRI"]) + "<should be : actual is > " +  str(data["NumFiles"]))
                     if int(filecounts["FM-fMRI"]) > int(data["NumFiles"]):
@@ -307,9 +299,7 @@ if __name__ == "__main__":
 
             dict["ManufacturerModelName"] = data["ManufacturerModelName"]
             #print(data["SeriesNumber"])
-           
-            logging.debug(dict)
-  
+            
 
     if compliance_found:
         dict["status"] = "1"
@@ -325,46 +315,45 @@ if __name__ == "__main__":
     t1_block["status"] =1
     t2_block["status"] = 1
 
-    print(dti_runcounter, fmdti_runcounter)
-    if dti_runcounter == fmdti_runcounter: 
+    if dti_runcounter >0 and  fmPAdti_runcounter > 0 and fmAPdti_runcounter: 
          dti_block["status"] = 1
          dti_block["message"] = "Compliant ABCD-DTI component was found"
     else: 
          dti_block["status"] = 0
-         dti_block["message"] = "Compliant ABCD-DTI component was not found, A compliant DTI component should include a DTI field map followed by the DTI acquisition"
+         dti_block["message"] = "Compliant ABCD-DTI component was not found, A compliant DTI component should include a both AP and PA DTI field map followed by the DTI acquisition"
 
-    print(midfmri_runcounter, fmMIDfmri_runcounter)
-    if midfmri_runcounter == fmMIDfmri_runcounter: 
+    print(midfmri_runcounter, fmAPfmri_runcounter, fmPAfmri_runcounter)
+    if midfmri_runcounter > 0 and  fmAPfmri_runcounter > 0  and fmPAfmri_runcounter > 0: 
          mid_fmri_block["status"] = 1
          mid_fmri_block["message"] = "Compliant ABCD MID fMRI task was found."
     else: 
          mid_fmri_block["status"] = 0
          mid_fmri_block["message"] = "Compliant ABCD MID fMRI task  component was not found, A compliant MID fMRI component should include a MID fMRI field map followed by the MID fMRI acquisition"
 
-    if sstfmri_runcounter == fmSSTfmri_runcounter: 
+    if sstfmri_runcounter > 0 and  fmAPfmri_runcounter > 0  and fmPAfmri_runcounter > 0: 
          sst_fmri_block["status"] = 1
          sst_fmri_block["message"] = "Compliant ABCD SST fMRI task was found."
+         
     else: 
          dti_block["status"] = 0
          dti_block["message"] = "Compliant ABCD SST fMRI component was not found, A compliant SST fMRI should include a SST fMRI field map followed by the SST fMRI acquisition"
 
-    if nBackfmri_runcounter == nBackfmri_runcounter: 
+    if nBackfmri_runcounter > 0 and  fmAPfmri_runcounter > 0  and fmPAfmri_runcounter > 0: 
          nback_fmri_block["status"] = 1
          nback_fmri_block["message"] = "Compliant nBack fMRI task was found."
     else: 
          nback_fmri_block["status"] = 0
          nback_fmri_block["message"] = "Compliant nBack fMRI task was not found. A compliant nBack fMRI task component should include a fMRI field map followed by the nBack fMRI task acquisition"
 
-
-    print(rsfmri_runcounter, fmrestfMRI_runcounter)
-
-    if rsfmri_runcounter == fmrestfMRI_runcounter: 
+    if rsfmri_runcounter > 0 and  fmAPfmri_runcounter > 0  and fmPAfmri_runcounter > 0: 
          rsfmri_block["status"] = 1
          rsfmri_block["message"] = "Compliant rest fMRI task was found."
     else: 
          rsfmri_block["status"] = 0
          rsfmri_block["message"] = "Compliant rest fMRI task was not found. A compliant rest fMRI task component should include a fMRI field map followed by the rest fMRI task acquisition"
 
+    fmAPfmri_block["message"] = "fMRI FieldMap AP was found."
+    fmPAfmri_block["message"] = "fMRI FieldMap PA was found."
 
     dict["T1"] = t1_block
     dict["T2"] = t2_block
@@ -373,7 +362,8 @@ if __name__ == "__main__":
     dict["SST_fMRI_Block"] = sst_fmri_block
     dict["nBack_fMRI_Block"] = nback_fmri_block
     dict["rsfMRI_Block"] = rsfmri_block
-   
+    dict["fMRI_FieldMap_AP_Block"] = fmAPfmri_block
+    dict["fMRI_FieldMap_PA_Block"] = fmPAfmri_block
 
     dict["AdditionalSeries"] = others
 

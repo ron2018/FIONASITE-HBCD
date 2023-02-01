@@ -219,6 +219,8 @@
       {
         "rule" : "SIEMENSBYMANUFACTURER"
       },{
+        "rule" : "ORIGINAL"
+      },{
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
         "value": "140"
@@ -235,7 +237,7 @@
        },{
          "tag": ["SeriesDescription" ],
          "operator": "contains",
-          "value": "PA_FA"
+          "value": "DistortionMap_PA"
        }
     ]
   },
@@ -245,6 +247,8 @@
     "rules" : [
       {
         "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
       },{
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -256,13 +260,13 @@
         "tag": [ "0x18", "0x9005" ],
         "value": "epse2d1_140"
       },{
-         "tag": ["SeriesDescription" ],
+         "tag": ["ImageType" ],
          "operator": "contains",
           "value": "DIFFUSION"
        },{
          "tag": ["SeriesDescription" ],
          "operator": "contains",
-          "value": "AP_FA"
+          "value": "DistortionMap_AP"
        }
     ]
   },
@@ -333,7 +337,7 @@
     ]
   },
   {
-    "type" : "ABCD-rsfMRI-FM-PA",
+    "type" : "ABCD-fMRI-FM-PA",
     "description" : "Field Maps for ABCD fMRI scans",
     "rules" : [
       {
@@ -350,20 +354,45 @@
         "value": "90"
       },{
          "tag": [ "PulseSequenceName" ],
-         "value": "epf..2d1_90"
+         "value": "ep..2d1_90"
       },{
       "tag": [ "NumberOfTemporalPositions" ],
-        "value": "383"
+        "value": "1"
       },{
         "tag": [ "SeriesDescription" ],
         "operator": "contains",
-        "value": "fMRI-PA_rest"
-      },{
-        "tag": [ "SeriesDescription" ],
-        "operator": "contains",
-        "value": "SBRef"
+        "value": "_fMRI_PA"
       }
 
+    ]
+  },
+  {
+    "type" : "ABCD-fMRI-FM-AP",
+    "description" : "Field Maps for ABCD fMRI scans",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "90"
+      },{
+        "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "90"
+      },{
+         "tag": [ "PulseSequenceName" ],
+         "value": "ep..2d1_90"
+      },{
+      "tag": [ "NumberOfTemporalPositions" ],
+        "value": "1"
+      },{
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "_fMRI_AP"
+      }
     ]
   },
   
@@ -462,102 +491,6 @@
         "value": "_SBRef"
       }
 
-    ]
-  },
-  {
-    "type" : "ABCD-fMRI-SST-FM-PA",
-    "description" : "Field Maps for ABCD fMRI scans",
-    "rules" : [
-      {
-        "rule" : "SIEMENSBYMANUFACTURER"
-      },{
-        "rule" : "ORIGINAL"
-      },{
-       "tag": [ "0x28", "0x10" ],
-        "operator": "==",
-        "value": "90"
-      },{
-        "tag": [ "0x18", "0x89" ],
-        "operator": "==",
-        "value": "90"
-      },{
-        "tag": [ "NumberOfTemporalPositions" ],
-        "value": "445"
-      },{
-        "tag": [ "PulseSequenceName" ],
-        "value": "epf..2d1_90"
-      },{
-        "tag": [ "ImageType" ],
-        "operator": "contains",
-        "value": "FMRI"
-      },{
-        "tag": [ "SeriesDescription" ],
-        "operator": "contains",
-        "value": "_SBRef"
-      }
-   ]
-  },{
-
-    "type" : "ABCD-fMRI-MID-FM-PA",
-    "description" : "Field Maps for ABCD fMRI scans",
-    "rules" : [
-      {
-        "rule" : "SIEMENSBYMANUFACTURER"
-      },{
-        "rule" : "ORIGINAL"
-      },{
-       "tag": [ "0x28", "0x10" ],
-        "operator": "==",
-        "value": "90"
-      },{
-        "tag": [ "0x18", "0x89" ],
-        "operator": "==",
-        "value": "90"
-      },{
-        "tag": [ "NumberOfTemporalPositions" ],
-        "value": "411"
-      },{
-        "tag": [ "PulseSequenceName" ],
-        "value": "epf..2d1_90"
-      },{
-        "tag": [ "ImageType" ],
-        "operator": "contains",
-        "value": "FMRI"
-      },{
-        "tag": [ "SeriesDescription" ],
-        "operator": "contains",
-        "value": "_SBRef"
-      }
-    ]
-  },{
-    "type" : "ABCD-nBack-FM-PA",
-    "description" : "Field Maps for ABCD nBack fMRI scan",
-    "rules" : [
-      {
-        "rule" : "SIEMENSBYMANUFACTURER"
-      },{
-        "rule" : "ORIGINAL"
-      },{
-        "tag": [ "0x28","0x10" ],
-        "value": "90"
-      },{
-        "tag": [ "0x28","0x11" ],
-        "value": "90"
-      },{
-        "tag": [ "PulseSequenceName" ],
-        "value": "epf..2d1_90"
-      },{
-        "tag": [ "NumberOfTemporalPositions" ],
-        "value": "370"
-      },{
-       "tag": [ "ImageType" ],
-        "operator": "contains",
-        "value": "FMRI"
-      },{
-       "tag": [ "SeriesDescription" ],
-        "operator": "contains",
-        "value": "_SBRef"
-      }
     ]
   },
 {
