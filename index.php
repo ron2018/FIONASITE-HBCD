@@ -1558,14 +1558,12 @@ console.log(data);
         jQuery('#session-participant').value = data[0] 
         // }
         
-        jQuery('#imaging-info-text').text(JSON.stringify("A match is found in PII/LORIS database!"));
-        jQuery('#imaging-info-text').css({'background-color':'lightgreen'});
 
 console.log(data[0]);
         
-        if(data[0][0].includes("Unknown") == true || data[0][0].includes("Invalid") == true || data[0][0].includes("LORIS") == true 
+        if((!data[0]) || (data[0] === 0) || data[0][0].includes("Unknown") == true || data[0][0].includes("Invalid") == true || data[0][0].includes("LORIS") == true 
            || data[0][0].includes("Incomplete") == true || data[0].includes("does not match") == true 
-           || data[0][0].includes("PSCID_DCCID_VISIT") == true ) {
+           || data[0][0].includes("PSCID_DCCID_VISIT") == true || data[0].includes("LORIS") == true) {
             no_match = true;          
             
             jQuery('#imaging-info-text').text(JSON.stringify(data[0]) + "Please review the information and re-enter the correct" );
@@ -1583,8 +1581,14 @@ console.log(data[0]);
             jQuery('#study-info-dialog-sendall').attr("disabled", true);
             jQuery('#session-name').hide();
             jQuery('#session-name-label').hide();
+            
+            jQuery('#imaging-info-text').text(JSON.stringify(data[0]));
+            jQuery('#imaging-info-text').css({'background-color':'lightred'});
+            
 
         } else {
+            jQuery('#imaging-info-text').text(JSON.stringify("A match is found in PII/LORIS database!"));
+            jQuery('#imaging-info-text').css({'background-color':'lightgreen'});
             jQuery('#new-session-participant-label').hide();
             jQuery('#new-session-participant').hide();
             jQuery('#imaging-info-dialog-cancel').hide();
@@ -1607,10 +1611,10 @@ console.log(data[1]);
             jQuery('#new-session-sex').val(age_loris);
             jQuery('#new-session-dob').val(dob_loris);
 
-console.log(jQuery('#modify-participant-name').val());
-console.log(jQuery('#new-session-age').val());
-console.log(jQuery('#new-session-sex').val());
-console.log(jQuery('#new-session-dob').val());
+            	console.log(jQuery('#modify-participant-name').val());
+		console.log(jQuery('#new-session-age').val());
+		console.log(jQuery('#new-session-sex').val());
+		console.log(jQuery('#new-session-dob').val());
             jQuery('#study-info-dialog-sendall').removeAttr("disabled");
         }
 		

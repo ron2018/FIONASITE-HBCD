@@ -41,9 +41,21 @@ print(response.json())
 #response = {"sites":{"pscid":"TIUCS0016","candid":"977877","visit_label":"V02","gender":"M", "age":"003M","site":"UCS","scheduled_date":"20220916"}}
 matched_list=[]
 
+if (response.status_code == 500 ):
+    errors = response.json()
+    print(errors)
+    if "error" in errors:
+        errors["error"] ="Please Contact LORIS support: " +errors["error"]
+    else:
+        errors["errors"] ="Please Contact LORIS support: " + ' '.join(str(item) for item in errors["errors"])
+    matched_list.append(errors)
 if (response.status_code == 404 ):
     errors = response.json()
     print(errors)
+    if "error" in errors:
+        errors["error"] ="Please Contact LORIS support: " +errors["error"]
+    else:
+        errors["errors"] ="Please Contact LORIS support: " + ' '.join(str(item) for item in errors["errors"])
 
     matched_list.append(errors)
 

@@ -39,6 +39,7 @@ UIDs = filename.split("_")
 SUID = UIDs[0]
 SeUID = UIDs[1].replace(".tgz","")
 #print("SUID : ", SUID, " SeUID : ", SeUID)
+dob = dob.replace('-', '')
 
 try:
     proc = subprocess.run(["/bin/cp", "/data/quarantine/"+filename+".tgz",  "/data/site/temp/"], shell=False)

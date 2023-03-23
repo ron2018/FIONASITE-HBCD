@@ -267,7 +267,7 @@ class ProcessSingleFile(Daemon):
                                 if not tag[0] in dataset:
                                         taghere = False
                                 else:
-                                        v = dataset[tag[0]]
+                                        v = dataset[tag[0]].value
                         else:
                                 v = data[tag[0]]
                 elif len(tag) == 2:
@@ -514,7 +514,7 @@ class ProcessSingleFile(Daemon):
                         for entry in range(len(self.classify_rules[rule]['rules'])):
                                 r = self.classify_rules[rule]['rules'][entry]
 
-                                #logging.info(r)
+                               # logging.info(r)
 
                                 # we could have a negated rule here
                                 def isnegate(x): return x
@@ -522,8 +522,6 @@ class ProcessSingleFile(Daemon):
                                         def isnegate(x): return not x
                                 # check if this regular expression matches the current type t
                                 taghere = True
-                                if 'SharedFunctionalGroupsSequence' in dataset:
-                                    logging.info(str(dataset[0x5200,0x9230][0][0X18,0X9226][0][0x21,0x1178].value))
                                 try:
                                         #logging.info("First Resolve")
 
@@ -533,12 +531,9 @@ class ProcessSingleFile(Daemon):
                                 # the 'value' could in some cases be a tag, that would allow for relative comparisons in the classification
                                 v2 = r['value']
                                 #logging.info("First V1 value ****")
-                                #logging.info(v)
 
                                 taghere2 = True
                                 try:
-                                 #       logging.info("Second  Resolve")
-                                 #       logging.info(v2)
 
                                         taghere2, v2 = self.resolveValue(v2,dataset,data)
                                 except ValueError:
@@ -549,9 +544,11 @@ class ProcessSingleFile(Daemon):
                                 if not "operator" in r:
                                         r["operator"] = "regexp"  # default value
                                 op = r["operator"]
-                                #logging.info(op)
                                 #logging.info(v)
+                                #logging.info(type(v))
+                                #logging.info(op)
                                 #logging.info(v2)
+                                #logging.info(type(v2))
                                 #logging.info(taghere)
                                 if op == "notexist":
                                         if isnegate(taghere):
@@ -619,6 +616,9 @@ class ProcessSingleFile(Daemon):
                                         if v2 == "1.2.840.10008.5.1.4.1.1.7":
                                                 print("check %s not in %s" % (v2, v))
                                         if isnegate(v2 not in v):
+                                                #logging.info("V2 not in V1")
+                                                #logging.info(v2 )
+                                                #logging.info(v) 
                                                 ok = False
                                                 break
                                 elif op == "approx":
@@ -1073,6 +1073,13 @@ class ProcessSingleFile(Daemon):
                                         pass
                                 try:
                                         data['Private0043_1039'] = dataset[0x0043,0x1039].value
+                                except:
+                                        pass
+                                try:
+                                        #logging.info(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x1106].value)
+                                        #logging.info(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x1106].value.split("_")[-1:][0]) 
+                                        
+                                        data['Private0021_1106'] = str(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x1106].value.split("_")[-1:][0])
                                 except:
                                         pass
                                 

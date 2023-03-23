@@ -101,6 +101,9 @@ foreach ($result as $res) {
    }
 }
 
+#$records = array();
+#$records[] = "HBCD_phantom_xa30"."_123456_test";
+#$records[1] = "M_2022-01-01_010M";
 
 print(json_encode(array_values(array_unique($records))));
 #echo $results;
