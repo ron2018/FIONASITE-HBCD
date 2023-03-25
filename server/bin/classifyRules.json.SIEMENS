@@ -130,6 +130,63 @@
     ]
   },
   { 
+    "type" : "HBCD-T1",
+    "description" : "A T1 image from Siemens with HBCD resolution, Enhanced DICOM",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+     "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "320"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "300"
+      },
+      {  
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "tfl3d1_16ns"
+      },{
+             "tag": ["0X5200","0X9230","0X0021","0X11fe", "0X0021","0X1175"],
+             "operator": "contains",
+             "value": "DIS3D"
+      }
+
+   ]
+  },
+  {
+    "type" : "HBCD-T1-ND",
+    "description" : "A T1 ND image from Siemens with HBCD resolution, Enhanced DICOM",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "320"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "300"
+      },{
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "tfl3d1_16ns"
+      },{
+             "tag": ["0X5200","0X9230","0X0021","0X11fe", "0X0021","0X1175"],
+             "operator": "contains",
+             "value": "ND"
+      }
+
+    ]
+  },
+  { 
     "type" : "HBCD-T2",
     "description" : "A T2 weighted image from Siemens with HBCD resolution, Enhanced DICOM",
     "rules" : [
@@ -146,7 +203,8 @@
         "operator": "contains",
         "value": "spc_120ns"
       },{
-             "tag": ["0X5200","0X9230","0X18","0X9226","0x21","0x1178"],
+             "tag": ["ImageType"],
+             "operator": "contains",
              "value": "DIS3D"
       }
 
@@ -169,7 +227,56 @@
         "operator": "contains",
         "value": "spc_120ns"
       },{
-             "tag": ["0X5200","0X9230","0X18","0X9226","0x21","0x1178"],
+             "tag": ["ImageType"],
+             "operator": "contains",
+             "value": "ND"
+      }
+
+    ]
+  },
+  { 
+    "type" : "HBCD-T2",
+    "description" : "A T2 weighted image from Siemens with HBCD resolution, Enhanced DICOM",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "320"
+      },{
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "spc_120ns"
+      },{
+             "tag": ["0X5200","0X9230","0X0021","0X11fe", "0X0021","0X1175"],
+             "operator": "contains",
+             "value": "DIS3D"
+      }
+
+    ]
+  },
+  { 
+    "type" : "HBCD-T2-ND",
+    "description" : "A T2 weighted image from Siemens with HBCD resolution, Enhanced DICOM",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "320"
+      },{
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "spc_120ns"
+      },{
+             "tag": ["0X5200","0X9230","0X0021","0X11fe", "0X0021","0X1175"],
+             "operator": "contains",
              "value": "ND"
       }
 
@@ -455,6 +562,66 @@
 
     ]
    },
+  { 
+    "type" : "HBCD-FM-fMRI-PA",
+    "description" : "Field Maps for HBCD fMRI scans Enhanced DICOM",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "0x28", "0x10" ],
+        "value": "112" 
+      },{ 
+        "tag": [ "0x28", "0x11" ],
+        "value": "112" 
+      },{ 
+        "tag": [ "PulseSequenceName" ],
+        "value": "epse2d1_112"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "fmap"
+      },
+      {
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "PA"
+      }
+
+    ]
+  },   
+  {
+    "type" : "HBCD-FM-fMRI-AP",
+    "description" : "Field Maps for HBCD fMRI scans Enhanced DICOM",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+        "tag": [ "0x28", "0x10" ],
+        "value": "112"
+      },{
+        "tag": [ "0x28", "0x11" ],
+        "value": "112"
+      },{
+        "tag": [ "PulseSequenceName" ],
+        "value": "epse2d1_112"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "fmap"
+      },
+      {
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "AP"
+      }
+
+    ]
+},
    {
     "type" : "HBCD-fMRI-PA",
     "description" : "HBCD rfMRI_REST PA scans Enhanced DICOM",
@@ -482,6 +649,35 @@
         "operator": "contains",
         "negate": "yes",
         "value": "_SBRef"
+      }
+    ]
+  },
+   {
+    "type" : "HBCD-fMRI-PA",
+    "description" : "HBCD rfMRI_REST PA scans Enhanced DICOM",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+      "tag": [ "0x28","0x10" ],
+        "value": "112"
+      },{
+        "tag": [ "0x28","0x11" ],
+        "value": "112"
+      },{
+        "tag": [ "PulseSequenceName" ],
+        "value": "epfid2d1_112"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "rest"
+      }
+      ,{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "PA"
       }
     ]
   },

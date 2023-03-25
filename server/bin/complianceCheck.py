@@ -30,9 +30,12 @@ def parse_arguments():
 def getSeriesFileCount(filename):
   # return file series count and update filename with new filecont
   UIDs = filename.split("_")
-  SUID = UIDs[0]
-
-  SeUID = UIDs[1].replace(".json","")
+  if "PI" in UIDs[0]:
+      SUID = UIDs[4]
+      SeUID = UIDs[5].replace(".json","")
+  else:
+    SUID = UIDs[0]
+    SeUID = UIDs[1].replace(".json","")
   print("SUID : ", SUID, " SeUID : ", SeUID)
   dir_path = r'/data/site/raw/' + SUID + r'/' + SeUID 
   count = len([entry for entry in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, entry))])
@@ -439,11 +442,7 @@ if __name__ == "__main__":
             dict["Manufacturer"] = data["Manufacturer"]
             dict["ManufacturerModelName"] = data["ManufacturerModelName"] 
             # re-calculate number of file in the series
-
             data["NumFiles"] = getSeriesFileCount(filename)
-            with open(os.path.join(datadir,filename), "w") as write_qjson_file:
-                json.dump(data, write_qjson_file, indent = 4, sort_keys=True)
-
             dict2 = {}
             if len(data["ClassifyType"]) > 2:
                 dict2["status"] = 1
@@ -649,7 +648,7 @@ if __name__ == "__main__":
                     else:
                         dict4["message"] = "Kspace data Not found" 
                         dict4["status"] = 0
-                    dict4["file"] = kspace    
+                    kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
                     fmAPfmri_runcounter = fmAPfmri_runcounter + 1
