@@ -41,6 +41,17 @@ SeUID = UIDs[1].replace(".tgz","")
 #print("SUID : ", SUID, " SeUID : ", SeUID)
 dob = dob.replace('-', '')
 
+#get fiona ID
+
+# try to read the config file from this machine
+configFilename = '/data/config/config.json'
+settings = {}
+with open(configFilename,'r') as f:
+    settings = json.load(f)
+
+FIONAID = settings["FIONAID"]
+print("Fiona ID: ", FIONAID)
+
 try:
     proc = subprocess.run(["/bin/cp", "/data/quarantine/"+filename+".tgz",  "/data/site/temp/"], shell=False)
     if proc.returncode < 0:
@@ -68,6 +79,10 @@ if tripleId:
         command3 = 'dcmodify -i "(0010,0020)='+ tripleId + '" -nb ' + "/data/site/temp/" + SUID + "/" + SeUID + '/*'
         os.system(command3)
         print ("De-identify Patient Name for this folder: %s", tripleId)
+        command3 = 'dcmodify -i "(0012,0030)='+ FIONAID + '" -nb ' + "/data/site/temp/" + SUID + "/" + SeUID + '/*'
+        os.system(command3)
+        print ("De-identify Patient Name for this folder: %s", tripleId)
+
     except OSError as e:
         print("dcmodify PatientID or Name for /data/site/temp/"+filename + " failed:", e, file=sys.stderr)
 

@@ -219,7 +219,7 @@ if __name__ == "__main__":
                         dict4["status"] = 1
                         dict4["message"] = "Kspace found"
                     else:
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                         dict4["message"] = "Kspace not found"
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist
@@ -245,7 +245,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     if "ND" not in data["SeriesDescription"]:
@@ -267,7 +267,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -290,7 +290,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     rsfmri_block[data["ClassifyType"][2] + '_run_' + str(rsfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -312,7 +312,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -334,7 +334,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -358,7 +358,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -379,7 +379,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -400,7 +400,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -486,7 +486,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     if "ND" not in data["SeriesDescription"]:
@@ -512,7 +512,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     if "ND" not in data["SeriesDescription"]:
@@ -536,7 +536,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -560,7 +560,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     rsfmri_block[data["ClassifyType"][2] + '_run_' + str(rsfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -582,7 +582,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -604,7 +604,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     dict4["file"] = kspace    
                     dict4["file"] = kspacelist    
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -626,7 +626,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -647,7 +647,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
@@ -668,7 +668,7 @@ if __name__ == "__main__":
                         dict4["message"] = "Kspace data found" 
                     else:
                         dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 0
+                        dict4["status"] = 2
                     kspacelist.append(kspace)
                     dict4["file"] = kspacelist    
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
