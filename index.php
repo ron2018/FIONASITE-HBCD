@@ -1433,9 +1433,14 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          if (series["file"] == null) {
              console.log("ERROR: displaySeries: file not found");
          } else {
-             filePath = series["file"][0]["path"];
-             transferStatus = filePath.substring(0,filePath.lastIndexOf("/")+1);
-console.log("GOT transferStatus as : " + transferStatus + " from : " + filePath);
+             console.log(series);
+             if (series["file"][0] == null ) {
+                 console.log("ERROR: displaySeries: file not found");
+             } else {
+                 filePath = series["file"][0]["path"];
+                 transferStatus = filePath.substring(0,filePath.lastIndexOf("/")+1);
+                 console.log("GOT transferStatus as : " + transferStatus + " from : " + filePath);
+             }
          }
 
         var str = "";
