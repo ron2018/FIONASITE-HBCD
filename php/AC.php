@@ -412,15 +412,14 @@
     $roles = array(); // collect all roles for this user
     foreach ( $d["users"] as $key => $value ) {
       if ($value["name"] == $user_name) {
+         audit( "merge_role", $value["name"]." as ".$user_name);
          $roles = array_merge($roles, $value["roles"]);
       }
     }
     
-    foreach ( $roles as $role ) {
-       if ($role == $role_in) {
-           audit( "check_role", $role_in." as ".$user_name);
-           return true;
-       }
+    if(in_array($role_in, $roles)) {
+        audit( "check_role", $role_in." as ".$user_name);
+        return true;
     }
     audit( "check_role failed", $role_in." as ".$user_name);
     return false;
