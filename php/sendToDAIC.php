@@ -94,10 +94,11 @@ file_put_contents($log, date(DATE_ATOM)." Check if we need to modify the dicom  
 $f = glob('/data'.$project.'/quarantine/'.$path_info['filename'].'*');
 $oksessions = array();
 $failedsessions = array();
+$modify_participant_name = "1";
 foreach($f as $fi) {
    $path_parts = pathinfo($fi);
    $destination = '/data'.$project.'/outbox';
-   if ( $modify_participant_name == 1 ) {
+   if ( $modify_participant_name == "1" ) {
       if ( $path_parts['extension'] == "tgz") {
 
          echo (" Start modifying $filename");
