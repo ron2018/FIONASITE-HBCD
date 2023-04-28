@@ -416,8 +416,17 @@
          $roles = array_merge($roles, $value["roles"]);
       }
     }
-    
-    if(in_array($role_in, $roles)) {
+    //get the role ID
+    $role_id = -1;
+
+    foreach ( $d["roles"] as $key => $value) {
+       audit( "check_role before checking ", $role_in." as ".$role);	     
+       if ($value["name"] === $role_in) {
+           audit( "check_role role exists", $role_in." as ".$value["name"]);
+           $role_id = $value["id"];
+       }
+    }
+    if(in_array($role_id, $roles)) {
         audit( "check_role", $role_in." as ".$user_name);
         return true;
     }
