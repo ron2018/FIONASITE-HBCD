@@ -610,8 +610,9 @@ loading configuration file...
           <label for="session-run" class="control-label" id="session-run-label">Imaging Session Type</label><br/>
           <select class="form-control" id="session-run">
             <option value="SessionC" title="A Complete Session: T2, T1, rsFMRI, DWI, b1map, qMRI and FieldMaps ">SessionC: A Complete Session (T2, T1, rsFMRI, DWI, b1map, qMRI and FieldMaps)</option>
-            <option value="SessionA" title="Part 1 of two part sessions: T1 or T2 plus others,">SessionA: Part 1 of two part sessions (T1 or T2 plus others)</option>
-            <option value="SessionB" title="Part 2 of two part sessions: T1 or T2 plus others">SessionB: Part 2 of two part sessions: (T1 or T2 plus others)</option>
+            <option value="SessionA" title="Part 1 of multiple sessions: T1 or T2 plus others,">SessionA: Part 1 of multiple sessions (T1 or T2 plus others)</option>
+            <option value="SessionB" title="Part 2 of multiple sessions: T1 or T2 plus others">SessionB: Part 2 of multiple sessions: (T1 or T2 plus others)</option>
+            <option value="SessionD" title="Part 3 of multiple sessions: T1 or T2 plus others">SessionD: Part 3 of multiple sessions: (T1 or T2 plus others)</option>
             <option value="SessionPHANTOM" title="Phantom scan">P (Phantom scan)</option>
           </select>
         </div>
