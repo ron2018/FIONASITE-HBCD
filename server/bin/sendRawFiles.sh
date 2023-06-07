@@ -81,12 +81,13 @@ sendFile () {
  
      
       #rsync this file and md5sum file
-      /usr/bin/rsync -LptgoDv0 --no-R ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona || error_exit
-      #move the rsync file from outbox to UMN folder
+     { /usr/bin/rsync -LptgoDv0 --no-R ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona || error_exit
+      #move the rsync file from outbox to UMN folder 
+     } && {
       mv ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* ${pfolder}/umn/
-
-      /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleId}_MRI_${SUID}_${run} --token=$token >> $log 2>&1 
-
+    } && {
+      /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleId}_MRI_${SUID}_${run}.tar.gz --token=$token --type=MRI  >> $log 2>&1 
+   }
    done < suidsdiff.csv
    
    cat suidsdiff.csv >> sentlists.csv
