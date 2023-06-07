@@ -73,37 +73,50 @@ cd  $kspaceDatLocations
 #
 # now go through all the files on the /data/site/kspace/ folder
 #
-find ${kspaceDatLocations} -type f -name *.tgz -print0 | while read -d $'\0' file
+find ${kspaceDatLocations} -maxdepth 1 -type d -print0 | while read -d $'\0' fdir
 do
-
-  # only look at files that are at least oldtime seconds old
-  if [ "$(( $(date +"%s") - $(stat -c "%Y" "$file") ))" -lt "$oldtime" ]; then
-        echo "`date`: too young $file"
-        continue
-  fi
-
-  echo $file
-  tar -xf $file
-
+  #tar -xf $file
   # pattern is : 20221213_1.3.46.670589.11.45002.5.0.15852.2022121307120758000.tgz
   # tar the file
-  filedir=$(echo `basename "$file"` | sed "s/.tgz//")
-  
+  #filedir=$(echo `basename "$file"` | sed "s/.tgz//")
+
+  filedir=$(echo `basename "$fdir"`);
+  echo $filedir;
+
+  if [ ${filedir} = "kspace" ]; then
+        continue;
+  fi
+  if [ ${filedir} = "umn" ]; then
+        continue;
+  fi
+  if [ ${filedir} = "outbox" ]; then
+       continue;
+  fi
+  if [ ${filedir} = "badkspace" ]; then
+       continue;
+  fi
+  if [ ${filedir} = "processed" ]; then
+       continue;
+  fi
+
+
+  # pattern is : 20221213_1.3.46.670589.11.45002.5.0.15852.2022121307120758000
   echo $filedir
    
   suid=$(echo ${filedir} | cut -d'_' -f2)
   
-  echo $suid
+  echo "SUID = {$suid}"
 
   cd $filedir
   echo ${kspaceDatLocations}/${filedir} 
   #rename the zip file to rawdata_suid_$suid_seuid_$seuid.zip
   find ./ -type f -iname '*.zip' -print0 | while read -d $'\0' zipfile
   do
-     echo $zipfile
+     echo "Found : ${zipfile}"
+
      newfile=$(echo `basename "$zipfile"` | sed "s/.zip//")
-     echo $newfile
-     mv $zipfile ../outbox/rawdata_suid_${suid}_seuid_${newfile}.zip || error_exit
+     echo "new file : ${newfile}"
+     /usr/bin/cp  $zipfile ../outbox/rawdata_suid_${suid}_seuid_${newfile}.zip || error_exit
   done
 
   # tar all text file into a zip   rawdata_suid_$suid_text.zip
@@ -115,14 +128,14 @@ do
   cd /data/site/kspace/outbox/
 
   #clean up the folder
-  rm -rf  ${kspaceDatLocations}/${filedir}
+  /usr/bin/mv  ${kspaceDatLocations}/${filedir} ${kspaceDatLocations}/processed
 
   echo "Before rsyc: rawdata_suid_${suid}*.zip"
 
   #rsync this files
-  /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/rawdata_suid_${suid}*.zip hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona 
+  /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/rawdata_suid_${suid}*.zip hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/ 
   #register the files to UMN
-  /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=rawdata_suid_${suid} --token=$token >> $log 2>&1
+  /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=rawdata_suid_${suid} --token=$token --type=KSPACE >> $log 2>&1
 
 done
 

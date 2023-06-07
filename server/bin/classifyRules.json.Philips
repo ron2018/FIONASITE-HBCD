@@ -49,6 +49,28 @@
 	"rule" : "PHILIPSBYMANUFACTURER"
       },{ 
         "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 320, 320, 0"
+      },{ 
+        "tag": [ "0x18","0x20"],
+        "value": "GR"
+      },{ 
+        "tag": [ "0x18","0x21"],
+        "value": "MP"
+      },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "PROJECTION IMAGE"
+          }
+    ]
+  },
+  { "type" : "HBCD-T1",
+    "description" : "A T1 weighted image from Philips with HBCD resolution",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
         "value": "0, 320, 300, 0"
       },{ 
         "tag": [ "0x18","0x20"],
@@ -173,6 +195,27 @@
     ]
   },
   { 
+    "type" : "HBCD-fMRI-PA",
+    "description" : "Field Maps for HBCD fMRI scans",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix"  ],
+        "value": "112, 0, 0, 111"
+      },{ 
+             "tag": ["0X2005","0X140f", "0X18","0X9005" ],
+              "value": "FEEPI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "PA" 
+      }
+    ]
+  },
+  { 
     "type" : "HBCD-FM-fMRI-BD",
     "description" : "Field Maps for HBCD fMRI scans",
     "rules" : [
@@ -234,6 +277,26 @@
     ]
   }, 
   { 
+    "type" : "HBCD-dMRI-AP",
+    "description" : "AP Field Map for HBCD DTI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 139"
+      },{ 
+        "tag": [ "0X2005","0X140f", "0X18","0X9005" ],
+        "value": "DwiSE"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "AP" 
+      }
+    ]
+  }, 
+  { 
     "type" : "HBCD-dMRI-PA",
     "description" : "AP Field Map for HBCD DTI scan",
     "rules" : [
@@ -251,6 +314,27 @@
         "tag": [ "SeriesDescription" ],
         "operator": "contains",
         "value": "PE" 
+      }
+    ]
+  }, 
+  {
+    "type" : "HBCD-dMRI-PA",
+    "description" : "AP Field Map for HBCD DTI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "0X5200","0X9230","0X2005","0X140f", "0X0018","0X1310"  ],
+        "value": "140, 0, 0, 138"
+      },{ 
+        "tag": [ "0X18","0X9005" ],
+        "value": "DwiSE"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "PA" 
       }
     ]
   }, 
@@ -293,12 +377,7 @@
       },{ 
         "tag": ["0X2005","0X140f", "0X18","0X9005"],
         "value": "TSE"
-      },
-      {
-	     "tag": ["SeriesDescription" ],
-              "operator": "contains",
-              "value": "T2w"
-          }
+      }
     ]
   },
   { "type" : "HBCD-T2",
@@ -363,6 +442,27 @@
     ]
   },
   { 
+    "type" : "HBCD-FM-fMRI-PA",
+    "description" : "Field Maps for HBCD fMRI scans",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "112, 0, 0, 111"
+      },{ 
+        "tag": [ "0X2005","0X140f", "0X18","0X9005" ],
+        "value": "SEEPI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+	"operator": "contains",
+        "value": "PA" 
+      }
+    ]
+  },
+  { 
     "type" : "HBCD-FM-fMRI-AP",
     "description" : "Field Maps for HBCD fMRI scans",
     "rules" : [
@@ -380,6 +480,27 @@
         "tag": [ "SeriesDescription" ],
 	"operator": "contains",
         "value": "fMRI_BU" 
+      }
+    ]
+  },
+  {
+    "type" : "HBCD-FM-fMRI-AP",
+    "description" : "Field Maps for HBCD fMRI scans",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "112, 0, 0, 111"
+      },{ 
+        "tag": [ "0X2005","0X140f", "0X18","0X9005" ],
+        "value": "SEEPI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+	"operator": "contains",
+        "value": "AP" 
       }
     ]
   },
@@ -599,6 +720,28 @@
       },
       {
         "tag": ["PulseSequenceName" ],
+        "operator": "contains",
+        "value": "T1TFE"
+      },{
+             "tag": [ "SeriesDescription" ],
+             "operator": "contains",
+             "value": "QALAS"
+          }
+
+   ]
+  },
+  {
+    "type" : "HBCD-qMRI",
+    "description" : "A QALAS from PHILIP with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "PHILIPSBYMANUFACTURER"
+      },{
+     "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 176, 176, 0"
+      },
+      {
+        "tag": ["0X2005","0X140f","0X0018","0X9005" ],
         "operator": "contains",
         "value": "T1TFE"
       },{

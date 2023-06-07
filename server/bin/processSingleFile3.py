@@ -495,9 +495,9 @@ class ProcessSingleFile(Daemon):
                         print("Warning: no classify rules found in %s, ClassifyType tag will be empty" % self.rulesFile)
                         logging.info("Warning: no classify rules found in %s, ClassifyType tag will be empty" % self.rulesFile)
                         return classifyTypes
-                if 'SharedFunctionalGroupsSequence' in dataset:
+                #if 'SharedFunctionalGroupsSequence' in dataset:
                     #self.classify_rules = self.classify_rules_enhanced
-                    logging.info('*********** Enhanced Rule')
+                #     logging.info('*********** Enhanced Rule')
                 
                 for rule in range(len(self.classify_rules)):
                         t = self.classify_rules[rule]['type']
@@ -507,8 +507,8 @@ class ProcessSingleFile(Daemon):
                                 seriesLevelCheck = True
                         ok = True
                         
-                        #logging.info(rule)
-                        #logging.info(self.classify_rules[rule])
+                       # logging.info(rule)
+                       # logging.info(self.classify_rules[rule])
                         #logging.info("number of rules:" + str(len(self.classify_rules[rule]['rules'])))
 
                         for entry in range(len(self.classify_rules[rule]['rules'])):
@@ -544,12 +544,12 @@ class ProcessSingleFile(Daemon):
                                 if not "operator" in r:
                                         r["operator"] = "regexp"  # default value
                                 op = r["operator"]
-                                #logging.info(v)
-                                #logging.info(type(v))
-                                #logging.info(op)
-                                #logging.info(v2)
-                                #logging.info(type(v2))
-                                #logging.info(taghere)
+                            #    logging.info(v)
+                            #    logging.info(type(v))
+                            #    logging.info(op)
+                            #    logging.info(v2)
+                            #    logging.info(type(v2))
+                            #    logging.info(taghere)
                                 if op == "notexist":
                                         if isnegate(taghere):
                                            ok = False
@@ -616,9 +616,9 @@ class ProcessSingleFile(Daemon):
                                         if v2 == "1.2.840.10008.5.1.4.1.1.7":
                                                 print("check %s not in %s" % (v2, v))
                                         if isnegate(v2 not in v):
-                                                #logging.info("V2 not in V1")
-                                                #logging.info(v2 )
-                                                #logging.info(v) 
+                                  #              logging.info("V2 not in V1")
+                                  #             logging.info(v2 )
+                                  #              logging.info(v) 
                                                 ok = False
                                                 break
                                 elif op == "approx":
@@ -1076,8 +1076,8 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
-                                        #logging.info(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x1106].value)
-                                        #logging.info(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x1106].value.split("_")[-1:][0]) 
+                        #                logging.info(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x1106].value)
+                        #                logging.info(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x1106].value.split("_")[-1:][0]) 
                                         
                                         data['Private0021_1106'] = str(dataset[0x5200,0x9230][0][0x21,0x11fe][0][0x21,0x1106].value.split("_")[-1:][0])
                                 except:

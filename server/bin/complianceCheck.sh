@@ -35,7 +35,7 @@ SSDIR=${SDIR:4}
 echo "`date`: remove the input file /var/www/html/php/request_compliance_check/$1" >> $log
 rm -f "/var/www/html/php/request_compliance_check/$1"
 
-echo "`date`: protocol compliance check (python complianceCheck.py --suid=${SDIR} >> $log &)" >> $log
-python complianceCheck.py --suid=${SDIR}
+echo "`date`: protocol compliance check (python complianceCheck.py --suid=${SSDIR} >> $log &)" >> $log
+python complianceCheck.py --suid=${SSDIR}
 
 echo "`date`: compliance check finished for ${SDIR} with \"$id\"" >> $log

@@ -29,6 +29,7 @@ if (isset($_GET['filename']) && $_GET['filename'] !== "") {
 }
 
 #$filename="rawdata_suid_1.3.12.2.1107.5.2.43.166242.30000022121716243434800000021_seuid_1.3.12.2.1107.5.2.43.166242.2022122011592300448652194.0.0.0.dat";
+#$filename="PIUCS0023_128918_V02_MRS.zip";
 
 $fn = $filename;
 $path_info = pathinfo($filename);
@@ -50,6 +51,8 @@ if ($filestrs[0] = 'rawdata') {
 
 $e = glob('/data'.$project.'/site/kspace/outbox/'.$suid.'/'.$path_info['filename'].".".$path_info['extension']);
 $f = glob('/data'.$project.'/site/kspace/umn/'.$suid.'/'.$path_info['filename'].".".$path_info['extension']);
+$g = glob('/data'.$project.'/site/mrs/'.$path_info['filename'].".".$path_info['extension']);
+$h = glob('/data'.$project.'/site/mrs/umn/'.$path_info['filename'].".".$path_info['extension']);
 
 
 // we should check if we have an md5sum file for each one
@@ -106,6 +109,26 @@ foreach($d as $f) {
    }
 }
 
+$gvalid = array();
+foreach($g as $f) {
+
+   $path_parts = pathinfo($f);
+   // lets see if we have an md5sum file here
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   if (file_exists($md5sumfname)) {
+       $gvalid[] = [$f, date ("F d Y H:i:s.", filemtime($md5sumfname))];
+   }
+}
+$hvalid = array();
+foreach($h as $f) {
+   $path_parts = pathinfo($f);
+   // lets see if we have an md5sum file here
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   if (file_exists($md5sumfname)) {
+       $hvalid[] = [$f, date ("F d Y H:i:s.", filemtime($md5sumfname))];
+   }
+}
+
 $val = array();
 foreach($qvalid as $qv) {
    $val[] = array( "ok" => 1, "message" => "readyToSend", "filename" => $qv[0], "filemtime" => $qv[1] );
@@ -120,6 +143,12 @@ foreach($evalid as $qv) {
    $val[] = array( "ok" => 1, "message" => "readyToSend", "filename" => $qv[0], "filemtime" => $qv[1] );
 }
 foreach($fvalid as $qv) {
+   $val[] = array( "ok" => 1, "message" => "transferred", "filename" => $qv[0], "filemtime" => $qv[1] );
+}
+foreach($gvalid as $qv) {
+   $val[] = array( "ok" => 1, "message" => "readyToSend", "filename" => $qv[0], "filemtime" => $qv[1] );
+}
+foreach($hvalid as $qv) {
    $val[] = array( "ok" => 1, "message" => "transferred", "filename" => $qv[0], "filemtime" => $qv[1] );
 }
 

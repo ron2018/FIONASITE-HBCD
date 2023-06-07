@@ -66,6 +66,37 @@ def getKSpaceFileSize(StudyInstanceUID, SeriesInstanceUID, scannerType):
         return os.path.getsize(filename)
     else:
         return 0
+def getMRSFilePath(tripleID):
+    filename1 = "/data/site/mrs/umn/"+ tripleID + "_MRS.zip"
+    filename2 = "/data/site/mrs/umn/"+ tripleID + "_MRS.tar.gz"
+    filename3 = "/data/site/mrs/"+ tripleID + "_MRS.zip"
+    filename4 = "/data/site/mrs/"+ tripleID + "_MRS.tar.gz"
+    if os.path.isfile(filename1):
+        return filename1
+    elif os.path.isfile(filename2):
+        return filename2
+    elif os.path.isfile(filename3):
+        return filename3
+    elif os.path.isfile(filename4):
+        return filename4
+    else:
+        return "NotFound.txt"
+
+def getMRSFileSize(tripleID):
+    filename1 = "/data/site/mrs/umn/"+ tripleID + "_MRS.zip"
+    filename2 = "/data/site/mrs/umn/"+ tripleID + "_MRS.tar.gz"
+    filename3 = "/data/site/mrs/"+ tripleID + "_MRS.zip"
+    filename4 = "/data/site/mrs/"+ tripleID + "_MRS.tar.gz"
+    if os.path.isfile(filename1):
+        return os.path.getsize(filename1)
+    elif os.path.isfile(filename2):
+        return os.path.getsize(filename2)
+    elif os.path.isfile(filename3):
+        return os.path.getsize(filename3)
+    elif os.path.isfile(filename4):
+        return os.path.getsize(filename4)
+    else:
+        return 0
 
  
 
@@ -99,7 +130,7 @@ if __name__ == "__main__":
     else:
         filecounts = complianceSetting[SCANNERTYPE]
 
-        logging.info("DEBUG: complianceSetting.json: ", complianceSetting[SCANNERTYPE]["T1"])
+        #logging.info("DEBUG: complianceSetting.json: ", complianceSetting[SCANNERTYPE]["T1"])
         logging.debug(json.dumps(filecounts))
 
     # read the existing json if it is existed
@@ -121,6 +152,7 @@ if __name__ == "__main__":
     b1_block = {}
     fmPAfmri_block = {}
     others = []
+    mrs_block = {}
 
     #read the json files in /data/quantine folder with all SUID name in it
     compliance_found = 1
@@ -144,8 +176,11 @@ if __name__ == "__main__":
     fmAPfmri_runcounter = 1 
     fmPAfmri_runcounter = 1 
     b1_runcounter = 1 
+    mrs_runcounter = 1 
 
     SeUIDs = []
+
+    print("SUID = ",SUID)
 
     for filename in os.listdir(datadir):
         if SUID in filename and '.json' in filename and filename != 'scp_'+SUID+'.json':
@@ -384,27 +419,21 @@ if __name__ == "__main__":
                     dict4["file"] = kspacelist    
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
                     fmAPfmri_runcounter = fmAPfmri_runcounter + 1
-                elif 'B1' in data["ClassifyType"][2]:
-                    if int(filecounts["B1"]) > int(data["NumFiles"]):
-                            # it is incomplete series
-                            print("bMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
-                            compliance_found = 0
-
-                    dict[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
+                elif 'SVS-loc' in data["ClassifyType"][2]:
+                    dict[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
-                    if kspace["size"] > 0 :
+                    mrs["path"] = getMRSFilePath(data["PatientID"])
+                    mrs["size"] = getMRSFileSize(data["PatientID"])
+                    if mrs["size"] > 0 :
                         dict4["status"] = 1 
-                        dict4["message"] = "Kspace data found" 
+                        dict4["message"] = "MRS data found" 
                     else:
-                        dict4["message"] = "Kspace data Not found" 
+                        dict4["message"] = "MRS data Not found" 
                         dict4["status"] = 2
-                    kspacelist.append(kspace)
-                    dict4["file"] = kspacelist    
-                    b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
-                    bmri_runcounter = bmri_runcounter + 1
+                    mrslist.append(mrs)
+                    dict4["file"] = mrslist    
+                    mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)+"_MRS"] = copy.deepcopy(dict4) 
+                    mrs_runcounter = bmri_runcounter + 1
                 else:
                     others.append(copy.deepcopy(dict2))
             else:
@@ -463,9 +492,12 @@ if __name__ == "__main__":
 
             kspace = {}
             kspacelist = []
+            mrs = {}
+            mrslist = []
             
             if len(data["ClassifyType"]) > 2:
                 logging.info(data["ClassifyType"][2])
+                print(data["ClassifyType"][2])
                 #depending on serise to imcrement the run counter
                 if 'T1' in data["ClassifyType"][2]:
                     # check if any T1 Norm has enough files.
@@ -587,28 +619,6 @@ if __name__ == "__main__":
                     dict4["file"] = kspacelist    
                     qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
                     qmri_runcounter = qmri_runcounter + 1
-                elif 'B1' in data["ClassifyType"][2]:
-                    if int(filecounts["B1"]) > int(data["NumFiles"]):
-                            # it is incomplete series
-                            print("bMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
-                            compliance_found = 0
-
-                    b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
-
-                    # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
-                    if kspace["size"] > 0  :
-                        dict4["status"] = 1 
-                        dict4["message"] = "Kspace data found" 
-                    else:
-                        dict4["message"] = "Kspace data Not found" 
-                        dict4["status"] = 2
-                    dict4["file"] = kspace    
-                    dict4["file"] = kspacelist    
-                    b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
-                    bmri_runcounter = bmri_runcounter + 1
 
                 elif 'HBCD-FM-fMRI-PA' in data["ClassifyType"][2]:
                     if int(filecounts["FM-fMRI"]) > int(data["NumFiles"]):
@@ -659,7 +669,7 @@ if __name__ == "__main__":
                             dict2["status"] = 0
                             compliance_found = 0
 
-                    dict[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
+                    b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace data
                     kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
                     kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
@@ -673,6 +683,23 @@ if __name__ == "__main__":
                     dict4["file"] = kspacelist    
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
                     bmri_runcounter = bmri_runcounter + 1
+                elif 'SVS_loc' in data["ClassifyType"][2]:
+                    mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace datadd
+                    mrs["path"] = getMRSFilePath(data["PatientID"])
+                    mrs["size"] = getMRSFileSize(data["PatientID"])
+                    print("MRS file path :", mrs["path"])
+                    print("MRS file size :", mrs["size"])
+                    if mrs["size"] > 0 :
+                        dict4["status"] = 1 
+                        dict4["message"] = "MRS raw data found" 
+                    else:
+                        dict4["message"] = "MRS raw data Not found" 
+                        dict4["status"] = 2
+                    mrslist.append(mrs)
+                    dict4["file"] = mrslist    
+                    mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)+"_MRS"] = copy.deepcopy(dict4) 
+                    mrs_runcounter = bmri_runcounter + 1
                 else:
                     others.append(copy.deepcopy(dict2))
             else:
@@ -741,6 +768,10 @@ if __name__ == "__main__":
         b1_block["message"] = "B1 was found."
     else: 
         b1_block["message"] = "B1 was Not found."
+    if mrs_block:
+        mrs_block["message"] = "MRS was found."
+    else: 
+        mrs_block["message"] = "MRS was Not found."
 
     dict["T1"] = t1_block
     dict["T2"] = t2_block
@@ -751,7 +782,7 @@ if __name__ == "__main__":
     dict["qMRI_Block"] = qmri_block
     dict["B1_block"] = b1_block 
     dict["AdditionalSeries"] = others
-
+    dict["MRS"] = mrs_block
 
     #dict = dict(sorted(dict, key=lambda k: k.get('SeriesTime')))
 
