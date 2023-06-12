@@ -507,9 +507,9 @@ class ProcessSingleFile(Daemon):
                                 seriesLevelCheck = True
                         ok = True
                         
-                        logging.info(rule)
-                        logging.info(self.classify_rules[rule])
-                        logging.info("number of rules:" + str(len(self.classify_rules[rule]['rules'])))
+                        #logging.info(rule)
+                        #logging.info(self.classify_rules[rule])
+                        #logging.info("number of rules:" + str(len(self.classify_rules[rule]['rules'])))
 
                         for entry in range(len(self.classify_rules[rule]['rules'])):
                                 r = self.classify_rules[rule]['rules'][entry]
@@ -544,12 +544,12 @@ class ProcessSingleFile(Daemon):
                                 if not "operator" in r:
                                         r["operator"] = "regexp"  # default value
                                 op = r["operator"]
-                                logging.info(v)
-                                logging.info(type(v))
-                                logging.info(op)
-                                logging.info(v2)
-                                logging.info(type(v2))
-                                logging.info(taghere)
+                               # logging.info(v)
+                               # logging.info(type(v))
+                               # logging.info(op)
+                               # logging.info(v2)
+                               # logging.info(type(v2))
+                               # logging.info(taghere)
                                 if op == "notexist":
                                         if isnegate(taghere):
                                            ok = False
@@ -648,7 +648,7 @@ class ProcessSingleFile(Daemon):
                                 classifyTypes = classifyTypes + list(set([t]) - set(classifyTypes))
                         if seriesLevelCheck and not ok and (t in classifyTypes):
                                 classifyTypes = [y for y in classifyTypes if y != t]
-                        logging.info(classifyTypes)
+                        #logging.info(classifyTypes)
                 return classifyTypes
                                 
         def run(self):

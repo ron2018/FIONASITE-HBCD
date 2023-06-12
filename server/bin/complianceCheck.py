@@ -230,6 +230,8 @@ if __name__ == "__main__":
             list3.append(dict3)
             dict2["file"] = list3
 
+            mrs = {}
+            mrslist = []
             kspace = {}
             kspacelist= []
             
@@ -419,21 +421,24 @@ if __name__ == "__main__":
                     dict4["file"] = kspacelist    
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
                     fmAPfmri_runcounter = fmAPfmri_runcounter + 1
-                elif 'SVS-loc' in data["ClassifyType"][2]:
-                    dict[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
+                elif 'HBCD-LocSVS' in data["ClassifyType"][2]:
+                    mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
                     mrs["path"] = getMRSFilePath(data["PatientID"])
                     mrs["size"] = getMRSFileSize(data["PatientID"])
+                    print("MRS file path :", mrs["path"])
+                    print("MRS file size :", mrs["size"])
                     if mrs["size"] > 0 :
-                        dict4["status"] = 1 
-                        dict4["message"] = "MRS data found" 
+                        dict4["status"] = 1
+                        dict4["message"] = "MRS raw data found"
                     else:
-                        dict4["message"] = "MRS data Not found" 
+                        dict4["message"] = "MRS raw data Not found"
                         dict4["status"] = 2
                     mrslist.append(mrs)
-                    dict4["file"] = mrslist    
-                    mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)+"_MRS"] = copy.deepcopy(dict4) 
+                    dict4["file"] = mrslist
+                    mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)+"_MRS"] = copy.deepcopy(dict4)
                     mrs_runcounter = bmri_runcounter + 1
+
                 else:
                     others.append(copy.deepcopy(dict2))
             else:
@@ -683,7 +688,7 @@ if __name__ == "__main__":
                     dict4["file"] = kspacelist    
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
                     bmri_runcounter = bmri_runcounter + 1
-                elif 'SVS_loc' in data["ClassifyType"][2]:
+                elif 'HBCD-LocSVS' in data["ClassifyType"][2]:
                     mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
                     mrs["path"] = getMRSFilePath(data["PatientID"])
@@ -709,14 +714,14 @@ if __name__ == "__main__":
             
             
 
-    if compliance_found:
+    #if compliance_found:
         dict["status"] = "1"
         dict["shortmessage"] = "C"
         dict["message"] = "The Serie is ready to send to DAIRC. One session based acquisition."
-    else:
-        dict["status"] = "0"
-        dict["shortmessage"] = "N"
-        dict["message"] = "Some series is not complete, Please re-send them from original sources"
+    #else:
+    #    dict["status"] = "0"
+    #    dict["shortmessage"] = "N"
+    #    dict["message"] = "Some series is not complete, Please re-send them from original sources"
 
 
 

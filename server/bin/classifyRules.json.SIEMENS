@@ -151,9 +151,10 @@
         "operator": "contains",
         "value": "tfl3d1_16ns"
       },{
-             "tag": ["0X5200","0X9230","0X0021","0X11fe", "0X0021","0X1175"],
+             "tag": ["SeriesDescription"],
+              "negate": "yes",
              "operator": "contains",
-             "value": "DIS3D"
+             "value": "_ND"
       }
 
    ]
@@ -179,7 +180,7 @@
         "operator": "contains",
         "value": "tfl3d1_16ns"
       },{
-             "tag": ["0X5200","0X9230","0X0021","0X11fe", "0X0021","0X1175"],
+             "tag": ["SeriesDescription"],
              "operator": "contains",
              "value": "ND"
       }
@@ -205,6 +206,7 @@
       },{
              "tag": ["ImageType"],
              "operator": "contains",
+	     "negate": "yes", 
              "value": "DIS3D"
       }
 
@@ -251,9 +253,10 @@
         "operator": "contains",
         "value": "spc_120ns"
       },{
-             "tag": ["0X5200","0X9230","0X0021","0X11fe", "0X0021","0X1175"],
+             "tag": ["SeriesDescription"],
              "operator": "contains",
-             "value": "DIS3D"
+	     "negate":"yes",
+             "value": "ND"
       }
 
     ]
@@ -275,7 +278,7 @@
         "operator": "contains",
         "value": "spc_120ns"
       },{
-             "tag": ["0X5200","0X9230","0X0021","0X11fe", "0X0021","0X1175"],
+             "tag": ["SeriesDescription"],
              "operator": "contains",
              "value": "ND"
       }
@@ -1209,7 +1212,7 @@
   },
  {
     "type" : "HBCD-LocSVS",
-    "description" : "A LocSVS from PHILIP with HBCD resolution",
+    "description" : "A LocSVS from Siemens with HBCD resolution",
     "rules" : [
       {
         "rule" : "SIEMENSBYMANUFACTURER"
@@ -1221,6 +1224,34 @@
         "tag": ["0X2005","0X140f", "0x18", "0x9005" ],
         "operator": "contains",
         "value": "TSE"
+      },{
+             "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+             "value": "SVS"
+          }
+
+   ]
+  },
+ {
+    "type" : "HBCD-LocSVS",
+    "description" : "A LocSVS from Siemens with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+      "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "192"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "192"
+      },
+
+      {
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "h2d1_192"
       },{
              "tag": [ "SeriesDescription" ],
         "operator": "contains",

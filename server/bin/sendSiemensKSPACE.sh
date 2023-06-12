@@ -37,7 +37,7 @@ if [ "$project" != "" ]; then
 fi
 echo "Endpoint selected: $endpoint"
 
-token==`cat /data/config/config.json | jq -r ".CONNECTION"`
+token=`cat /data/config/config.json | jq -r ".CONNECTION"`
 if [ "$token" == "" ]; then
    echo "CONNECTION string is missing from /data/config/config.json file"
    exit
@@ -79,7 +79,7 @@ do
   # pattern is : 20221213_1.3.46.670589.11.45002.5.0.15852.2022121307120758000.tgz
   # tar the file
   #filedir=$(echo `basename "$file"` | sed "s/.tgz//")
-  
+
   filedir=$(echo `basename "$fdir"`);
   echo $filedir;
 
@@ -98,98 +98,131 @@ do
   if [ ${filedir} = "processed" ]; then
        continue;
   fi
-  echo $filedir
    
   # if folder files have not been changed.
 
+  tripleID="undefined"
+  suid="undefined"
+
+
   cd $fdir
-  echo ${fdir} 
   #rename the dat file to rawdata_suid_$suid_seuid_$seuid.dat
   find ./ -type f -iname '*.dat' -print0 | while read -d $'\0' datfile
   do
-     echo $datfile
+  #   echo $datfile
       
-     ## for now the filenumber is in the 10:3 meas_MID00259_FID00294_T2w_SPACE.dat
-     #filenumer=(${datfile:10:3})
-     #echo "filenumber : ${filenumber}"
 
      if [ "$(( $(date +"%s") - $(stat -c "%Y" "$datfile") ))" -lt "$oldtime" ]; then
         echo "`date`: too young $datfile"
         continue
      fi
-
+   
      suid=$(grep -a -m 1 StudyInstanceUID ${datfile} | cut -d"\"" -f4)
      echo $suid
-     
 
      fname=${suid}*.json
-     echo $fname
-
-     found=0
+     seuid='undefined'
 
      find "/data/quarantine/" -type f -iname $fname -print0 | while read -d $'\0' jsonfile
      do
+	 if [[ ${tripleId} = "undefined" ]]; then
+	    tripleId=`cat $jsonfile | jq -r ".PatientName"`;
+	 fi
+
          private0021_1106=`cat $jsonfile | jq -r ".Private0021_1106"`;
          seriesDecr=`cat $jsonfile | jq -r ".SeriesDescription"`;
-	 echo $jsonfile
-	 echo "$private0021_1106 $seriesDecr "
-         seuid='undefined'
+#	 echo $jsonfile
+	 echo "In quarantine $private0021_1106 $seriesDecr "
+         if [ ! -n "${private0021_1106}" ]; then
+            pattern=`printf "MID%05.0f" ${private0021_1106}`
+         fi
 
-	 if [[ $datfile =~ "MID00"${private0021_1106} ]]; then
+#         echo $pattern
+
+	 if [[ $datfile =~ ${pattern} ]]; then
 		if [[ $datfile =~ ${seriesDecr} ]]; then
 		    seuid=`cat $jsonfile | jq -r ".SeriesInstanceUID"`
                     echo "Found SeUID : ${seuid}"
-	            found=1
+                    newfile="rawdata_suid_${suid}_seuid_${seuid}.dat"
+ #                   echo $newfile
+                    /bin/mv  $datfile $newfile || error_exit 
+                    break
 	        fi
 	 fi
 
-	 echo ${seuid}
          # check /data/DAIC if the data is not in /data/quarantine
-         if [ ${seuid} = "undefined" ]; then
+         if [[ ${seuid} = "undefined" ]]; then
              find "/data/DAIC/"  -type f -iname $fname -print0 | while read -d $'\0' jsonfile
              do
-                 echo $jsonfile
+  #              echo "In /data/DAIC/ : ${jsonfile}"
+                 if [[ ${tripleId} = "undefined" ]]; then
+                   tripleId=`cat $jsonfile | jq -r ".PatientName"`;
+                 fi
                  private0021_1106=`cat $jsonfile | jq -r ".Private0021_1106"`;
+		 #echo "In DAIC $private0021_1106 $seriesDecr "
+                 if [ ! -n "${private0021_1106}" ]; then
+                    pattern=`printf "MID%05.0f" ${private0021_1106}`
+                 fi
+                 pattern=`printf "MID%05.0f" ${private0021_1106}`
+
+                #echo $tripleId
+
                  seriesDecr=`cat $jsonfile | jq -r ".SeriesDescription"`;
-                 if [[ $datfile =~ "MID00"${private0021_1106} ]]; then
+                 if [[ $datfile =~ ${pattern} ]]; then
 		    if [[ $datfile =~ ${seriesDecr} ]]; then
                         seuid=`cat $jsonfile | jq -r ".SeriesInstanceUID"`;
                         echo "Found SeUID : ${seuid}"
-		        found=1
+                        newfile="rawdata_suid_${suid}_seuid_${seuid}.dat"
+    #                    echo $newfile
+                        /bin/mv  $datfile $newfile || error_exit
+                        break
                     fi
 		 fi
              done
          fi
-         echo ${seuid}
-         
-	 ## if both suid and seuid existed
-         if [ ${seuid} = "undefined" ]; then
-	    echo "Could not find the Seuid"
-         else
-             #seuid=$(grep -a -m 1  ${datfile} | cut -d"\"" -f4)
-             newfile="rawdata_suid_${suid}_seuid_${seuid}.dat"
-             echo $newfile
-             #zip[[ $datfile =~ ${seriesDecr} ]] the file
-             /bin/mv  $datfile $newfile || error_exit
-         fi
-         if [[ ${found} = 1 ]]; then
-             break;
-         fi
+     #    echo "${seuid}"
+     #    echo "${datfile}"
+ 
      done
 
-     #if [[ ${found} = 1 ]]; then
-     #    break;
-     #fi
+  done
+  
+  #process unmatched files
+  find ./ -type f -iname 'meas*.dat' -print0 | while read -d $'\0' datfile
+  do
+     suid=$(grep -a -m 1 StudyInstanceUID ${datfile} | cut -d"\"" -f4)
+     tripleId=$(echo `basename "$datfile"`) 
+     filename=$(echo `basename "$datfile"`)
+     newfile="rawdata_suid_${suid}_${filename}"
+     echo "Could not find the Seuid: ${newfile} ${suid}"
+     /bin/mv  $datfile $newfile || error_exit
   done
 
   #clean up the folder
   #rm -rf  ${kspaceDatLocations}/${filedir}
 
-  echo "Before rsyc: rawdata_suid_${suid}*.zip"
-  mv /data/site/kspace/${filedir} /data/site/kspace/processed/
-
+  echo "Before rsyc: rawdata_suid_${suid}*.dat"
+  if [[ ! -d /data/site/kspace/outbox/${filedir} ]]; then
+     mv /data/site/kspace/${filedir} /data/site/kspace/outbox/
+  fi
+  #if [[ -d /data/site/kspace/outbox/${filedir} ]]; then
+  #   mv /data/site/kspace/${filedir}/* /data/site/kspace/outbox/${filedir}/
+  #fi
   #rsync this files
-  #/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/rawdata_suid_${suid}*.zip hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona 
-  #register the files to UMN
-  #/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=rawdata_suid_${suid} --token=$token >> $log 2>&1
+  tripleID=${filedir}
+  echo ${tripleID}
+  #get SUID from file
+  suid=$(ls /data/site/kspace/outbox/rawdata_suid_* | head -1 | cut -d"_" -f3)
+  echo $suid
+
+  { echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/"
+  /usr/bin/rsync -LptgoDv0r /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/ 
+  } &&  {
+	  #register the files to UMN
+  echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
+
+  /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
+  mv /data/site/kspace/outbox/${filedir} /data/site/kspace/processed/
+  }
+
 done
