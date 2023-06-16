@@ -612,15 +612,30 @@
       {
         "rule" : "PHILIPSBYMANUFACTURER"
       },{
-        "tag": [ "0x18", "0x9005" ],
-        "operator": "contains",
-        "value": "TSE"
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 160, 160, 0"
       },{
              "tag": [ "SeriesDescription" ],
         "operator": "contains",
-             "value": "SVS"
+             "value": "anat-t2w_desc-mrsLocAX"
           }
 
+   ]
+  },
+ {
+    "type" : "HBCD-LocSVS",
+    "description" : "A LocSVS from PHILIP with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "PHILIPSBYMANUFACTURER"
+      },{
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 160, 160, 0"
+      },{
+             "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+             "value": "anat-t2w_desc-mrsLocCor"
+          }
    ]
   },
   {
@@ -683,27 +698,6 @@
       },{
              "tag": [ "SeriesDescription" ],
              "value": "^B1"
-          }
-
-   ]
-  },
- {
-    "type" : "HBCD-LocSVS",
-    "description" : "A LocSVS from PHILIP with HBCD resolution",
-    "rules" : [
-      {
-        "rule" : "PHILIPSBYMANUFACTURER"
-      },{
-        "tag": [ "AcquisitionMatrix" ],
-        "value": "192, 0, 0, 192"
-      },{
-        "tag": ["PulseSequenceName" ],
-        "operator": "contains",
-        "value": "TSE"
-      },{
-             "tag": [ "SeriesDescription" ],
-        "operator": "contains",
-             "value": "SVS"
           }
 
    ]

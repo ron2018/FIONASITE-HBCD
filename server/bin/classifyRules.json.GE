@@ -169,26 +169,30 @@
       ]
   },
   {
-      "type" : "HBCD-dMRI",
+      "type" : "HBCD-dMRI-AP",
       "id" : "GEDTI",
       "description": "GE based MMIL DTI format for DV26",
       "rules": [
           {"rule": "GEBYMANUFACTURER"
 	  },{
 	     "tag": [ "0x19", "0x109c" ],
-             "value": "^research/.*/muxepi2"
+             "value": "^research/.*/muxepi2alt"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
         "value": "140, 0, 0, 140"
       },{ 
         "tag": [ "ImagesInAcquisition" ],
         "value": "6699"
+      },{
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "dwi_dir-AP"
       }
 	  
       ]
   },
   {
-      "type" : "HBCD-dMRI",
+      "type" : "HBCD-dMRI-PA",
       "id" : "GEDTI",
       "description": "GE based MMIL DTI format for DV29/RX28",
       "rules": [
@@ -205,7 +209,7 @@
       },{ 
        "tag": [ "SeriesDescription" ],
         "operator": "contains",
-        "value": "ORIG"
+        "value": "dwi_dir-PA"
       }  
       ]
   },
@@ -268,7 +272,7 @@
       ]
   },
   {
-      "type" : "HBCD-FM-fMRI",
+      "type" : "HBCD-FM-fMRI-PA",
       "description": "Field Maps for HBCD fMRI scan",
       "rules": [
           {	     
@@ -280,15 +284,32 @@
         "tag": [ "AcquisitionMatrix" ],
         "value": "112, 0, 0, 112"
       },{ 
-        "tag": [ "0x19", "0x10b3" ],
-        "value": "2.000000"
+        "tag": [ "0x21", "0x104f" ],
+        "value": "76"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "fmap-epi_dir-PA"
+      }
+      ]
+  },
+  {
+      "type" : "HBCD-FM-fMRI-AP",
+      "description": "Field Maps for HBCD fMRI scan",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/epi_pepolar"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "112, 0, 0, 112"
       },{ 
         "tag": [ "0x21", "0x104f" ],
         "value": "76"
       },{ 
-        "tag": [ "0x20", "0x105" ],
-        "operator": "==",
-        "value": "4"
+        "tag": [ "SeriesDescription" ],
+        "value": "fmap-epi_dir-AP"
       }
       ]
   },
@@ -450,16 +471,11 @@
         "tag": [ "AcquisitionMatrix" ],
         "value": "0, 320, 300, 0"
       },{ 
-        "tag": [ "0x19", "0x109c"],
-        "value": "Cube"
-      },
-      { 
         "tag": [ "0x19", "0x109e"],
         "value": "3DFSE"
-      },{ 
-       "tag": [ "0x18", "0x22" ],
-        "operator": "contains",
-        "value": "FILTERED_GEMS"
+      },{
+     "tag": [ "SeriesDescription" ],
+        "value": "anat-t2w-ND" 
       }
     ]
   },{ 
@@ -471,18 +487,13 @@
       },{ 
         "tag": [ "AcquisitionMatrix" ],
         "value": "0, 320, 300, 0"
-      },{ 
-        "tag": [ "0x19", "0x109c"],
-        "value": "Cube"
       }, 
       { 
         "tag": [ "0x19", "0x109e"],
         "value": "3DFSE"
       },{ 
-       "tag": [ "0x18", "0x22" ],
-        "operator": "contains",
-	"negate": "yes", 
-        "value": "FILTERED_GEMS"
+       "tag": [ "SeriesDescription" ],
+        "value": "anat-t2w"
       }
     ]
   },
@@ -496,11 +507,60 @@
         "tag": [ "AcquisitionMatrix" ],
         "value": "0, 176, 176, 0"
       },{ 
-        "tag": [ "0x19", "0x109a"],
-        "value": "305030144.0"
+        "tag": [ "SeriesDescription"],
+        "value": "anat_desc-qalas"
       }
     ]
- }
+ },
+  { 
+    "type" : "HBCD-B1",
+    "description" : "A GE based B1 for HBCD",
+    "rules" : [
+      {
+	  "rule" : "GEBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 36, 36, 0"
+      },{ 
+        "tag": [ "SeriesDescription"],
+        "value": "fmap_TB1AFI"
+      }
+    ]
+ },
+{
+    "type" : "HBCD-LocSVS",
+    "description" : "A LocSVS from PHILIP with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "GEBYMANUFACTURER"
+      },{
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 192, 192, 0"
+      },{
+             "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+             "value": "anat-t2w_desc-mrsLocAX"
+          }
+
+   ]
+  },
+ {
+    "type" : "HBCD-LocSVS",
+    "description" : "A LocSVS from PHILIP with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "GEBYMANUFACTURER"
+      },{
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 192, 192, 0"
+      },{
+             "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+             "value": "anat-t2w_desc-mrsLocCor"
+          }
+   ]
+  }
+
 
 
 ]
