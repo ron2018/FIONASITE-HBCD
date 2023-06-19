@@ -38,7 +38,10 @@ def getSeriesFileCount(filename):
     SeUID = UIDs[1].replace(".json","")
   print("SUID : ", SUID, " SeUID : ", SeUID)
   dir_path = r'/data/site/raw/' + SUID + r'/' + SeUID 
-  count = len([entry for entry in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, entry))])
+  if os.path.exists(dir_path):
+     count = len([entry for entry in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, entry))])
+  else:
+     count = 0
   print("Dir_Path" + dir_path + "file count " + str(count))
   
   return count

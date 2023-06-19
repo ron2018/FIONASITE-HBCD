@@ -1,6 +1,6 @@
 <?php
 #
-# Allow the users to repush data (deletes information in /data/site/raw and resends data from /data/site/archive/).
+# Allow the users to repush data (deletes information in /data/site/raw and resends data from /data/site/rawdata/).
 #
 #  requires:
 #     yum install php-posix
@@ -79,7 +79,7 @@ if (!$user_name) {
                 array_shift($content);
                 file_put_contents('/var/www/html/php/repush.jobs', implode("\n",$content));
                 // still send the files again
-                $path = "/data".$project."/site/archive/scp_".$studyinstanceuid;
+                $path = "/data".$project."/site/rawdata/scp_".$studyinstanceuid;
                 if (file_exists($path)) {
                     exec('/var/www/html/server/utils/s2m.sh '.$path.' '.$project.' &',$output); // execute and return immediately 
                     echo("s2m result: ".implode("\n",$output));
@@ -96,7 +96,7 @@ if (!$user_name) {
                 // now try to delete all the existing files and symbolic links in this directory
                 echo("remove all files in:".$p."\n");
                 rrmdir($p);
-                $path = "/data".$project."/site/archive/scp_".$studyinstanceuid;
+                $path = "/data".$project."/site/rawdata/scp_".$studyinstanceuid;
                 echo(date(DATE_ATOM)." try to re-run: ".$path."\n");
                 exec('/var/www/html/server/utils/s2m.sh '.$path.' '.$project.' &',$output); // execute and return immediately 
                 echo("s2m result: ".implode("\n",$output)."\n");

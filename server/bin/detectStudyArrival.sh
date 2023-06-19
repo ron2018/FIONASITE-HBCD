@@ -80,7 +80,7 @@ anonymize () {
      mkdir -p "${datadir}/site/rawdata/scp_${SDIR}/"
   fi
   # move original file to rawdata folder copy anonymized file to /data/site/archive/scp_{SDIR} 
-  for FILE in ${datadir}/site/raw/${SDIR}/${SSERIESDIR}/*; do FILE2=MR.$(basename $FILE); /bin/cp /data/site/archive/scp_${SDIR}/$FILE2 /data/site/rawdata/scp_${SDIR}/; FILE3=$(basename $FILE);echo $FILE3; /bin/mv ${datadir}/site/raw/${SDIR}/${SSERIESDIR}_anonymized/$FILE3 /data/site/archive/scp_${SDIR}/$FILE2; done;
+  for FILE in ${datadir}/site/raw/${SDIR}/${SSERIESDIR}/*; do FILE2=MR*.$(basename $FILE); /bin/cp /data/site/archive/scp_${SDIR}/$FILE2 /data/site/rawdata/scp_${SDIR}/; FILE3=$(basename $FILE);echo $FILE3; /bin/mv ${datadir}/site/raw/${SDIR}/${SSERIESDIR}_anonymized/$FILE3 /data/site/archive/scp_${SDIR}/$FILE2; done;
 
   #/bin/mv ${datadir}/site/raw/${SDIR}/${SSERIESDIR}_anonymized/* /data/site/archive/scp_${SDIR}/
   # move the anonymized files to archive folder and delete the anonymized folder.

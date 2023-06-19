@@ -145,12 +145,15 @@
       },{
         "tag": [ "0x18", "0x9005" ],
         "operator": "contains",
-        "value": "spc_120ns"
+        "value": "spc_314ns"
       },{
-             "tag": ["ImageType"],
+             "tag": ["SeriesDescription"],
+             "value": "anat-t2w"
+      },{
+             "tag": ["SeriesDescription"],
              "operator": "contains",
-	     "negate": "yes", 
-             "value": "DIS3D"
+             "negate": "yes",
+             "value": "ND"
       }
 
     ]
@@ -175,6 +178,30 @@
              "tag": ["ImageType"],
              "operator": "contains",
              "value": "ND"
+      }
+
+    ]
+  },
+  { 
+    "type" : "HBCD-T2-ND",
+    "description" : "A T2 weighted image from Siemens with HBCD resolution, Enhanced DICOM",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "320"
+      },{
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "spc_314ns"
+      },{
+             "tag": ["SeriesDescription"],
+             "operator": "contains",
+             "value": "t2w_ND"
       }
 
     ]
@@ -470,58 +497,6 @@
     ]
  },
   { 
-    "type" : "HBCD-T2",
-    "description" : "A T2 weighted image from Siemens with HBCD resolution",
-    "rules" : [
-      {
-	"rule" : "SIEMENSBYMANUFACTURER"
-      },{
-	"rule" : "ORIGINAL"
-      },{
-        "tag": [ "AcquisitionMatrix" ],
-        "value": "0, 320, 300, 0"
-      },{ 
-        "tag": [ "0x18", "0x24" ],
-        "operator": "contains",
-        "value": "spc_120ns"
-      },{
-	     "tag": [ "0x08", "0x08" ],
-        "operator": "contains",
-        "value": "NORM"
-          },{
-	     "tag": [ "0x08", "0x08" ],
-        "operator": "contains",
-        "value": "DIS3D"
-          }
-    ]
-  },
-  { 
-    "type" : "HBCD-T2-ND",
-    "description" : "A T2 weighted image from Siemens with HBCD resolution",
-    "rules" : [
-      {
-	"rule" : "SIEMENSBYMANUFACTURER"
-      },{
-	"rule" : "ORIGINAL"
-      },{ 
-        "tag": [ "AcquisitionMatrix" ],
-        "value": "0, 320, 300, 0"
-      },{ 
-        "tag": [ "0x18", "0x24" ],
-        "operator": "contains",
-        "value": "spc_120ns"
-      },{
-	     "tag": [ "0x08", "0x08" ],
-        "operator": "contains",
-        "value": "NORM"
-          },{
-	     "tag": [ "0x08", "0x08" ],
-        "operator": "contains",
-        "value": "ND"
-          }
-    ]
-  },
-  { 
     "type" : "HBCD-dMRI-PA",
     "description" : "HBCD Diffusion scan",
     "rules" : [
@@ -593,7 +568,7 @@
         "value": "epse2d1_140"
       },{ 
        "tag": [ "SeriesDescription" ],
-        "value": "dwi_dir-PA"
+        "value": "dwi_dir-AP"
       }
     ]
   },
@@ -647,12 +622,15 @@
     "rules" : [
       {
         "rule" : "SIEMENSBYMANUFACTURER"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "value": "64"
       },{
-     "tag": [ "AcquisitionMatrix" ],
-        "value": "0, 64, 64, 0"
+       "tag": [ "0x28", "0x11" ],
+        "value": "64"
       },
       {
-        "tag": ["SequenceName" ],
+        "tag": ["PulseSequenceName" ],
         "operator": "contains",
         "value": "tfl2d1"
       },{
@@ -839,12 +817,11 @@
         "value": "h2d1_192"
       },{
              "tag": [ "SeriesDescription" ],
-             "value": "anat-t2w_desc-mrsLocAX"
+             "value": "Localizer_SVS"
           }
-
-   ]
-  },{
-    "type" : "HBCD-LocSVS",
+    ]
+}, {
+    "type" : "HBCD-mrsLocAX",
     "description" : "A LocSVS from Siemens with HBCD resolution",
     "rules" : [
       {
@@ -852,19 +829,47 @@
       },{
       "tag": [ "0x28", "0x10" ],
         "operator": "==",
-        "value": "192"
+        "value": "160"
       },{
        "tag": [ "0x28", "0x11" ],
         "operator": "==",
-        "value": "192"
+        "value": "144"
       },
 
       {
         "tag": [ "0x18", "0x9005" ],
         "operator": "contains",
-        "value": "h2d1_192"
+        "value": "tse2d1rr24"
       },{
              "tag": [ "SeriesDescription" ],
+             "operator": "contains",
+             "value": "anat-t2w_desc-mrsLocAX"
+          }
+
+   ]
+  },{
+    "type" : "HBCD-mrsLocCor",
+    "description" : "A LocSVS from Siemens with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+      "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "160"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "144"
+      },
+
+      {
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "tse2d1rr24"
+      },{
+             "tag": [ "SeriesDescription" ],
+             "operator": "contains",
              "value": "anat-t2w_desc-mrsLocCor"
           }
 
