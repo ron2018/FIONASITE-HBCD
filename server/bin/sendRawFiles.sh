@@ -20,7 +20,7 @@ fi
 
 
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
-log=${SERVERDIR}/logs/sendRawFile${project}.log
+log=${SERVERDIR}/logs/sendRawFiles${project}.log
 user=`cat /data/config/config.json | jq -r ".SERVERUSER"`
 # directory storing the files that are ok to send
 pfiles=/data${project}/site/rawdata/outbox
