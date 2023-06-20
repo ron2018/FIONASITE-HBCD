@@ -32,7 +32,7 @@ if [ "$project" != "" ]; then
 fi
 echo "Endpoint selected: $endpoint"
 
-token==`cat /data/config/config.json | jq -r ".CONNECTION"`
+token=`cat /data/config/config.json | jq -r ".CONNECTION"`
 if [ "$token" == "" ]; then
    echo "CONNECTION string is missing from /data/config/config.json file"
    exit
@@ -43,7 +43,8 @@ fi
 
 
 cd $pfolder
-grep -avxFf sentlists.csv suidlists.csv > suidsdiff.csv
+sort suidlists.csv | uniq > suidlistsSorted.csv
+grep -avxFf sentlists.csv suidlistsSorted.csv > suidsdiff.csv
 
 # given error message, and exiting with an error code.
 function error_exit {
@@ -58,10 +59,16 @@ sendFile () {
    while IFS="," read -r tripleId SUID run
    do
 
+	   
+
       echo "tripleId: $tripleId, SUID: $SUID run: $run"
       if [ "$tripleId" == "" ]; then
          echo "sendRawFile needs two parameters : tripletID and SUID"
          exit
+      fi
+      if [ "$SUID" == "" ]; then
+         echo "sendRawFile needs two parameters : tripletID and SUID"
+         continue
       fi
    
       echo "`date`: Pack and send this SUID ${SUID}" >> $log
@@ -81,11 +88,14 @@ sendFile () {
  
      
       #rsync this file and md5sum file
-     { /usr/bin/rsync -LptgoDv0 --no-R ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona || error_exit
+     { 
+	     echo "/usr/bin/rsync -LptgoDv0 --no-R ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona || error_exit"
+	     #/usr/bin/rsync -LptgoDv0 --no-R ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona || error_exit
       #move the rsync file from outbox to UMN folder 
      } && {
       mv ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* ${pfolder}/umn/
     } && {
+      echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleId}_MRI_${SUID}_${run}.tar.gz --token=$token --type=MRI  >> $log 2>&1"
       /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleId}_MRI_${SUID}_${run}.tar.gz --token=$token --type=MRI  >> $log 2>&1 
    }
    done < suidsdiff.csv
