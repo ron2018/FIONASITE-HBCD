@@ -83,7 +83,7 @@
       {  
         "tag": [ "0x18", "0x9005" ],
         "operator": "contains",
-        "value": "tfl3d1_16ns"
+        "value": "tflvNav3d"
       },{
 	     "tag": ["SeriesDescription"],
              "operator": "contains",
@@ -116,7 +116,7 @@
       },{
         "tag": [ "0x18", "0x9005" ],
         "operator": "contains",
-        "value": "tfl3d1_16ns"
+        "value": "tflvNav3d"
       },{
          "tag": ["SeriesDescription"],
              "operator": "contains",
@@ -145,7 +145,7 @@
       },{
         "tag": [ "0x18", "0x9005" ],
         "operator": "contains",
-        "value": "spc_314ns"
+        "value": "spcvNav"
       },{
              "tag": ["SeriesDescription"],
              "value": "anat-t2w"
@@ -173,7 +173,7 @@
       },{
         "tag": [ "0x18", "0x9005" ],
         "operator": "contains",
-        "value": "spc_120ns"
+        "value": "spcvNav"
       },{
              "tag": ["ImageType"],
              "operator": "contains",
@@ -821,7 +821,7 @@
           }
     ]
 }, {
-    "type" : "HBCD-mrsLocAX",
+    "type" : "HBCD-LocSVS",
     "description" : "A LocSVS from Siemens with HBCD resolution",
     "rules" : [
       {
@@ -829,11 +829,11 @@
       },{
       "tag": [ "0x28", "0x10" ],
         "operator": "==",
-        "value": "160"
+        "value": "144"
       },{
        "tag": [ "0x28", "0x11" ],
         "operator": "==",
-        "value": "144"
+        "value": "160"
       },
 
       {
@@ -848,7 +848,7 @@
 
    ]
   },{
-    "type" : "HBCD-mrsLocCor",
+    "type" : "HBCD-LocSVS",
     "description" : "A LocSVS from Siemens with HBCD resolution",
     "rules" : [
       {

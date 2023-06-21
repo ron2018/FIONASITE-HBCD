@@ -729,14 +729,14 @@ if __name__ == "__main__":
 
 
 
-    if len(t1_block) > 2 :
+    if len(t1_block) > 1 :
         t1_block["message"] = "HBCD-T1 series was found"
         t1_block["status"] =1
        
     else:
         t1_block["message"] = "HBCD-T1 series was not found"
         t1_block["status"] = 0 
-    if len(t2_block) > 2 :
+    if len(t2_block) > 1 :
         t2_block["status"] = 1
         t2_block["message"] = "HBCD-T2 series was found"
     else:
