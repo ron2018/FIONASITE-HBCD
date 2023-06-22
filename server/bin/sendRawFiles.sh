@@ -43,8 +43,8 @@ fi
 
 
 cd $pfolder
-sort suidlists.csv | uniq > suidlistsSorted.csv
-grep -avxFf sentlists.csv suidlistsSorted.csv > suidsdiff.csv
+sort suidlists.csv | uniq > suidsdiff.csv
+#grep -avxFf sentlists.csv suidlistsSorted.csv > suidsdiff.csv
 
 # given error message, and exiting with an error code.
 function error_exit {
@@ -90,7 +90,7 @@ sendFile () {
       #rsync this file and md5sum file
      { 
 	     echo "/usr/bin/rsync -LptgoDv0 --no-R ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona || error_exit"
-	     /usr/bin/rsync -LptgoDv0 --no-R ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona || error_exit
+	     /usr/bin/rsync -LptgoDv0 --no-R ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRI/ || error_exit
       #move the rsync file from outbox to UMN folder 
      } && {
       mv ${pfiles}/${tripleId}_MRI_${SUID}_${run}.* ${pfolder}/umn/
@@ -101,6 +101,8 @@ sendFile () {
    done < suidsdiff.csv
    
    cat suidsdiff.csv >> sentlists.csv
+
+   cp /dev/null suidlists.csv
 
    echo "`date`: Complete pack and rsync this SUID ${filename}" >> $log
   
