@@ -27,9 +27,8 @@ if (isset($_GET['filename']) && $_GET['filename'] !== "") {
   echo ("{ \"ok\": 0, \"message\": \"ERROR: filename not set\" }");
   return;
 }
-
-#$filename="rawdata_suid_1.3.12.2.1107.5.2.43.166242.30000022121716243434800000021_seuid_1.3.12.2.1107.5.2.43.166242.2022122011592300448652194.0.0.0.dat";
-#$filename="PIUCS0023_128918_V02_MRS.zip";
+#$filename="rawdata_suid_1.3.12.2.1107.5.2.43.166158.30000023062013162853300000030_seuid_1.3.12.2.1107.5.2.43.166158.2023062215492942043238624.0.0.0.dat";
+#$filename="XISTL0009_181193_V02_MRS.zip";
 
 $fn = $filename;
 $path_info = pathinfo($filename);
@@ -44,13 +43,15 @@ $o = glob('/data'.$project.'/outbox/*'.$path_info['filename'].".".$path_info['ex
 $d = glob('/data'.$project.'/DAIC/*'.$path_info['filename'].".".$path_info['extension']);
 
 $suid="";
+$tripleid="";
 $filestrs = explode('_',$path_info['filename']);
-if ($filestrs[0] = 'rawdata') {
+if ($filestrs[0] == 'rawdata') {
 	$suid=$filestrs[2];
 }	
 
+
 $e = glob('/data'.$project.'/site/kspace/outbox/'.$suid.'/'.$path_info['filename'].".".$path_info['extension']);
-$f = glob('/data'.$project.'/site/kspace/umn/'.$suid.'/'.$path_info['filename'].".".$path_info['extension']);
+$p = glob('/data'.$project.'/site/kspace/processed/'.$suid.'/'.$path_info['filename'].".".$path_info['extension']);
 $g = glob('/data'.$project.'/site/mrs/'.$path_info['filename'].".".$path_info['extension']);
 $h = glob('/data'.$project.'/site/mrs/umn/'.$path_info['filename'].".".$path_info['extension']);
 
@@ -100,7 +101,7 @@ foreach($e as $f) {
    }
 }
 $fvalid = array();
-foreach($d as $f) {
+foreach($p as $f) {
    $path_parts = pathinfo($f);
    // lets see if we have an md5sum file here
    $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';

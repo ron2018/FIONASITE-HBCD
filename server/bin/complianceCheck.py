@@ -46,25 +46,27 @@ def getSeriesFileCount(filename):
   
   return count
 
-def getKSpaceFilePath(StudyInstanceUID, SeriesInstanceUID,scannerType):
+def getKSpaceFilePath(tripleId,StudyInstanceUID, SeriesInstanceUID, scannerType):
     if scannerType == "SIEMENS":  
-         filename = "/data/site/kspace/outbox/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
+         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
     elif scannerType == "PHILIPS":  
-         filename = "/data/site/kspace/outbox/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".zip"
+         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".zip"
     else:    
-         filename = "/data/site/kspace/outbox/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
+         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
+    print(filename)
     if os.path.isfile(filename):
         return filename
     else:
         return "NotFound.txt"
 
-def getKSpaceFileSize(StudyInstanceUID, SeriesInstanceUID, scannerType):
+def getKSpaceFileSize(tripleId, StudyInstanceUID, SeriesInstanceUID, scannerType):
     if scannerType == "SIEMENS":  
-         filename = "/data/site/kspace/outbox/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
+         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
     elif scannerType == "PHILIPS":  
-         filename = "/data/site/kspace/outbox/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".zip"
+         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".zip"
     else:    
-         filename = "/data/site/kspace/outbox/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
+         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
+
     if os.path.isfile(filename): 
         return os.path.getsize(filename)
     else:
@@ -253,8 +255,8 @@ if __name__ == "__main__":
                     t1_block[data["ClassifyType"][2] + '_run_' + str(t1_runcounter)] = copy.deepcopy(dict2)
  
                     # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0:  
                         dict4["status"] = 1
                         dict4["message"] = "Kspace found"
@@ -278,8 +280,8 @@ if __name__ == "__main__":
                         compliance_found = 0
                     t2_block[data["ClassifyType"][2] + '_run_' + str(t2_nd_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0:
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -300,8 +302,8 @@ if __name__ == "__main__":
                             compliance_found = 0
                     dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -323,8 +325,8 @@ if __name__ == "__main__":
 
                     rsfmri_block[data["ClassifyType"][2] + '_run_' + str(rsfmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -345,8 +347,8 @@ if __name__ == "__main__":
 
                     qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0:
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -367,8 +369,8 @@ if __name__ == "__main__":
 
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -391,8 +393,8 @@ if __name__ == "__main__":
 
                     fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0  :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -412,8 +414,8 @@ if __name__ == "__main__":
 
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -519,8 +521,8 @@ if __name__ == "__main__":
                     t1_block[data["ClassifyType"][2] + '_run_' + str(t1_runcounter)] = copy.deepcopy(dict2)
  
                     # check the kspace datadd
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE)
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -545,8 +547,8 @@ if __name__ == "__main__":
                     t2_block[data["ClassifyType"][2] + '_run_' + str(t2_nd_runcounter)] = copy.deepcopy(dict2)
 
                     # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -569,8 +571,8 @@ if __name__ == "__main__":
                     dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)] = copy.deepcopy(dict2)
    
                     # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -593,8 +595,8 @@ if __name__ == "__main__":
 
                     rsfmri_block[data["ClassifyType"][2] + '_run_' + str(rsfmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -615,8 +617,8 @@ if __name__ == "__main__":
 
                     qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -637,8 +639,8 @@ if __name__ == "__main__":
 
                     fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -658,8 +660,8 @@ if __name__ == "__main__":
 
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -679,8 +681,8 @@ if __name__ == "__main__":
 
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace data
-                    kspace["path"] = getKSpaceFilePath(suid, seuid, SCANNERTYPE )
-                    kspace["size"] = getKSpaceFileSize(suid, seuid, SCANNERTYPE )
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 

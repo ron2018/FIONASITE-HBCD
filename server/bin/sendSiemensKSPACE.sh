@@ -1,5 +1,3 @@
-#!/bin/bash
-#
 # For HBCD: Siemens k-space data from an MRI scanner is stored as .dat files and name convention is following:
 # Seriese description is at the end of filename:  meas_MID00258_FID00293_T2w_SPACE.dat 
 #   meas_MIDXXXXX_FIDXXXXX_PROTOCOL_NAME.dat
@@ -109,7 +107,7 @@ do
   #rename the dat file to rawdata_suid_$suid_seuid_$seuid.dat
   find ./ -type f -iname '*.dat' -print0 | while read -d $'\0' datfile
   do
-  #   echo $datfile
+    # echo $datfile
       
 
      if [ "$(( $(date +"%s") - $(stat -c "%Y" "$datfile") ))" -lt "$oldtime" ]; then
@@ -130,60 +128,61 @@ do
 	 fi
 
          private0021_1106=`cat $jsonfile | jq -r ".Private0021_1106"`;
-         seriesDecr=`cat $jsonfile | jq -r ".SeriesDescription"`;
-#	 echo $jsonfile
-	 echo "In quarantine $private0021_1106 $seriesDecr "
+         seriesDecr=`cat $jsonfile | jq -r ".SeriesDescription" | sed -r 's/-/_/g'`;
+	 #echo $jsonfile
+	 #echo "In quarantine $private0021_1106 $seriesDecr "
          if [ ! -n "${private0021_1106}" ]; then
             pattern=`printf "MID%05.0f" ${private0021_1106}`
          fi
 
-#         echo $pattern
+         #echo $pattern
 
 	 if [[ $datfile =~ ${pattern} ]]; then
 		if [[ $datfile =~ ${seriesDecr} ]]; then
 		    seuid=`cat $jsonfile | jq -r ".SeriesInstanceUID"`
                     echo "Found SeUID : ${seuid}"
                     newfile="rawdata_suid_${suid}_seuid_${seuid}.dat"
- #                   echo $newfile
+                    echo $newfile
                     /bin/mv  $datfile $newfile || error_exit 
                     break
 	        fi
 	 fi
 
-         # check /data/DAIC if the data is not in /data/quarantine
-         if [[ ${seuid} = "undefined" ]]; then
-             find "/data/DAIC/"  -type f -iname $fname -print0 | while read -d $'\0' jsonfile
-             do
-  #              echo "In /data/DAIC/ : ${jsonfile}"
-                 if [[ ${tripleId} = "undefined" ]]; then
-                   tripleId=`cat $jsonfile | jq -r ".PatientName"`;
-                 fi
-                 private0021_1106=`cat $jsonfile | jq -r ".Private0021_1106"`;
-		 #echo "In DAIC $private0021_1106 $seriesDecr "
-                 if [ ! -n "${private0021_1106}" ]; then
-                    pattern=`printf "MID%05.0f" ${private0021_1106}`
-                 fi
-                 pattern=`printf "MID%05.0f" ${private0021_1106}`
-
-                #echo $tripleId
-
-                 seriesDecr=`cat $jsonfile | jq -r ".SeriesDescription"`;
-                 if [[ $datfile =~ ${pattern} ]]; then
-		    if [[ $datfile =~ ${seriesDecr} ]]; then
-                        seuid=`cat $jsonfile | jq -r ".SeriesInstanceUID"`;
-                        echo "Found SeUID : ${seuid}"
-                        newfile="rawdata_suid_${suid}_seuid_${seuid}.dat"
-    #                    echo $newfile
-                        /bin/mv  $datfile $newfile || error_exit
-                        break
-                    fi
-		 fi
-             done
-         fi
-     #    echo "${seuid}"
-     #    echo "${datfile}"
- 
      done
+
+     fname=*${suid}*.json
+     # check /data/DAIC if the data is not in /data/quarantine
+     find "/data/DAIC/"  -type f -iname $fname -print0 | while read -d $'\0' jsonfile
+     do
+          # echo "In /data/DAIC/ : ${jsonfile}"
+           if [[ ${tripleId} = "undefined" ]]; then
+              tripleId=`cat $jsonfile | jq -r ".PatientName"`;
+           fi
+           seriesDecr=`cat $jsonfile | jq -r ".SeriesDescription" | sed -r 's/-/_/g'`;
+
+           private0021_1106=`cat $jsonfile | jq -r ".Private0021_1106"`;
+	  # echo "In DAIC $private0021_1106 $seriesDecr "
+           if [ ! -n "${private0021_1106}" ]; then
+               pattern=`printf "MID%05.0f" ${private0021_1106}`
+           fi
+           pattern=`printf "MID%05.0f" ${private0021_1106}`
+
+         #  echo $pattern
+         #  echo $tripleId
+
+           if [[ $datfile =~ ${pattern} ]]; then
+	       if [[ $datfile =~ ${seriesDecr} ]]; then
+                    seuid=`cat $jsonfile | jq -r ".SeriesInstanceUID"`;
+                    echo "Found SeUID : ${seuid}"
+                    newfile="rawdata_suid_${suid}_seuid_${seuid}.dat"
+                    echo $newfile
+                    /bin/mv -f  $datfile $newfile || error_exit
+                    break
+                fi
+	   fi
+     done
+    # echo "${seuid}"
+    # echo "${datfile}"
 
   done
   
@@ -191,29 +190,28 @@ do
   find ./ -type f -iname 'meas*.dat' -print0 | while read -d $'\0' datfile
   do
      suid=$(grep -a -m 1 StudyInstanceUID ${datfile} | cut -d"\"" -f4)
-     tripleId=$(echo `basename "$datfile"`) 
      filename=$(echo `basename "$datfile"`)
      newfile="rawdata_suid_${suid}_${filename}"
      echo "Could not find the Seuid: ${newfile} ${suid}"
-     /bin/mv  $datfile $newfile || error_exit
+     /bin/mv -f $datfile $newfile || error_exit
   done
 
   #clean up the folder
   #rm -rf  ${kspaceDatLocations}/${filedir}
 
-  echo "Before rsyc: rawdata_suid_${suid}*.dat"
   if [[ ! -d /data/site/kspace/outbox/${filedir} ]]; then
-     mv /data/site/kspace/${filedir} /data/site/kspace/outbox/
+     mv -f /data/site/kspace/${filedir} /data/site/kspace/outbox/
   fi
   #if [[ -d /data/site/kspace/outbox/${filedir} ]]; then
   #   mv /data/site/kspace/${filedir}/* /data/site/kspace/outbox/${filedir}/
   #fi
   #rsync this files
   tripleID=${filedir}
-  echo ${tripleID}
+  #echo ${tripleID}
   #get SUID from file
-  suid=$(ls /data/site/kspace/outbox/rawdata_suid_* | head -1 | cut -d"_" -f3)
+  suid=$(ls /data/site/kspace/outbox/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f5)
   echo $suid
+  echo "Before rsyc: rawdata_suid_${suid}*.dat"
 
   { echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/"
   /usr/bin/rsync -LptgoDv0r /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/ 
@@ -222,7 +220,11 @@ do
   echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
 
   /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
-  mv /data/site/kspace/outbox/${filedir} /data/site/kspace/processed/
+  mv -f /data/site/kspace/outbox/${filedir} /data/site/kspace/processed/
+  mv -f /data/site/kspace/processed/${filedir} /data/site/kspace/processed/${suid}
+  cd /data/site/kspace/processed/${suid}
+  for a in `ls -1 *.dat`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
+
   }
 
 done

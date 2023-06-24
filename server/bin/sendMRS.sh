@@ -86,7 +86,7 @@ cd  $mrsDatLocations
   # if folder files have not been changed.
 
   #rename the dat file to rawdata_suid_$suid_seuid_$seuid.dat
-find ./ -type f -iname '*.zip' -print0 | while read -d $'\0' datfile
+find ./ -maxdepth 1  -type f -iname '*.zip' -print0 | while read -d $'\0' datfile
 do
      
      echo $datfile
@@ -104,7 +104,8 @@ do
      match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
 
      echo $match
-     suid=`ls /data/DAIC/PIUCS0023_128918_V02*.tgz | head -1 | cut -d"_" -f5`
+     suid=`ls /data/DAIC/${tripleID}*.tgz | head -1 | cut -d"_" -f5`
+     #suid=`ls /data/DAIC/PIUCS0023_128918_V02*.tgz | head -1 | cut -d"_" -f5`
      echo $suid
      touch /var/www/html/php/request_compliance_check/$suid
 
@@ -112,7 +113,8 @@ do
          # triple ID are correct and should send the MRS datat to UMN
          #register the files to UMN
          {  echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
-         /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/$tripleID_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
+		 /usr/bin/md5sum  $datfile  >  /data/site/mrs/${mrsID}.md5sum; 
+               /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/$tripleID_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
          } &&
          {
          echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=$datafile --token=$token --type=MRS"
@@ -125,7 +127,7 @@ do
 done
   # for site to use .tar.gz extension
 
-find ./ -type f -iname '*.tar.gz' -print0 | while read -d $'\0' datfile
+find ./ -maxdepth 1 -type f -iname '*.tar.gz' -print0 | while read -d $'\0' datfile
 do
      echo $datfile
       
@@ -143,7 +145,7 @@ do
      match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
 
      echo $match
-     suid=`ls /data/DAIC/PIUCS0023_128918_V02*.tgz | head -1 | cut -d"_" -f5`
+     suid=`ls /data/DAIC/${tripleID}*.tgz | head -1 | cut -d"_" -f5`
      echo $suid
      touch /var/www/html/php/request_compliance_check/$suid
 
@@ -153,6 +155,7 @@ do
 
          {  echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
 
+		 /usr/bin/md5sum  $datfile  >  /data/site/mrs/${mrsID}.md5sum; 
 		 /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
          } && {
          echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=$datafile --token=$token --type=MRS"
