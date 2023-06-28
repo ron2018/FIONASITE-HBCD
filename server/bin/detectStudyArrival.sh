@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # */1 * * * * sleep 30; /data/code/bin/detectStudyArrival.sh
 # */1 * * * * sleep 15; /data/code/bin/detectStudyArrival.sh
 # */1 * * * * sleep 45; /data/code/bin/detectStudyArrival.sh

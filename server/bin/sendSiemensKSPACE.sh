@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # For HBCD: Siemens k-space data from an MRI scanner is stored as .dat files and name convention is following:
 # Seriese description is at the end of filename:  meas_MID00258_FID00293_T2w_SPACE.dat 
 #   meas_MIDXXXXX_FIDXXXXX_PROTOCOL_NAME.dat
@@ -213,8 +215,8 @@ do
   echo $suid
   echo "Before rsyc: rawdata_suid_${suid}*.dat"
 
-  { echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/"
-  /usr/bin/rsync -LptgoDv0r /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/ 
+  { echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE/"
+  /usr/bin/rsync -LptgoDv0r /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE/ 
   } &&  {
 	  #register the files to UMN
   echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
