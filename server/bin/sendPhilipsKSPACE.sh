@@ -105,7 +105,7 @@ do
    
   suid=$(echo ${filedir} | cut -d'_' -f2)
   
-  echo "SUID = {$suid}"
+  echo "SUID = ${suid}"
 
   cd $filedir
   echo ${kspaceDatLocations}/${filedir} 
@@ -116,26 +116,45 @@ do
 
      newfile=$(echo `basename "$zipfile"` | sed "s/.zip//")
      echo "new file : ${newfile}"
-     /usr/bin/cp  $zipfile ../outbox/rawdata_suid_${suid}_seuid_${newfile}.zip || error_exit
+     /usr/bin/mv  $zipfile rawdata_suid_${suid}_seuid_${newfile}.zip || error_exit
   done
 
   # tar all text file into a zip   rawdata_suid_$suid_text.zip
-  /usr/bin/zip ../outbox/rawdata_suid_${suid}_text.zip *.txt || error_exit
+  /usr/bin/zip rawdata_suid_${suid}_text.zip *.txt || error_exit
 
   # tar all text file into a zip   rawdata_suid_$suid_text.zip
-  /usr/bin/zip ../outbox/rawdata_suid_${suid}_extra.zip ./Extra_files/* || error_exit
+  /usr/bin/zip rawdata_suid_${suid}_extra.zip ./Extra_files/* || error_exit
   
-  cd /data/site/kspace/outbox/
+  tripleID=`cat /data/quarantine/scp_${suid}.json | jq -r ".PatientName"`
+  echo $tripleID
+  match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
 
-  #clean up the folder
-  /usr/bin/mv  ${kspaceDatLocations}/${filedir} ${kspaceDatLocations}/processed
-
+  echo $match
+  
   echo "Before rsyc: rawdata_suid_${suid}*.zip"
 
-  #rsync this files
-  /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/rawdata_suid_${suid}*.zip hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/ 
-  #register the files to UMN
-  /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=rawdata_suid_${suid} --token=$token --type=KSPACE >> $log 2>&1
+  if [[ ${match} -gt 0 ]]; then
 
+    #rsync this files
+    { 
+       echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/*.zip hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE/"
+       /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/*.zip  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE/
+    } && {
+
+      #  register the files to UMN
+      echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
+      /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
+      #clean up the folder
+      /usr/bin/mv  ${kspaceDatLocations}/${filedir} ${kspaceDatLocations}/processed/${suid}
+
+      cd /data/site/kspace/processed/${suid}
+      for a in `ls -1 *.dat`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
+    }
+  fi
+  if [[ ${match} -eq 0 ]]; then
+        echo " NO match found, probably the DICOM data has not been processed"
+        break;
+  fi
+  
 done
 
