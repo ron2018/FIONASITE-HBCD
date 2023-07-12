@@ -215,8 +215,11 @@ do
   echo $suid
   echo "Before rsyc: rawdata_suid_${suid}*.dat"
 
-  { echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE/"
-  /usr/bin/rsync -LptgoDv0r /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE/ 
+  { echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/"
+  cd /data/site/kspace/outbox/${filedir}
+  for a in `ls -1 *.dat`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
+
+  /usr/bin/rsync -LptgoDv0r /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/ 
   } &&  {
 	  #register the files to UMN
   echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
@@ -224,8 +227,6 @@ do
   /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
   mv -f /data/site/kspace/outbox/${filedir} /data/site/kspace/processed/
   mv -f /data/site/kspace/processed/${filedir} /data/site/kspace/processed/${suid}
-  cd /data/site/kspace/processed/${suid}
-  for a in `ls -1 *.dat`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
 
   }
 
