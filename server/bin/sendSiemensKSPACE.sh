@@ -198,34 +198,26 @@ do
      /bin/mv -f $datfile $newfile || error_exit
   done
 
-  #clean up the folder
-  #rm -rf  ${kspaceDatLocations}/${filedir}
 
-  if [[ ! -d /data/site/kspace/outbox/${filedir} ]]; then
-     mv -f /data/site/kspace/${filedir} /data/site/kspace/outbox/
-  fi
-  #if [[ -d /data/site/kspace/outbox/${filedir} ]]; then
-  #   mv /data/site/kspace/${filedir}/* /data/site/kspace/outbox/${filedir}/
-  #fi
   #rsync this files
   tripleID=${filedir}
   #echo ${tripleID}
   #get SUID from file
-  suid=$(ls /data/site/kspace/outbox/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f5)
+  suid=$(ls /data/site/kspace/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f5)
   echo $suid
   echo "Before rsyc: rawdata_suid_${suid}*.dat"
 
-  { echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/"
-  cd /data/site/kspace/outbox/${filedir}
+  { echo "/usr/bin/rsync -v --no-R /data/site/kspace/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/"
+  cd /data/site/kspace/${filedir}
   for a in `ls -1 *.dat`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
 
-  /usr/bin/rsync -LptgoDv0r /data/site/kspace/outbox/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/ 
+  /usr/bin/rsync -v /data/site/kspace/${filedir}/ hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/ 
   } &&  {
 	  #register the files to UMN
   echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
 
   /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
-  mv -f /data/site/kspace/outbox/${filedir} /data/site/kspace/processed/
+  mv -f /data/site/kspace/${filedir} /data/site/kspace/processed/
   mv -f /data/site/kspace/processed/${filedir} /data/site/kspace/processed/${suid}
 
   }
