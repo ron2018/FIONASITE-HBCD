@@ -107,38 +107,43 @@ do
   
   echo "SUID = ${suid}"
 
-  cd $filedir
-  echo ${kspaceDatLocations}/${filedir} 
-  #rename the zip file to rawdata_suid_$suid_seuid_$seuid.zip
-  find ./ -type f -iname '*.zip' -print0 | while read -d $'\0' zipfile
-  do
-     echo "Found : ${zipfile}"
-
-     newfile=$(echo `basename "$zipfile"` | sed "s/.zip//")
-     echo "new file : ${newfile}"
-     /usr/bin/mv  $zipfile rawdata_suid_${suid}_seuid_${newfile}.zip || error_exit
-  done
-
-  # tar all text file into a zip   rawdata_suid_$suid_text.zip
-  /usr/bin/zip rawdata_suid_${suid}_text.zip *.txt || error_exit
-
-  # tar all text file into a zip   rawdata_suid_$suid_text.zip
-  /usr/bin/zip rawdata_suid_${suid}_extra.zip ./Extra_files/* || error_exit
-  
   tripleID=`cat /data/quarantine/scp_${suid}.json | jq -r ".PatientName"`
   echo $tripleID
   match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
-
   echo $match
   
-  echo "Before rsyc: rawdata_suid_${suid}*.zip"
-
+  
   if [[ ${match} -gt 0 ]]; then
+  
+     cd $filedir
+
+     echo ${kspaceDatLocations}/${filedir} 
+     #rename the zip file to rawdata_suid_$suid_seuid_$seuid.zip
+     find ./ -type f -iname '*.zip' -print0 | while read -d $'\0' zipfile
+     do
+        echo "Found : ${zipfile}"
+
+        newfile=$(echo `basename "$zipfile"` | sed "s/.zip//")
+        echo "new file : ${newfile}"
+        /usr/bin/mv  $zipfile rawdata_suid_${suid}_seuid_${newfile}.zip || error_exit
+     done
+
+     # tar all text file into a zip   rawdata_suid_$suid_text.zip
+     /bin/zip rawdata_suid_${suid}_text.zip *.txt || error_exit
+
+     # tar all text file into a zip   rawdata_suid_$suid_text.zip
+     #/bin/zip rawdata_suid_${suid}_extra.zip ./Extra_files/* || error_exit
+  
+
+  
+     echo "Before rsyc: rawdata_suid_${suid}*.zip"
 
     #rsync this files
     { 
-       echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/*.zip hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE/"
-       /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/*.zip  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE/
+       echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/"
+      cd /data/site/kspace/${filedir}
+      for a in `ls -1 *.zip`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
+       /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/*  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/
     } && {
 
       #  register the files to UMN
@@ -147,8 +152,6 @@ do
       #clean up the folder
       /usr/bin/mv  ${kspaceDatLocations}/${filedir} ${kspaceDatLocations}/processed/${suid}
 
-      cd /data/site/kspace/processed/${suid}
-      for a in `ls -1 *.dat`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
     }
   fi
   if [[ ${match} -eq 0 ]]; then
