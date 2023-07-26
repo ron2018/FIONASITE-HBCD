@@ -11,6 +11,7 @@ import json
 import logging as log
 from datetime import datetime
 import argparse
+import glob
 from pydicom.filereader import InvalidDicomError
 
 # LOGGING
@@ -30,12 +31,13 @@ def parse_arguments():
 def getSeriesFileCount(filename):
   # return file series count and update filename with new filecont
   UIDs = filename.split("_")
-  if "PI" in UIDs[0]:
+  if len(UIDs[0]) < 32:
       SUID = UIDs[4]
       SeUID = UIDs[5].replace(".json","")
   else:
-    SUID = UIDs[0]
-    SeUID = UIDs[1].replace(".json","")
+      SUID = UIDs[0]
+      SeUID = UIDs[1].replace(".json","")
+
   print("SUID : ", SUID, " SeUID : ", SeUID)
   dir_path = r'/data/site/raw/' + SUID + r'/' + SeUID 
   if os.path.exists(dir_path):
@@ -50,7 +52,9 @@ def getKSpaceFilePath(tripleId,StudyInstanceUID, SeriesInstanceUID, scannerType)
     if scannerType == "SIEMENS":  
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
     elif scannerType == "PHILIPS":  
-         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".zip"
+         filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.zip"
+         filename = glob.glob(filenamestem)[0]
+         print(filename)
     else:    
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
     print(filename)
@@ -63,7 +67,10 @@ def getKSpaceFileSize(tripleId, StudyInstanceUID, SeriesInstanceUID, scannerType
     if scannerType == "SIEMENS":  
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
     elif scannerType == "PHILIPS":  
-         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".zip"
+         filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.zip"
+         filename = glob.glob(filenamestem)[0]
+         print(filename)
+
     else:    
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
 
@@ -257,6 +264,9 @@ if __name__ == "__main__":
                     # check the kspace data
                     kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
                     kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+
+                    print(kspace["size"])
+
                     if kspace["size"] > 0:  
                         dict4["status"] = 1
                         dict4["message"] = "Kspace found"
@@ -523,6 +533,9 @@ if __name__ == "__main__":
                     # check the kspace datadd
                     kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
                     kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+
+                    print(kspace["size"], kspace["path"])
+
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 

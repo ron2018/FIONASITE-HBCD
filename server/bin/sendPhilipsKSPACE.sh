@@ -151,6 +151,7 @@ do
       /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
       #clean up the folder
       /usr/bin/mv  ${kspaceDatLocations}/${filedir} ${kspaceDatLocations}/processed/${suid}
+      touch /var/www/html/php/request_compliance_check/$suid
 
     }
   fi
