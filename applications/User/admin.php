@@ -364,6 +364,13 @@
        var organization = jQuery('#add-user-organisation').val();
        
        var password = jQuery('#add-user-password').val();
+       let re = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{9,})')
+       var validpassword = re.test(password) 
+       //console.log('checking password' + password + ' ' +  re + ' ' + validpassword);
+       if (!validpassword) {
+          alert("The password you have entered is not valid! The valid password must have at least 9 characters, mixed with at least one number, one lowercase, one uppercase letter and one special character");
+          return; 
+       }
        hash = hex_md5(password);
        if (password == "") {
           alert("Error: password cannot be empty");
