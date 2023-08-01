@@ -103,7 +103,7 @@ do
     echo $filename;
     
     # untar the file
-    #/usr/bin/tar xvf $filename
+    /usr/bin/tar xvf $filename
 
     tripleID=$(echo `basename $filename .tar.gz`)
     echo ${tripleID}
@@ -152,7 +152,7 @@ do
                  
                    newfile=rawdata_suid_${filesuid}_seuid_${seuid}_${filedir}
                    echo "/usr/bin/tar cvzf ${newfile}.tar.gz ./${filedir}"
-                   #/usr/bin/tar cvzf ${newfile}.tar.gz ./${filedir}
+                   /usr/bin/tar cvzf ${newfile}.tar.gz ./${filedir}
                    break
                fi
            
