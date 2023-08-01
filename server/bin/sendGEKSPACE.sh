@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# For HBCD: GE k-space data from an MRI scanner is stored as .tgz with json and md5sum  files and name convention is following:
+# For HBCD: GE k-space data from an MRI scanner sent to FIona as one tgz file.
 # 
 #  SUID_1.2.840.113619.6.495.256392911284210468483920599390767769027_subjid_test_ex6139_se3_01-10-2023_174656.tgz
 #  and 
@@ -73,99 +73,119 @@ cd  $kspaceDatLocations
 # now go through all the files on the /data/site/kspace/ folder
 #
 
-find ${kspaceDatLocations} -maxdepth 1 -type d -print0 | while read -d $'\0' fdir
+#find ${kspaceDatLocations} -maxdepth 1 -type d -print0 | while read -d $'\0' fdir
+#do
+
+#  filedir=$(echo `basename "$fdir"`);
+#  echo $filedir;
+
+#  if [ ${filedir} = "kspace" ]; then
+#        continue;
+#  fi
+#  if [ ${filedir} = "umn" ]; then
+#        continue;
+#  fi
+#  if [ ${filedir} = "outbox" ]; then
+#       continue;
+#  fi
+#  if [ ${filedir} = "badkspace" ]; then
+#       continue;
+#  fi
+#  if [ ${filedir} = "processed" ]; then
+#       continue;
+#  fi
+
+find ${kspaceDatLocations} -maxdepth 1 -type f -iname '*.tar.gz' -print0 | while read -d $'\0' filepath
 do
+    echo $filepath
 
-  filedir=$(echo `basename "$fdir"`);
-  echo $filedir;
+    filename=$(echo `basename "$filepath"`);
+    echo $filename;
+    
+    # untar the file
+    #/usr/bin/tar xvf $filename
 
-  if [ ${filedir} = "kspace" ]; then
-        continue;
-  fi
-  if [ ${filedir} = "umn" ]; then
-        continue;
-  fi
-  if [ ${filedir} = "outbox" ]; then
-       continue;
-  fi
-  if [ ${filedir} = "badkspace" ]; then
-       continue;
-  fi
-  if [ ${filedir} = "processed" ]; then
-       continue;
-  fi
+    tripleID=$(echo `basename $filename .tar.gz`)
+    echo ${tripleID}
+    cd /data/DAIC/
+    suid=`ls ${filedir}*.tgz | head -1 | cut -d"_" -f5`
+    
 
-  cd /data/DAIC/
-  suid=`ls ${filedir}*.tgz | head -1 | cut -d"_" -f5`
-  echo ${suid}
-  match=`ls /data/DAIC/${filedir}*.tgz | wc -l`
-  tripleID=${filedir}
+    echo ${suid}
+    match=`ls /data/DAIC/${filedir}*.tgz | wc -l`
 
-  if  [[ ${match} -gt 0 ]]; then
+    if  [[ ${match} -gt 0 ]]; then
 
 
-     cd ${kspaceDatLocations}/${filedir}
-     echo ${kspaceDatLocations}/${filedir} 
-     #rename the zip file to rawdata_suid_$suid_seuid_$seuid.zip
-     find ./ -maxdepth 1 -type f -iname '*.tgz' -print0 | while read -d $'\0' filepath
-     do
-        echo $filepath;
+       cd ${kspaceDatLocations}/${tripleID}
+       echo ${kspaceDatLocations}/${tripleID} 
+       #tar the series folder into rawdata_suid_seuid_tar.gz file 
+       # calulate the checksum
+       find ./ -maxdepth 1 -type d -iname "Series*" -print0 | while read -d $'\0' fdir
+       do
+           filedir=$(echo `basename "$fdir"`);
+           echo $filedir;
 
-        filename=$(echo `basename "$filepath"`);
-        echo $filename;
- 
-  
-   
-        # if folder files have not been changed.
-       if [ "$(( $(date +"%s") - $(stat -c "%Y" "$filename") ))" -lt "$oldtime" ]; then
-          echo "`date`: too young $datfile"
-          continue
-       fi
-  
-       filestem=$(echo `basename $filename .tgz`);
+           if [ ${filename} = "." ]; then
+              continue;
+            fi  
        
-       
-       filesuid=`cat ${filestem}.json | jq .StudyInstanceUID`;
+           #loop all the SUID related json file in /data/DAIC/
+           echo "*${suid}*.json"
+           find /data/DAIC/ -maxdepth 1 -type f -iname *${suid}*.json -print0 | while read -d $'\0' jsonfilepath
+           do
+               jsonfile=$(echo `basename "$jsonfilepath"`);
+               #echo $jsonfile;
+
+               filesuid=`cat ${jsonfilepath} | jq .StudyInstanceUID`
+               seuid=`cat ${jsonfilepath} | jq .SeriesInstanceUID`
+               serialno=`cat ${jsonfilepath} | jq .SeriesNumber`
+               #echo "${filesuid} ${seuid} ${serialno}"
   
-       echo $filesuid;
-
-       seuid=`cat ${filestem}.json | jq .SeriesInstanceUID`
-       echo $seuid;
-  
-       #replace the quota
-       filesuid=`echo $filesuid | sed "s/\"//g"`;
-       seuid=`echo $seuid | sed  "s/\"//g" `;
+               #replace the quota
+               filesuid=`echo $filesuid | sed "s/\"//g"`
+               seuid=`echo $seuid | sed  "s/\"//g" `
+               serialno=`echo $serialno | sed  "s/\"//g" `
+               fileno=`echo ${filedir} | sed "s/Series//g"` 
+               #echo "${serialno} == ${fileno} "             
+               if [[ ${serialno} == ${fileno} ]]; then
+                 
+                   newfile=rawdata_suid_${filesuid}_seuid_${seuid}_${filedir}
+                   echo "/usr/bin/tar cvzf ${newfile}.tar.gz ./${filedir}"
+                   #/usr/bin/tar cvzf ${newfile}.tar.gz ./${filedir}
+                   break
+               fi
+           
+           done
+           # check if $filedir.tar.gz file exists 
+           matchfile=`ls ./*${filedir}.tar.gz | wc -l`
+           echo "matchfile == ${matchfile}"
+           if [[ ${matchfile} -eq 0 ]]; then
+               newfile=rawdata_suid_${suid}_${filedir}
+                echo "/usr/bin/tar cvzf ${newfile}.tar.gz ./${filedir}"
+                /usr/bin/tar cvzf ${newfile}.tar.gz ./${filedir}
+           fi
+           echo "Completed rename folder  : ${filedir} "
+           
+       done
        
-       newfile=rawdata_suid_${filesuid}_seuid_${seuid}
-       echo $newfile
-       /bin/mv  ${filestem}.tgz ${newfile}.tgz 
-       /bin/mv  ${filestem}.json ${newfile}.json 
-       /bin/mv  ${filestem}.md5sum ${newfile}.md5sum 
-       /bin/mv  ${filestem}.log ${newfile}.log 
-       echo "Completed rename files  : rawdata_suid_${suid}*.zip"
-
-    done
-
-    echo "${suid} ${tripleID}"
  
     #rsync this folder
     { 
-      echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/*${suid}* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE/"
-      #/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/*${suid}*  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE/
+     if [[ ! -d ${kspaceDatLocations}/processed/${suid}/ ]]; then
+        mkdir ${kspaceDatLocations}/processed/${suid}/
+     fi
+     /usr/bin/mv  ${kspaceDatLocations}/${tripleID}/*${suid}*.tar.gz ${kspaceDatLocations}/processed/${suid}/
+      echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/processed/${suid}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/"
+      /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/processed/${suid}/*  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/
     } && {
 
      #  register the files to UMN
      echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
      /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
      #clean up the folder
-     if [[ ! -d ${kspaceDatLocations}/processed/${suid}/ ]]; then
-        mkdir ${kspaceDatLocations}/processed/${suid}/
-     fi
-     /usr/bin/mv  ${kspaceDatLocations}/${filedir}/*${suid}* ${kspaceDatLocations}/processed/${suid}/
-     if [[ -d ${kspaceDatLocations}/baskspace/${filedir}/ ]]; then
-        rm -rf ${kspaceDatLocations}/badkspace/${filedir}/
-     fi
-     /usr/bin/mv -f  ${kspaceDatLocations}/${filedira} ${kspaceDatLocations}/badkspace/
+     #/usr/bin/rm -rf  ${filedir}
+     /usr/bin/mv $filepath  ${kspaceDatLocations}/original/
      
     }
   fi
