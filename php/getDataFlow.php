@@ -66,12 +66,13 @@
 	
 	$s  = explode("_", $sname)[0];	
 	$ss = explode("_", $sname)[1];	
+ 
 	if (!isset($data[$s])) {
            $data[$s] = (object)array( "quarantine" => 1);
         } else {
 	   $data[$s]->quarantine = 1;
         }
-        if (!array_key_exists('series',$data[$s])) {
+        if (!array_key_exists('series',(array)$data[$s])) {
 	   $data[$s]->series = array();
         }
 	if (!array_key_exists($ss,$data[$s]->series)) {
