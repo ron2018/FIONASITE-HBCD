@@ -53,7 +53,13 @@ def getKSpaceFilePath(tripleId,StudyInstanceUID, SeriesInstanceUID, scannerType)
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
     elif scannerType == "PHILIPS":  
          filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.zip"
-         filename = glob.glob(filenamestem)[0]
+         filenamelist = glob.glob(filenamestem)
+         print(filenamelist)
+         if filenamelist:
+             filename = filenamelist[0]
+         else:
+             filename = 'None'
+
          print(filename)
     else:    
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
@@ -68,8 +74,12 @@ def getKSpaceFileSize(tripleId, StudyInstanceUID, SeriesInstanceUID, scannerType
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
     elif scannerType == "PHILIPS":  
          filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.zip"
-         filename = glob.glob(filenamestem)[0]
-         print(filename)
+         filenamelist = glob.glob(filenamestem)
+         print(filenamelist)
+         if filenamelist:
+             filename = filenamelist[0]
+         else:
+             filename = 'None'
 
     else:    
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
