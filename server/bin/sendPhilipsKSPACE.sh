@@ -36,7 +36,7 @@ if [ "$project" != "" ]; then
 fi
 echo "Endpoint selected: $endpoint"
 
-token==`cat /data/config/config.json | jq -r ".CONNECTION"`
+token=`cat /data/config/config.json | jq -r ".CONNECTION"`
 if [ "$token" == "" ]; then
    echo "CONNECTION string is missing from /data/config/config.json file"
    exit
