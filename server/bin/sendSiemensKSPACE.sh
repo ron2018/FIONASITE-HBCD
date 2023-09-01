@@ -217,8 +217,14 @@ do
   echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
 
   /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
-  mv -f /data/site/kspace/${filedir} /data/site/kspace/processed/
-  mv -f /data/site/kspace/processed/${filedir} /data/site/kspace/processed/${suid}
+  if [[ -d  /data/site/kspace/processed/${suid} ]]; then
+      mv -f /data/site/kspace/${filedir}/* /data/site/kspace/processed/${suid}/
+      rm -rf /data/site/kspace/${filedir}
+  else    
+
+      mv -f /data/site/kspace/${filedir} /data/site/kspace/processed/
+      mv -f /data/site/kspace/processed/${filedir} /data/site/kspace/processed/${suid}
+  fi
 
   }
 
