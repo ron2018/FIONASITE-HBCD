@@ -2327,7 +2327,7 @@ jQuery(document).ready(function() {
        var dialog = document.querySelector('#modal-study-info');
        jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        dialog.close();
-       jQuery.get('php/announceData.php', { 'pGUID' : jQuery('#session-participant').val(), 'project': projname }, function(data) {
+       jQuery.get('php/announceData.php', { 'suid' : suid, 'project': projname }, function(data) {
 	  console.log("tried to announce data, got: " + data);
        });
     });
