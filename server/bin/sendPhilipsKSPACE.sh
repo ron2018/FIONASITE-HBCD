@@ -109,9 +109,13 @@ do
 
   tripleID=`cat /data/quarantine/scp_${suid}.json | jq -r ".PatientName"`
   echo $tripleID
-  match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
+  if [ -z "$tripleID" ]; then
+      match=0
+  else
+      match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
+  fi
   echo $match
-  
+
   
   if [[ ${match} -gt 0 ]]; then
   
