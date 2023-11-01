@@ -74,15 +74,15 @@ def getKSpaceFilePath(tripleId,StudyInstanceUID, SeriesInstanceUID, scannerType)
 
 def getKSpaceFileSize(tripleId, StudyInstanceUID, SeriesInstanceUID, scannerType):
     if scannerType == "SIEMENS":  
-         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
+        filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
     elif scannerType == "PHILIPS":  
         filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.zip"
-         filenamelist = glob.glob(filenamestem)
-         if filenamelist:
-             filename = filenamelist[0]
-         else:
-             filename = ''
-         print(filename)
+        filenamelist = glob.glob(filenamestem)
+        if filenamelist:
+            filename = filenamelist[0]
+        else:
+            filename = ''
+        print(filename)
     else:
         filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.tar.gz"
         filenames = glob.glob(filenamestem)
