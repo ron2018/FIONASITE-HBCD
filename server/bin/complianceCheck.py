@@ -54,15 +54,18 @@ def getKSpaceFilePath(tripleId,StudyInstanceUID, SeriesInstanceUID, scannerType)
     elif scannerType == "PHILIPS":  
          filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.zip"
          filenamelist = glob.glob(filenamestem)
-         print(filenamelist)
          if filenamelist:
              filename = filenamelist[0]
          else:
-             filename = 'None'
-
+             filename = ''
          print(filename)
     else:    
-         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
+        filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.tar.gz"
+        filenames = glob.glob(filenamestem)
+        if len(filenames) > 0:
+            filename = filenames[0]
+        else:
+            filename = ''
     print(filename)
     if os.path.isfile(filename):
         return filename
@@ -73,16 +76,20 @@ def getKSpaceFileSize(tripleId, StudyInstanceUID, SeriesInstanceUID, scannerType
     if scannerType == "SIEMENS":  
          filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".dat"
     elif scannerType == "PHILIPS":  
-         filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.zip"
+        filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.zip"
          filenamelist = glob.glob(filenamestem)
-         print(filenamelist)
          if filenamelist:
              filename = filenamelist[0]
          else:
-             filename = 'None'
-
-    else:    
-         filename = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + ".tgz"
+             filename = ''
+         print(filename)
+    else:
+        filenamestem = "/data/site/kspace/processed/"+ StudyInstanceUID + "/rawdata_suid_" + StudyInstanceUID + "_seuid_" + SeriesInstanceUID + "*.tar.gz"
+        filenames = glob.glob(filenamestem)
+        if len(filenames) > 0:
+            filename = filenames[0]
+        else:
+            filename = ''
 
     if os.path.isfile(filename): 
         return os.path.getsize(filename)
@@ -205,7 +212,7 @@ if __name__ == "__main__":
     print("SUID = ",SUID)
 
     for filename in os.listdir(datadir):
-        if SUID in filename and '.json' in filename and filename != 'scp_'+SUID+'.json':
+        if SUID in filename and '.json' in filename and 'scp_' not in filename:   
             print(filename)
             logging.info(filename)
 
