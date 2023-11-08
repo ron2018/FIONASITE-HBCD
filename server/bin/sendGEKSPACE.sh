@@ -102,23 +102,29 @@ do
     filename=$(echo `basename "$filepath"`);
     echo $filename;
     
-    # untar the file
-    /usr/bin/tar xvf $filename
 
     tripleID=$(echo `basename $filename .tar.gz`)
     echo ${tripleID}
     cd /data/DAIC/
-    suid=`ls ${filedir}*.tgz | head -1 | cut -d"_" -f5`
+    suid=`ls ${tripleID}*.tgz | head -1 | cut -d"_" -f5`
     
 
     echo ${suid}
-    match=`ls /data/DAIC/${filedir}*.tgz | wc -l`
+
+    if [ -z "$suid" ]; then
+      match=0
+    else
+      match=`ls /data/DAIC/${filedir}*.tgz | wc -l`
+    fi
 
     if  [[ ${match} -gt 0 ]]; then
 
+       # untar the file
+       /usr/bin/tar xvf $filename
 
-       cd ${kspaceDatLocations}/${tripleID}
-       echo ${kspaceDatLocations}/${tripleID} 
+       
+       cd ${kspaceDatLocations}/export/home1/ABCD/${tripleID}
+       echo ${kspaceDatLocations}/export/home1/ABCD/${tripleID} 
        #tar the series folder into rawdata_suid_seuid_tar.gz file 
        # calulate the checksum
        find ./ -maxdepth 1 -type d -iname "Series*" -print0 | while read -d $'\0' fdir
@@ -175,7 +181,7 @@ do
      if [[ ! -d ${kspaceDatLocations}/processed/${suid}/ ]]; then
         mkdir ${kspaceDatLocations}/processed/${suid}/
      fi
-     /usr/bin/mv  ${kspaceDatLocations}/${tripleID}/*${suid}*.tar.gz ${kspaceDatLocations}/processed/${suid}/
+     /usr/bin/mv  ${kspaceDatLocations}/export/home1/ABCD/${tripleID}/*${suid}*.tar.gz ${kspaceDatLocations}/processed/${suid}/
       echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/processed/${suid}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/"
       /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/processed/${suid}/*  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/
     } && {
@@ -184,7 +190,7 @@ do
      echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
      /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
      #clean up the folder
-     #/usr/bin/rm -rf  ${filedir}
+     echo "/usr/bin/rm -rf  ${filedir}"
      /usr/bin/mv $filepath  ${kspaceDatLocations}/original/
      
     }
