@@ -108,7 +108,7 @@ do
   cd $fdir
 
   # Check if file dir has the data in /data/DAIC/
-  tripleID=$fdir
+  tripleID=$(echo `basename "$fdir"`)
   echo $fdir
   match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
   echo $match
@@ -131,7 +131,7 @@ do
         suid=$(grep -a -m 1 StudyInstanceUID ${datfile} | cut -d"\"" -f4)
         echo $suid
 
-        fname=${suid}*.json
+        fname=*${suid}*.json
         seuid='undefined'
 
         # check /data/DAIC if the data is not in /data/quarantine
@@ -144,7 +144,7 @@ do
            seriesDecr=`cat $jsonfile | jq -r ".SeriesDescription" | sed -r 's/-/_/g'`;
 
            private0021_1106=`cat $jsonfile | jq -r ".Private0021_1106"`;
-	  # echo "In DAIC $private0021_1106 $seriesDecr "
+	   #echo "In DAIC $private0021_1106 $seriesDecr "
            if [ ! -n "${private0021_1106}" ]; then
                pattern1=`printf "MID%05.0f" ${private0021_1106}`
                pattern2=`printf "MID%06.0f" ${private0021_1106}`
@@ -152,10 +152,10 @@ do
            pattern1=`printf "MID%05.0f" ${private0021_1106}`
            pattern2=`printf "MID%06.0f" ${private0021_1106}`
 
-          #  echo $pattern
-          #  echo $tripleId
+           #echo $pattern1
+           #echo $pattern2
 
-           if [[ $datfile =~ ${pattern1} || $datfile =~ ${pattern2}]]; then
+           if [[ $datfile =~ ${pattern1} || $datfile =~ ${pattern2} ]]; then
 	       if [[ $datfile =~ ${seriesDecr} ]]; then
                     seuid=`cat $jsonfile | jq -r ".SeriesInstanceUID"`;
                     echo "Found SeUID : ${seuid}"
@@ -194,6 +194,8 @@ do
        for a in `ls -1 *.dat`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
 
        /usr/bin/rsync -v --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/ 
+
+
      } &&  {
 	  #register the files to UMN
         echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
@@ -207,6 +209,7 @@ do
          mv -f /data/site/kspace/${filedir} /data/site/kspace/processed/
          mv -f /data/site/kspace/processed/${filedir} /data/site/kspace/processed/${suid}
      fi
+       touch /var/www/html/php/request_compliance_check/$suid
      }
   fi
   if [[ ${match} -eq 0 ]]; then
