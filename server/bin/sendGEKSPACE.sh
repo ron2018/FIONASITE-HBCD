@@ -119,6 +119,7 @@ do
 
     if  [[ ${match} -gt 0 ]]; then
 
+       cd  $kspaceDatLocations
        # untar the file
        /usr/bin/tar xvf $filename
 
@@ -192,7 +193,7 @@ do
      #clean up the folder
      echo "/usr/bin/rm -rf  ${filedir}"
      /usr/bin/mv $filepath  ${kspaceDatLocations}/original/
-     
+     touch /var/www/html/php/request_compliance_check/$suid 
     }
   fi
   if [[ ${match} -eq 0 ]]; then
