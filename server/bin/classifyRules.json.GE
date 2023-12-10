@@ -319,9 +319,6 @@
       "rules": [
           {	     
 	     "rule": "GEBYMANUFACTURER"
-	  },
-    {"tag": [ "0x19", "0x109c" ],
-             "value": "^research/.*/muxepi2"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
         "value": "140, 0, 0, 140"
@@ -332,43 +329,34 @@
       ]
   },
   {
-      "type" : "HBCD-Diffusion-QA",
-      "description": "QA for diffusion on GE scanners for DV26",
+      "type" : "HBCD-fBIRN-QA",
+      "description": "GE fBIRN QA (standard)",
       "rules": [
           {	     
 	     "rule": "GEBYMANUFACTURER"
-	  },
-    {"tag": [ "0x19", "0x109c" ],
-             "value": "^research/.*/muxepi2"
           },{ 
-        "tag": [ "AcquisitionMatrix" ],
-        "value": "140, 0, 0, 140"
-      },{ 
-        "tag": [ "ImagesInAcquisition" ],
-        "value": "810"
+             "tag": [ "AcquisitionMatrix" ],
+             "value": "64, 0, 0, 64"
+         },{ 
+             "tag": [ "SeriesDescription" ],
+             "value": "Standard_fBIRN_QA"
       }
       ]
   },
   {
-      "type" : "HBCD-fBIRN-QA",
-      "description": "GE fBIRN QA (non-Multiband)",
+      "type" : "HBCD-MB-fMRI-QA",
+      "description": "GE fMRI QA (Multiband)",
       "rules": [
           {	     
 	     "rule": "GEBYMANUFACTURER"
 	  },
-    {"tag": [ "0x19", "0x109c" ],
-             "value": "epi_pepolar$"
-          },{ 
-        "tag": [ "AcquisitionMatrix" ],
-        "value": "64, 0, 0, 64"
-      },
-      { 
-        "tag": [ "0x20", "0x1002" ],
-        "value": "6000"
-      },{ 
-        "tag": [ "0x18", "0x80" ],
-        "value": "2000"
-      }
+	  { "tag": [ "AcquisitionMatrix" ],
+             "value": "112, 0, 0, 112"
+          },
+          { 
+            "tag": [ "SeriesDescription"  ],
+             "value": "HBCD_MB_QA"
+          }
       ]
   },
   {
