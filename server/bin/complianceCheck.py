@@ -92,6 +92,7 @@ def getKSpaceFileSize(tripleId, StudyInstanceUID, SeriesInstanceUID, scannerType
             filename = ''
 
     if os.path.isfile(filename): 
+#        print(filename + ' filesize= ' + str(os.path.getsize(filename)))
         return os.path.getsize(filename)
     else:
         return 0
@@ -574,11 +575,12 @@ if __name__ == "__main__":
                         print("T2 Set the dict2[status] = 0")
                         dict2["status"] = 0
                         compliance_found = 0
-                    t2_block[data["ClassifyType"][2] + '_run_' + str(t2_nd_runcounter)] = copy.deepcopy(dict2)
+                    t2_block[data["ClassifyType"][2] + '_run_' + str(t2_runcounter)] = copy.deepcopy(dict2)
 
                     # check the kspace data
                     kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
                     kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+
                     if kspace["size"] > 0 :
                         dict4["status"] = 1 
                         dict4["message"] = "Kspace data found" 
@@ -589,7 +591,7 @@ if __name__ == "__main__":
                     dict4["file"] = kspacelist    
                     if "ND" not in data["SeriesDescription"]:
                         t2_block[data["ClassifyType"][2] + '_run_' + str(t2_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
-                    t2_nd_runcounter = t2_nd_runcounter + 1
+                    t2_runcounter = t2_runcounter + 1
                                        
    
                 elif 'HBCD-dMRI' in data["ClassifyType"][2]:
