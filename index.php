@@ -1613,8 +1613,8 @@ console.log(data[1]);
             sex_loris = lorisArray[0];
             age_loris = lorisArray[2];
             dob_loris = lorisArray[1];
-            jQuery('#new-session-age').val(sex_loris);
-            jQuery('#new-session-sex').val(age_loris);
+            jQuery('#new-session-age').val(age_loris);
+            jQuery('#new-session-sex').val(sex_loris);
             jQuery('#new-session-dob').val(dob_loris);
 
             	console.log(jQuery('#modify-participant-name').val());
