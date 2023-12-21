@@ -183,6 +183,9 @@ if __name__ == "__main__":
     fmPAfmri_block = {}
     others = []
     mrs_block = {}
+    # add block for Phantom QA
+    fbirn_qa_block = {}
+    mb_fMRI_qa_block = {}
 
     #read the json files in /data/quantine folder with all SUID name in it
     compliance_found = 1
@@ -207,6 +210,9 @@ if __name__ == "__main__":
     fmPAfmri_runcounter = 1 
     b1_runcounter = 1 
     mrs_runcounter = 1 
+    # add for Phantom QA
+    fbirn_qa_runcounter = 1
+    mb_fMRI_qa_runcounter = 1
 
     SeUIDs = []
 
@@ -470,7 +476,16 @@ if __name__ == "__main__":
                     mrslist.append(mrs)
                     dict4["file"] = mrslist
                     mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)+"_MRS"] = copy.deepcopy(dict4)
-                    mrs_runcounter = bmri_runcounter + 1
+                    mrs_runcounter = mrs_runcounter + 1
+                # add Phantom QA    
+                elif 'MB-fMRI-QA' in data["ClassifyType"][2]:
+                    mb_fMRI_qa_block[data["ClassifyType"][2] + '_run_' + str(mb_fMRI_qa_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace datadd
+                    mb_fMRI_qa_runcounter = mb_fMRI_qa_runcounter + 1
+                elif 'fBIRN-QA' in data["ClassifyType"][2]:
+                    fbirn_qa_block[data["ClassifyType"][2] + '_run_' + str(fbirn_qa_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace datadd
+                    fbirn_qa_runcounter = fbirn_qa_runcounter + 1
 
                 else:
                     others.append(copy.deepcopy(dict2))
@@ -742,6 +757,16 @@ if __name__ == "__main__":
                     dict4["file"] = mrslist    
                     mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)+"_MRS"] = copy.deepcopy(dict4) 
                     mrs_runcounter = bmri_runcounter + 1
+                # add Phantom QA    
+                elif 'MB-fMRI-QA' in data["ClassifyType"][2]:
+                    mb_fMRI_qa_block[data["ClassifyType"][2] + '_run_' + str(mb_fMRI_qa_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace datadd
+                    mb_fMRI_qa_runcounter = mb_fMRI_qa_runcounter + 1
+                elif 'fBIRN-QA' in data["ClassifyType"][2]:
+                    fbirn_qa_block[data["ClassifyType"][2] + '_run_' + str(fbirn_qa_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace datadd
+                    fbirn_qa_runcounter = fbirn_qa_runcounter + 1
+
                 else:
                     others.append(copy.deepcopy(dict2))
             else:
@@ -777,7 +802,7 @@ if __name__ == "__main__":
         t2_block["status"] = 0
         t2_block["message"] = "HBCD-T2 series was not found"
 
-    if dti_runcounter >0 and  fmPAdti_runcounter > 0 and fmAPdti_runcounter: 
+    if dti_runcounter > 1 and  fmPAdti_runcounter > 1 and fmAPdti_runcounter > 1: 
          dti_block["status"] = 1
          dti_block["message"] = " HBCD-dMRI component was found"
     else: 
@@ -786,7 +811,7 @@ if __name__ == "__main__":
 
     print(midfmri_runcounter, fmAPfmri_runcounter, fmPAfmri_runcounter)
 
-    if rsfmri_runcounter >0 and  rsfmri_runcounter > 0 and rsfmri_runcounter:
+    if rsfmri_runcounter > 1 and  rsfmri_runcounter > 1 and rsfmri_runcounter > 1:
          rsfmri_block["status"] = 1
          rsfmri_block["message"] = " rest fMRI task was found."
     else: 
@@ -825,6 +850,11 @@ if __name__ == "__main__":
     dict["B1_block"] = b1_block 
     dict["AdditionalSeries"] = others
     dict["MRS"] = mrs_block
+
+    #Phantom data
+
+    dict["fBIRN-QA"] = fbirn_qa_block
+    dict["MB-fMRI-QA"] = mb_fMRI_qa_block 
 
     #dict = dict(sorted(dict, key=lambda k: k.get('SeriesTime')))
 
