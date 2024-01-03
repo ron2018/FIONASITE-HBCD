@@ -414,26 +414,6 @@
     ]
   },
   { 
-    "type" : "HBCD-MB-fMRI-QA",
-    "description" : "Multiband HBCD Phantom QA",
-    "rules" : [
-      {
-	"rule" : "SIEMENSBYMANUFACTURER"
-      },{
-	"rule" : "ORIGINAL"
-      },{ 
-        "tag": [ "AcquisitionMatrix" ],
-        "value": "90, 0, 0, 90"
-      },{ 
-        "tag": [ "0x18", "0x24" ],
-        "value": "epf..2d1_90"
-      },{ 
-        "tag": [ "AcquisitionLength" ],
-        "value": "TA 06:44"
-      }
-    ]
-  },   
-  { 
     "type" : "HBCD-fBIRN-QA",
     "description" : "Non-multiband HBCD Phantom QA",
     "rules" : [
@@ -442,14 +422,41 @@
       },{
 	"rule" : "ORIGINAL"
       },{ 
-        "tag": [ "AcquisitionMatrix" ],
-        "value": "64, 0, 0, 64"
-      },{ 
-        "tag": [ "0x18", "0x24" ],
+        "tag": [ "PulseSequenceName" ],
+        "operator": "contains",
         "value": "epfid2d1_64"
       },{ 
-        "tag": [ "AcquisitionLength" ],
-        "value": "TA 06:44"
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "FBIRN_QA_fMRI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "SBRef"
+      }
+    ]
+  },   
+  { 
+    "type" : "HBCD-MB-fMRI-QA",
+    "description" : "Multiband HBCD Phantom QA",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{
+        "tag": [ "PulseSequenceName" ],
+        "value": "epfid2d1_108"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "HBCD_QA_fMRI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "SBRef"
       }
     ]
   },{
