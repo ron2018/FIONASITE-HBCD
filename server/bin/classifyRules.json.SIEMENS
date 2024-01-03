@@ -553,6 +553,11 @@
       },{ 
        "tag": [ "SeriesDescription" ],
         "value": "dwi_dir-PA"
+      },{
+         "tag": ["SeriesDescription" ],
+         "operator": "contains",
+         "negate": "yes",
+          "value": "_SBRef"
       }
     ]
   },
@@ -576,6 +581,11 @@
       },{ 
        "tag": [ "SeriesDescription" ],
         "value": "dwi_dir-AP"
+      },{
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "_SBRef"
       }
     ]
   },
