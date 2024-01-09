@@ -460,7 +460,7 @@ if __name__ == "__main__":
                     dict4["file"] = kspacelist    
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4) 
                     fmAPfmri_runcounter = fmAPfmri_runcounter + 1
-                elif 'HBCD-LocSVS' in data["ClassifyType"][2]:
+                elif 'HBCD-LocSVS' in data["ClassifyType"][2] or 'HBCD-MRS' in data["ClassifyType"][2]:
                     mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
                     mrs["path"] = getMRSFilePath(data["PatientID"])

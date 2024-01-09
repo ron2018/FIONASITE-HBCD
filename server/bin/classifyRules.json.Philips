@@ -528,6 +528,22 @@
           }
 
    ]
+  },
+  {
+    "type" : "HBCD-MRS",
+    "description" : "A MRS from PHILIP with HBCD resolution",
+    "rules" : [
+      {
+        "rule" : "PHILIPSBYMANUFACTURER"
+      },{
+     "tag": [ "0x08", "0x16" ],
+        "value": "1.2.840.10008.5.1.4.1.1.4.2"
+      },{
+      "tag": [ "SeriesDescription" ],
+             "value": "mrs-ISTHMUS"
+          }
+
+   ]
   }
 ]
 
