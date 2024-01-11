@@ -857,7 +857,34 @@ if __name__ == "__main__":
     dict["MB-fMRI-QA"] = mb_fMRI_qa_block 
 
     #dict = dict(sorted(dict, key=lambda k: k.get('SeriesTime')))
+    #Correct the Patient Name and ID in case they are not right.
+    newTrippleID = ''
 
+    if len(dict["PatientName"]) != 20:
+        #get the corrected filename from /data/output or /data/DAIC folder
+        outdata = '/data/outbox'
+        for filename in os.listdir(outdata):
+            if SUID in filename and '.json' in filename:
+                #get tripple IDs
+                Ids = filename.split('_')
+                newTrippleID = Ids[0] + "_" + Ids[1] + "_" + Ids[2]
+                print("new Tripple ID = {newTrippleID}")
+                if len(newTrippleID) == 20:
+                   break
+        if  len(newTrippleID) != 20:
+            outdata = '/data/DAIC'
+            for filename in os.listdir(outdata):
+                if SUID in filename and '.json' in filename:
+                    #get tripple IDs
+                    Ids = filename.split('_')
+                    newTrippleID = Ids[0] + "_" + Ids[1] + "_" + Ids[2]
+                    print("new Tripple ID = {newTrippleID}")
+                    if len(newTrippleID) == 20:
+                        break
+          
+        dict["PatientName"] = newTrippleID
+        dict["PatientID"] = newTrippleID
+    print("Correted PatientName" + dict["PatientName"]) 
 
     with open(os.path.join("/data/site/output/scp_"+SUID, "series_compliance/compliance_output.json"), "w") as write_file:
         json.dump(dict, write_file, indent = 4) 
