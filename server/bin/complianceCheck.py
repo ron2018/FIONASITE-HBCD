@@ -154,14 +154,17 @@ if __name__ == "__main__":
 
     SCANNERTYPE = settings["SCANNERTYPE"]
     DICOMFORMAT = settings["DICOMFORMAT"]
+    SCANNERMODEL = settings["SCANNERMODEL"]
 
     if DICOMFORMAT:
         filecounts = complianceSetting[SCANNERTYPE + "-" + DICOMFORMAT]
     else:
-        filecounts = complianceSetting[SCANNERTYPE]
+        filecounts = complianceSetting[SCANNERMODEL]
 
         #logging.info("DEBUG: complianceSetting.json: ", complianceSetting[SCANNERTYPE]["T1"])
         logging.debug(json.dumps(filecounts))
+
+    print(json.dumps(filecounts))
 
     # read the existing json if it is existed
     if os.path.exists(os.path.join("/data/site/output/scp_"+SUID, "series_compliance/compliance_output.json")): 
