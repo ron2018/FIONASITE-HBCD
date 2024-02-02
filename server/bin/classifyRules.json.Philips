@@ -166,6 +166,10 @@
         "tag": [ "SeriesDescription" ],
         "operator": "contains",
         "value": "PA" 
+      },{ 
+        "tag": [ "0X2001","0X10c8" ],
+        "negate": "yes",
+        "value": "HBCD_fBIRN_Phantom" 
       }
     ]
   },
@@ -357,6 +361,23 @@
     ]
   },
   { 
+    "type" : "HBCD-fBIRN-QA",
+    "description" : "HBCD Philips fBIRN QA (non-Multiband)",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": ["AcquisitionMatrix" ],
+       "value": "64, 0, 0, 63"
+       },{
+        "tag": [ "SeriesDescription" ],
+        "value": "Standard_fBIRN_QA"
+       }
+    ]
+  },
+  { 
     "type" : "HBCD-MB-fMRI-QA",
     "description" : "HBCD Philips fBIRN QA (Multiband)",
     "rules" : [
@@ -373,6 +394,26 @@
       },{ 
         "tag": [ "PulseSequenceName" ],
         "value": "FEEPI" 
+      }
+    ]
+  },
+  { 
+    "type" : "HBCD-MB-fMRI-QA",
+    "description" : "HBCD Philips fBIRN QA (Multiband)",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+	"tag": ["AcquisitionMatrix"  ],
+        "value": "112, 0, 0, 111"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "func_task-rest_dir-PA"
+      },{ 
+        "tag": [ "0X2001","0X10c8" ],
+        "value": "HBCD_fBIRN_Phantom" 
       }
     ]
   },
