@@ -805,7 +805,7 @@ if __name__ == "__main__":
         t2_block["status"] = 0
         t2_block["message"] = "HBCD-T2 series was not found"
 
-    if dti_runcounter > 1 and  fmPAdti_runcounter > 1 and fmAPdti_runcounter > 1: 
+    if dti_runcounter > 1 : 
          dti_block["status"] = 1
          dti_block["message"] = " HBCD-dMRI component was found"
     else: 
