@@ -112,15 +112,16 @@ do
      if [[ ${match} -gt 0 ]]; then
          # triple ID are correct and should send the MRS datat to UMN
          #register the files to UMN
-         {  echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
-		 /usr/bin/md5sum  $datfile  >  /data/site/mrs/${mrsID}.md5sum; 
-               /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/$tripleID_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
+         {  echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_${suid}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
+		 /usr/bin/md5sum  $datfile  >  /data/site/mrs/${tripleID}_${suid}_MRS.md5sum; 
+                 mv $datfile ${tripleID}_${suid}_MRS.zip
+                /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_${suid}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
          } &&
          {
-         echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=$datafile --token=$token --type=MRS"
+         echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_${suid}_MRS --token=$token --type=MRS"
 
          /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=$datafile --token=$token --type=MRS >> $log 2>&1
-         /bin/mv  ${tripleID}_MRS* /data/site/mrs/umn/ || error_exit
+         /bin/mv  ${tripleID}_${suid}_MRS* /data/site/mrs/umn/ || error_exit
          }
      fi
 
@@ -152,17 +153,17 @@ do
      if [[ ${match} -gt 0 ]]; then
          # triple ID are correct and should send the MRS datat to UMN
          #register the files to UMN
-
-         {  echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
-
-		 /usr/bin/md5sum  $datfile  >  /data/site/mrs/${mrsID}.md5sum; 
-		 /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
-         } && {
-         echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=$datafile --token=$token --type=MRS"
+         {  echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_${suid}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
+		 /usr/bin/md5sum  $datfile  >  /data/site/mrs/${tripleID}_${suid}_MRS.md5sum; 
+                 mv $datfile ${tripleID}_${suid}_MRS.tar.gz
+                /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_${suid}_MRS* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
+         } &&
+         {
+         echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_${suid}_MRS --token=$token --type=MRS"
 
          /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=$datafile --token=$token --type=MRS >> $log 2>&1
-         /bin/mv  ${tripleID}_MRS* /data/site/mrs/umn || error_exit
         }
-     fi
+      fi
+
 
 done
