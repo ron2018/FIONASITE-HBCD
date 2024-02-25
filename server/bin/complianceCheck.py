@@ -96,9 +96,9 @@ def getKSpaceFileSize(tripleId, StudyInstanceUID, SeriesInstanceUID, scannerType
         return os.path.getsize(filename)
     else:
         return 0
-def getMRSFilePath(tripleID):
-    filename1 = "/data/site/mrs/umn/"+ tripleID + "_MRS.zip"
-    filename2 = "/data/site/mrs/umn/"+ tripleID + "_MRS.tar.gz"
+def getMRSFilePath(tripleID, suid):
+    filename1 = "/data/site/mrs/umn/"+ tripleID + "_MRS_" + suid + ".zip"
+    filename2 = "/data/site/mrs/umn/"+ tripleID + "_MRS_" + suid + ".tar.gz"
     filename3 = "/data/site/mrs/"+ tripleID + "_MRS.zip"
     filename4 = "/data/site/mrs/"+ tripleID + "_MRS.tar.gz"
     if os.path.isfile(filename1):
@@ -112,9 +112,8 @@ def getMRSFilePath(tripleID):
     else:
         return "NotFound.txt"
 
-def getMRSFileSize(tripleID):
-    filename1 = "/data/site/mrs/umn/"+ tripleID + "_MRS.zip"
-    filename2 = "/data/site/mrs/umn/"+ tripleID + "_MRS.tar.gz"
+def getMRSFileSize(tripleID,suid):
+    filename1 = "/data/site/mrs/umn/"+ tripleID + "_MRS_" + suid + ".zip"
     filename3 = "/data/site/mrs/"+ tripleID + "_MRS.zip"
     filename4 = "/data/site/mrs/"+ tripleID + "_MRS.tar.gz"
     if os.path.isfile(filename1):
@@ -283,7 +282,7 @@ if __name__ == "__main__":
                     if int(filecounts["T1"])  > int(data["NumFiles"]):
                         # it is incomplete series
                         print("T1 Set the dict2[status] = 0")
-                        dict2["status"] = 0
+                        dict2["status"] = 2
                         compliance_found = 0
 
                     t1_block[data["ClassifyType"][2] + '_run_' + str(t1_runcounter)] = copy.deepcopy(dict2)
@@ -313,7 +312,7 @@ if __name__ == "__main__":
                     if int(filecounts["T2"]) > int(data["NumFiles"]):
                         # it is incomplete series
                         print("T2 Set the dict2[status] = 0")
-                        dict2["status"] = 0
+                        dict2["status"] = 2
                         compliance_found = 0
                     t2_block[data["ClassifyType"][2] + '_run_' + str(t2_nd_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
@@ -335,7 +334,7 @@ if __name__ == "__main__":
                     if int(filecounts["HBCD-dMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("HBCD-dMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
                     dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
@@ -357,7 +356,7 @@ if __name__ == "__main__":
                     if int(filecounts["HBCD-fMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("restfMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     rsfmri_block[data["ClassifyType"][2] + '_run_' + str(rsfmri_runcounter)] = copy.deepcopy(dict2)
@@ -379,7 +378,7 @@ if __name__ == "__main__":
                     if int(filecounts["qMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("qMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)] = copy.deepcopy(dict2)
@@ -401,7 +400,7 @@ if __name__ == "__main__":
                     if int(filecounts["B1"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("bMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
@@ -425,7 +424,7 @@ if __name__ == "__main__":
                     if int(filecounts["FM-fMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("restfMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)] = copy.deepcopy(dict2)
@@ -446,7 +445,7 @@ if __name__ == "__main__":
                     if int(filecounts["FM-fMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("restfMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)] = copy.deepcopy(dict2)
@@ -466,8 +465,8 @@ if __name__ == "__main__":
                 elif 'HBCD-LocSVS' in data["ClassifyType"][2] or 'HBCD-MRS' in data["ClassifyType"][2]:
                     mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    mrs["path"] = getMRSFilePath(data["PatientID"])
-                    mrs["size"] = getMRSFileSize(data["PatientID"])
+                    mrs["path"] = getMRSFilePath(data["PatientID"], suid)
+                    mrs["size"] = getMRSFileSize(data["PatientID"], suid)
                     print("MRS file path :", mrs["path"])
                     print("MRS file size :", mrs["size"])
                     if mrs["size"] > 0 :
@@ -561,7 +560,7 @@ if __name__ == "__main__":
                     if int(filecounts["T1"])  > int(data["NumFiles"]):
                         # it is incomplete series
                         print("T1 Set the dict2[status] = 0")
-                        dict2["status"] = 0
+                        dict2["status"] = 2
                         compliance_found = 0
 
                     t1_block[data["ClassifyType"][2] + '_run_' + str(t1_runcounter)] = copy.deepcopy(dict2)
@@ -591,7 +590,7 @@ if __name__ == "__main__":
                     if int(filecounts["T2"]) > int(data["NumFiles"]):
                         # it is incomplete series
                         print("T2 Set the dict2[status] = 0")
-                        dict2["status"] = 0
+                        dict2["status"] = 2
                         compliance_found = 0
                     t2_block[data["ClassifyType"][2] + '_run_' + str(t2_runcounter)] = copy.deepcopy(dict2)
 
@@ -616,7 +615,7 @@ if __name__ == "__main__":
                     if int(filecounts["HBCD-dMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("HBCD-dMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
                     dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)] = copy.deepcopy(dict2)
    
@@ -662,7 +661,7 @@ if __name__ == "__main__":
                     if int(filecounts["qMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("qMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)] = copy.deepcopy(dict2)
@@ -684,7 +683,7 @@ if __name__ == "__main__":
                     if int(filecounts["FM-fMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("restfMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)] = copy.deepcopy(dict2)
@@ -705,7 +704,7 @@ if __name__ == "__main__":
                     if int(filecounts["FM-fMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("restfMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)] = copy.deepcopy(dict2)
@@ -726,7 +725,7 @@ if __name__ == "__main__":
                     if int(filecounts["B1"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("bMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
@@ -746,8 +745,8 @@ if __name__ == "__main__":
                 elif 'HBCD-LocSVS' in data["ClassifyType"][2]:
                     mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
-                    mrs["path"] = getMRSFilePath(data["PatientID"])
-                    mrs["size"] = getMRSFileSize(data["PatientID"])
+                    mrs["path"] = getMRSFilePath(data["PatientID"], suid)
+                    mrs["size"] = getMRSFileSize(data["PatientID"], suid)
                     print("MRS file path :", mrs["path"])
                     print("MRS file size :", mrs["size"])
                     if mrs["size"] > 0 :
@@ -782,7 +781,7 @@ if __name__ == "__main__":
     #if compliance_found:
         dict["status"] = "1"
         dict["shortmessage"] = "C"
-        dict["message"] = "The Serie is ready to send to DAIRC. One session based acquisition."
+        dict["message"] = "The Serie is ready, please verify before sending to DAIRC. One session based acquisition."
     #else:
     #    dict["status"] = "0"
     #    dict["shortmessage"] = "N"
@@ -797,19 +796,19 @@ if __name__ == "__main__":
        
     else:
         t1_block["message"] = "HBCD-T1 series was not found"
-        t1_block["status"] = 0 
+        t1_block["status"] = 2
     if len(t2_block) > 1 :
         t2_block["status"] = 1
         t2_block["message"] = "HBCD-T2 series was found"
     else:
-        t2_block["status"] = 0
+        t2_block["status"] = 2
         t2_block["message"] = "HBCD-T2 series was not found"
 
     if dti_runcounter > 1 : 
          dti_block["status"] = 1
          dti_block["message"] = " HBCD-dMRI component was found"
     else: 
-         dti_block["status"] = 0
+         dti_block["status"] = 2
          dti_block["message"] = " HBCD-dMRI component was not found, A  DTI component should include a both AP and PA dMRI field map followed by the dMRI acquisition"
 
     print(midfmri_runcounter, fmAPfmri_runcounter, fmPAfmri_runcounter)
@@ -818,29 +817,34 @@ if __name__ == "__main__":
          rsfmri_block["status"] = 1
          rsfmri_block["message"] = " rest fMRI task was found."
     else: 
-         rsfmri_block["status"] = 0
+         rsfmri_block["status"] = 2
          rsfmri_block["message"] = " rest fMRI task was not found. A  rest fMRI task component should include a fMRI field map followed by the rest fMRI task acquisition"
 
     if fmAPfmri_block:
         fmAPfmri_block["message"] = "fMRI FieldMap AP was found."
     else:
+        fmAPfmri_block["status"] = 2
         fmAPfmri_block["message"] = "fMRI FieldMap AP was Not found."
     if fmAPfmri_block:
         fmPAfmri_block["message"] = "fMRI FieldMap PA was found."
     else: 
+        fmPAfmri_block["status"] = 2
         fmPAfmri_block["message"] = "fMRI FieldMap PA was Not found."
 
     if qmri_block:
         qmri_block["message"] = "qMRI was found."
     else:
+        qmri_block["status"] = 2
         qmri_block["message"] = "qMRI was Not found."
     if b1_block:
         b1_block["message"] = "B1 was found."
     else: 
+        b1_block["status"] = 2
         b1_block["message"] = "B1 was Not found."
     if mrs_block:
         mrs_block["message"] = "MRS was found."
     else: 
+        mrs_block["status"] = 2
         mrs_block["message"] = "MRS was Not found."
 
     dict["T1"] = t1_block
