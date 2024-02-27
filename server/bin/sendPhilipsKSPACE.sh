@@ -133,10 +133,10 @@ do
      done
 
      # tar all text file into a zip   rawdata_suid_$suid_text.zip
-     /bin/zip rawdata_suid_${suid}_text.zip *.txt || error_exit
+     /bin/zip rawdata_suid_${suid}_text.zip *.txt 
 
      # tar all text file into a zip   rawdata_suid_$suid_text.zip
-     #/bin/zip rawdata_suid_${suid}_extra.zip ./Extra_files/* || error_exit
+     #/bin/zip rawdata_suid_${suid}_extra.zip ./Extra_files/* 
   
 
   
@@ -144,18 +144,18 @@ do
 
     #rsync this files
     { 
-       echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/"
+      echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/"
       cd /data/site/kspace/${filedir}
       for a in `ls -1 *.zip`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
-       /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/*  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/
-    } && {
-
       #  register the files to UMN
-      echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
-      /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
       #clean up the folder
       /usr/bin/mv  ${kspaceDatLocations}/${filedir} ${kspaceDatLocations}/processed/${suid}
       touch /var/www/html/php/request_compliance_check/$suid
+      echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
+      /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
+    } && {
+
+      /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/processed/${suid}/*  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/
 
     }
   fi
