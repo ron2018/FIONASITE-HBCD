@@ -114,6 +114,7 @@ def getMRSFilePath(tripleID, suid):
 
 def getMRSFileSize(tripleID,suid):
     filename1 = "/data/site/mrs/umn/"+ tripleID + "_MRS_" + suid + ".zip"
+    filename2 = "/data/site/mrs/umn/"+ tripleID + "_MRS_" + suid + ".tar.gz"
     filename3 = "/data/site/mrs/"+ tripleID + "_MRS.zip"
     filename4 = "/data/site/mrs/"+ tripleID + "_MRS.tar.gz"
     if os.path.isfile(filename1):
