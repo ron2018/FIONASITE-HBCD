@@ -9,6 +9,14 @@ if (isset($config['LOCALTIMEZONE'])) {
    date_default_timezone_set($config['LOCALTIMEZONE']);
 }
 
+$scannertype = '';
+
+if (isset($config['SCANNERTYPE'])) {
+   $scannertype = $config['SCANNERTYPE'];
+}
+
+#echo "ScannerType = ".$scannertype;
+
 $filename = "";
 
 $project = "";
@@ -27,8 +35,8 @@ if (isset($_GET['filename']) && $_GET['filename'] !== "") {
   echo ("{ \"ok\": 0, \"message\": \"ERROR: filename not set\" }");
   return;
 }
-#$filename="rawdata_suid_1.3.12.2.1107.5.2.43.166158.30000023062013162853300000030_seuid_1.3.12.2.1107.5.2.43.166158.2023062215492942043238624.0.0.0.dat";
-#$filename="XISTL0009_181193_V02_MRS.zip";
+
+#$filename="/data/site/mrs/umn/CHVAN0019_282846_V02_MRS.tar.gz";
 
 $fn = $filename;
 $path_info = pathinfo($filename);
@@ -50,7 +58,7 @@ if ($filestrs[0] == 'rawdata') {
 }	
 
 
-$e = glob('/data'.$project.'/site/kspace/outbox/'.$suid.'/'.$path_info['filename'].".".$path_info['extension']);
+$e = glob('/data'.$project.'/site/kspace/'.$suid.'/'.$path_info['filename'].".".$path_info['extension']);
 $p = glob('/data'.$project.'/site/kspace/processed/'.$suid.'/'.$path_info['filename'].".".$path_info['extension']);
 $g = glob('/data'.$project.'/site/mrs/'.$path_info['filename'].".".$path_info['extension']);
 $h = glob('/data'.$project.'/site/mrs/umn/'.$path_info['filename'].".".$path_info['extension']);
@@ -104,7 +112,12 @@ $fvalid = array();
 foreach($p as $f) {
    $path_parts = pathinfo($f);
    // lets see if we have an md5sum file here
-   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   
+   if ($scannertype == "PHILIPS" ) {
+      $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.zip.md5sum';
+   } else {
+      $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   } 
    if (file_exists($md5sumfname)) {
        $fvalid[] = [$f, date ("F d Y H:i:s.", filemtime($md5sumfname))];
    }
@@ -115,7 +128,12 @@ foreach($g as $f) {
 
    $path_parts = pathinfo($f);
    // lets see if we have an md5sum file here
-   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   if ($path_info['extension'] == "gz" ) {
+      $filenamestem = substr($path_parts['filename'], 0, -3);
+   } else {
+      $filenamestem = $path_parts['filename'];
+   }
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$filenamestem.'md5sum';
    if (file_exists($md5sumfname)) {
        $gvalid[] = [$f, date ("F d Y H:i:s.", filemtime($md5sumfname))];
    }
@@ -124,7 +142,12 @@ $hvalid = array();
 foreach($h as $f) {
    $path_parts = pathinfo($f);
    // lets see if we have an md5sum file here
-   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   if ($path_info['extension'] == "gz" ) {
+      $filenamestem = substr($path_parts['filename'], 0, -3);
+   } else {
+      $filenamestem = $path_parts['filename'];
+   }
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$filenamestem.'md5sum';
    if (file_exists($md5sumfname)) {
        $hvalid[] = [$f, date ("F d Y H:i:s.", filemtime($md5sumfname))];
    }

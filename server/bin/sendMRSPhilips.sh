@@ -112,18 +112,18 @@ do
          #register the files to UMN
          {       
 
-		 tar cvfz /data/site/mrs/${filename}.tar.gz *
-		 /usr/bin/md5sum  /data/site/mrs/${filename}.tar.gz >  /data/site/mrs/${filename}.md5sum; 
-		 echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${filename}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
-                 /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${filename}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
+		 tar cvfz /data/site/mrs/${filename}_${suid}.tar.gz *
+		 /usr/bin/md5sum  /data/site/mrs/${filename}_${suid}.tar.gz >  /data/site/mrs/${filename}_${suid}.md5sum; 
+		 echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${filename}_${suid}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
+                 /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${filename}_${suid}.* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/   
 
          } &&
          {
-         echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${filename}.tar.gz --token=$token --type=MRS"
+         echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${filename}_${suid}.tar.gz --token=$token --type=MRS"
 
-         /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${filename}.tar.gz --token=$token --type=MRS >> $log 2>&1
+         /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${filename}_${suid}.tar.gz --token=$token --type=MRS >> $log 2>&1
          /bin/mv  /data/site/mrs/${filedir} /data/site/mrs/umn/ || error_exit
-         /bin/mv  /data/site/mrs/${filename}.*  /data/site/mrs/umn/  || error_exit
+         /bin/mv  /data/site/mrs/${filename}_${suid}.*  /data/site/mrs/umn/  || error_exit
 	 echo "Touch /var/www/html/php/request_compliance_check/${suid}"
          touch /var/www/html/php/request_compliance_check/$suid
 	 break;

@@ -102,7 +102,8 @@ do
 
   # pattern is : 20221213_1.3.46.670589.11.45002.5.0.15852.2022121307120758000
   echo $filedir
-   
+  suid=''
+ 
   suid=$(echo ${filedir} | cut -d'_' -f2)
   
   echo "SUID = ${suid}"
@@ -119,7 +120,7 @@ do
   
   if [[ ${match} -gt 0 ]]; then
   
-     cd $filedir
+     cd /data/site/kspace/$filedir
 
      echo ${kspaceDatLocations}/${filedir} 
      #rename the zip file to rawdata_suid_$suid_seuid_$seuid.zip
@@ -128,7 +129,7 @@ do
         echo "Found : ${zipfile}"
 
         newfile=$(echo `basename "$zipfile"` | sed "s/.zip//")
-        echo "new file : ${newfile}"
+        echo "new file : rawdata_suid_${suid}_seuid_${newfile}.zip"
         /usr/bin/mv  $zipfile rawdata_suid_${suid}_seuid_${newfile}.zip || error_exit
      done
 
@@ -136,7 +137,7 @@ do
      /bin/zip rawdata_suid_${suid}_text.zip *.txt 
 
      # tar all text file into a zip   rawdata_suid_$suid_text.zip
-     #/bin/zip rawdata_suid_${suid}_extra.zip ./Extra_files/* 
+     /bin/zip rawdata_suid_${suid}_extra.zip ./Extra_files/* 
   
 
   
@@ -144,7 +145,6 @@ do
 
     #rsync this files
     { 
-      echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/"
       cd /data/site/kspace/${filedir}
       for a in `ls -1 *.zip`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
       #  register the files to UMN
@@ -154,7 +154,8 @@ do
       echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE "
       /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_KSPACE_${suid} --token=$token --type=KSPACE >> $log 2>&1
     } && {
-
+      
+      echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/"
       /usr/bin/rsync -LptgoDv0 --no-R /data/site/kspace/processed/${suid}/*  hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/
 
     }

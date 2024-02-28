@@ -46,7 +46,9 @@
     "HBCD-fMRI": 19836,
     "HBCD-dMRI": 6525,
     "qMRI": 640,
-    "B1": 112
+    "B1": 112,
+    "anat-t2w_desc-mrsLocAX": 35,
+    "anat-t2w_desc-mrsLocCor": 13
   },
  "PHILIPSAchieva": {
     "T1": 209,

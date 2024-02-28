@@ -99,6 +99,8 @@ def getKSpaceFileSize(tripleId, StudyInstanceUID, SeriesInstanceUID, scannerType
 def getMRSFilePath(tripleID, suid):
     filename1 = "/data/site/mrs/umn/"+ tripleID + "_MRS_" + suid + ".zip"
     filename2 = "/data/site/mrs/umn/"+ tripleID + "_MRS_" + suid + ".tar.gz"
+    filename5 = "/data/site/mrs/umn/"+ tripleID + "_MRS.zip"
+    filename6 = "/data/site/mrs/umn/"+ tripleID + "_MRS.tar.gz"
     filename3 = "/data/site/mrs/"+ tripleID + "_MRS.zip"
     filename4 = "/data/site/mrs/"+ tripleID + "_MRS.tar.gz"
     if os.path.isfile(filename1):
@@ -109,6 +111,10 @@ def getMRSFilePath(tripleID, suid):
         return filename3
     elif os.path.isfile(filename4):
         return filename4
+    elif os.path.isfile(filename5):
+        return filename5
+    elif os.path.isfile(filename6):
+        return filename6
     else:
         return "NotFound.txt"
 
@@ -117,6 +123,8 @@ def getMRSFileSize(tripleID,suid):
     filename2 = "/data/site/mrs/umn/"+ tripleID + "_MRS_" + suid + ".tar.gz"
     filename3 = "/data/site/mrs/"+ tripleID + "_MRS.zip"
     filename4 = "/data/site/mrs/"+ tripleID + "_MRS.tar.gz"
+    filename5 = "/data/site/mrs/umn/"+ tripleID + "_MRS.zip"
+    filename6 = "/data/site/mrs/umn/"+ tripleID + "_MRS.tar.gz"
     if os.path.isfile(filename1):
         return os.path.getsize(filename1)
     elif os.path.isfile(filename2):
@@ -125,6 +133,10 @@ def getMRSFileSize(tripleID,suid):
         return os.path.getsize(filename3)
     elif os.path.isfile(filename4):
         return os.path.getsize(filename4)
+    elif os.path.isfile(filename5):
+        return os.path.getsize(filename5)
+    elif os.path.isfile(filename6):
+        return os.path.getsize(filename6)
     else:
         return 0
 
@@ -640,7 +652,7 @@ if __name__ == "__main__":
                     if int(filecounts["HBCD-fMRI"]) > int(data["NumFiles"]):
                             # it is incomplete series
                             print("restfMRI Set the dict2[status] = 0")
-                            dict2["status"] = 0
+                            dict2["status"] = 2
                             compliance_found = 0
 
                     rsfmri_block[data["ClassifyType"][2] + '_run_' + str(rsfmri_runcounter)] = copy.deepcopy(dict2)
