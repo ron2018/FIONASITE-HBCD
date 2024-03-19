@@ -344,11 +344,26 @@ if __name__ == "__main__":
                     t2_nd_runcounter = t2_nd_runcounter + 1
 
                 elif 'HBCD-dMRI' in data["ClassifyType"][2]:
-                    if int(filecounts["HBCD-dMRI"]) > int(data["NumFiles"]):
+                    if (SCANNERTYPE == 'GE'):
+ 
+                        if "-AP" in  data["ClassifyType"][2] and  int(filecounts["HBCD-dMRI-AP"]) > int(data["NumFiles"]):
                             # it is incomplete series
-                            print("HBCD-dMRI Set the dict2[status] = 0")
+                            print("HBCD-dMRI-AP Set the dict2[status] = 2")
                             dict2["status"] = 2
                             compliance_found = 0
+                        elif int(filecounts["HBCD-dMRI-PA"]) > int(data["NumFiles"]):
+                            print("HBCD-dMRI_PA Set the dict2[status] = 2")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
+                            
+                    else:
+                       if int(filecounts["HBCD-dMRI"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("HBCD-dMRI Set the dict2[status] = 2")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
                     dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)] = copy.deepcopy(dict2)
                     # check the kspace datadd
                     kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
@@ -625,9 +640,23 @@ if __name__ == "__main__":
                                        
    
                 elif 'HBCD-dMRI' in data["ClassifyType"][2]:
-                    if int(filecounts["HBCD-dMRI"]) > int(data["NumFiles"]):
+                    if (SCANNERTYPE == 'GE'):
+
+                        if "-AP" in  data["ClassifyType"][2] and  int(filecounts["HBCD-dMRI-AP"]) > int(data["NumFiles"]):
                             # it is incomplete series
-                            print("HBCD-dMRI Set the dict2[status] = 0")
+                            print("HBCD-dMRI-AP Set the dict2[status] = 2")
+                            dict2["status"] = 2
+                            compliance_found = 0
+                        elif int(filecounts["HBCD-dMRI-PA"]) > int(data["NumFiles"]):
+                            print("HBCD-dMRI_PA Set the dict2[status] = 2")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
+
+                    else:
+                       if int(filecounts["HBCD-dMRI"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("HBCD-dMRI Set the dict2[status] = 2")
                             dict2["status"] = 2
                             compliance_found = 0
                     dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)] = copy.deepcopy(dict2)
@@ -789,7 +818,299 @@ if __name__ == "__main__":
 
             dict["ManufacturerModelName"] = data["ManufacturerModelName"]
             
-            
+    datadir = "/data/outbox/"
+
+    for filename in os.listdir(datadir):
+        if SUID in filename and '.json' in filename and filename != 'scp_'+SUID+'.json':
+            print(filename)
+            logging.info(filename)
+
+            # read each json file
+            with open(os.path.join(datadir,filename), 'r') as f:
+                data = json.load(f)
+
+            logging.debug(data)
+            suid = data["StudyInstanceUID"]
+            seuid = data["SeriesInstanceUID"]
+
+            #ignore the data if it is in /data/quarantine folder
+            if seuid in SeUIDs:
+                continue
+
+            print(suid,"_", seuid)
+            dict["PatientID"] = data["PatientID"]
+            dict["PatientName"] = data["PatientName"]
+            dict["StudyDate"] = data["StudyDate"]
+            dict["PatientID"] = data["PatientID"]
+            dict["StudyInstanceUID"] = data["StudyInstanceUID"]
+            dict["Manufacturer"] = data["Manufacturer"]
+            dict["ManufacturerModelName"] = data["ManufacturerModelName"]
+            # re-calculate number of file in the series
+            data["NumFiles"] = getSeriesFileCount(filename)
+            dict2 = {}
+            if len(data["ClassifyType"]) > 2:
+                dict2["status"] = 1
+                compliance_found = 1
+            else:
+                dict2["status"] = 0
+            dict2["SeriesNumber"] = data["SeriesNumber"]
+            dict2["SeriesInstanceUID"] = data["SeriesInstanceUID"]
+            dict2["message"] = 'HBCD ' + data["SeriesDescription"] + ' was found'
+            #file size and path
+            dict3 = {}
+            dict4 = {}
+            list3 = []
+            dict3["path"] = os.path.join(datadir,filename)
+            dict3["size"] = os.path.getsize(os.path.join(datadir,filename))
+            list3.append(dict3)
+            dict2["file"] = list3
+
+            kspace = {}
+            kspacelist = []
+            mrs = {}
+            mrslist = []
+
+            if len(data["ClassifyType"]) > 2:
+                logging.info(data["ClassifyType"][2])
+                print(data["ClassifyType"][2])
+                #depending on serise to imcrement the run counter
+                if 'T1' in data["ClassifyType"][2]:
+                    # check if any T1 Norm has enough files.
+                    logging.debug (str(filecounts["T1"]) + " T1 Norm slice in DICOM vs number of Files " + str(data["NumFiles"]))
+                    if int(filecounts["T1"])  > int(data["NumFiles"]):
+                        # it is incomplete series
+                        print("T1 Set the dict2[status] = 0")
+                        dict2["status"] = 2
+                        compliance_found = 0
+
+                    t1_block[data["ClassifyType"][2] + '_run_' + str(t1_runcounter)] = copy.deepcopy(dict2)
+
+                    # check the kspace datadd
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE)
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+
+                    print(kspace["size"], kspace["path"])
+
+                    if kspace["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "Kspace data found"
+                    else:
+                        dict4["message"] = "Kspace data Not found"
+                        dict4["status"] = 2
+                    kspacelist.append(kspace)
+                    dict4["file"] = kspacelist
+                    if "ND" not in data["SeriesDescription"]:
+                        t1_block[data["ClassifyType"][2] + '_run_' + str(t1_runcounter)+"_KSPACE"] = copy.deepcopy(dict4)
+                    t1_runcounter = t1_runcounter + 1
+
+
+                elif 'T2' in data["ClassifyType"][2]:
+                    # check if any T1 Norm has enough files.
+                    logging.debug (str(filecounts["T2"]) + " T2 Norm slice in DICOM vs number of Files " + str(data["NumFiles"]))
+                    if int(filecounts["T2"]) > int(data["NumFiles"]):
+                        # it is incomplete series
+                        print("T2 Set the dict2[status] = 0")
+                        dict2["status"] = 2
+                        compliance_found = 0
+                    t2_block[data["ClassifyType"][2] + '_run_' + str(t2_runcounter)] = copy.deepcopy(dict2)
+
+                    # check the kspace data
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+
+                    if kspace["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "Kspace data found"
+                    else:
+                        dict4["message"] = "Kspace data Not found"
+                        dict4["status"] = 2
+                    kspacelist.append(kspace)
+                    dict4["file"] = kspacelist
+                    if "ND" not in data["SeriesDescription"]:
+                        t2_block[data["ClassifyType"][2] + '_run_' + str(t2_runcounter)+"_KSPACE"] = copy.deepcopy(dict4)
+                    t2_runcounter = t2_runcounter + 1
+
+
+                elif 'HBCD-dMRI' in data["ClassifyType"][2]:
+                    if (SCANNERTYPE == 'GE'):
+
+                        if "-AP" in  data["ClassifyType"][2] and  int(filecounts["HBCD-dMRI-AP"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("HBCD-dMRI-AP Set the dict2[status] = 2")
+                            dict2["status"] = 2
+                            compliance_found = 0
+                        elif int(filecounts["HBCD-dMRI-PA"]) > int(data["NumFiles"]):
+                            print("HBCD-dMRI_PA Set the dict2[status] = 2")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
+
+                    else:
+                       if int(filecounts["HBCD-dMRI"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("HBCD-dMRI Set the dict2[status] = 2")
+                            dict2["status"] = 2
+                            compliance_found = 0
+                    dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)] = copy.deepcopy(dict2)
+
+                    # check the kspace data
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    if kspace["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "Kspace data found"
+                    else:
+                        dict4["message"] = "Kspace data Not found"
+                        dict4["status"] = 2
+                    kspacelist.append(kspace)
+                    dict4["file"] = kspacelist
+                    dti_block[data["ClassifyType"][2] + '_run_' + str(dti_runcounter)+"_KSPACE"] = copy.deepcopy(dict4)
+
+                    dti_runcounter = dti_runcounter + 1
+
+                elif 'HBCD-fMRI' in data["ClassifyType"][2]:
+                    if int(filecounts["HBCD-fMRI"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("restfMRI Set the dict2[status] = 0")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
+                    rsfmri_block[data["ClassifyType"][2] + '_run_' + str(rsfmri_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace data
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    if kspace["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "Kspace data found"
+                    else:
+                        dict4["message"] = "Kspace data Not found"
+                        dict4["status"] = 2
+                    kspacelist.append(kspace)
+                    dict4["file"] = kspacelist
+                    rsfmri_block[data["ClassifyType"][2] + '_run_' + str(rsfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4)
+                    rsfmri_runcounter = rsfmri_runcounter + 1
+
+                elif 'qMRI' in data["ClassifyType"][2]:
+                    if int(filecounts["qMRI"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("qMRI Set the dict2[status] = 0")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
+                    qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace data
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    if kspace["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "Kspace data found"
+                    else:
+                        dict4["message"] = "Kspace data Not found"
+                        dict4["status"] = 2
+                    kspacelist.append(kspace)
+                    dict4["file"] = kspacelist
+                    qmri_block[data["ClassifyType"][2] + '_run_' + str(qmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4)
+                    qmri_runcounter = qmri_runcounter + 1
+
+
+                elif 'HBCD-FM-fMRI-PA' in data["ClassifyType"][2]:
+                    if int(filecounts["FM-fMRI"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("restfMRI Set the dict2[status] = 0")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
+                    fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace data
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    if kspace["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "Kspace data found"
+                    else:
+                        dict4["message"] = "Kspace data Not found"
+                        dict4["status"] = 2
+                    kspacelist.append(kspace)
+                    dict4["file"] = kspacelist
+                    fmPAfmri_block[data["ClassifyType"][2] + '_run_' + str(fmPAfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4)
+                    fmPAfmri_runcounter = fmPAfmri_runcounter + 1
+                elif 'HBCD-FM-fMRI-AP' in data["ClassifyType"][2]:
+                    if int(filecounts["FM-fMRI"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("restfMRI Set the dict2[status] = 0")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
+                    fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace data
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    if kspace["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "Kspace data found"
+                    else:
+                        dict4["message"] = "Kspace data Not found"
+                        dict4["status"] = 2
+                    kspacelist.append(kspace)
+                    dict4["file"] = kspacelist
+                    fmAPfmri_block[data["ClassifyType"][2] + '_run_' + str(fmAPfmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4)
+                    fmAPfmri_runcounter = fmAPfmri_runcounter + 1
+ 
+                elif 'B1' in data["ClassifyType"][2]:
+                    if int(filecounts["B1"]) > int(data["NumFiles"]):
+                            # it is incomplete series
+                            print("bMRI Set the dict2[status] = 0")
+                            dict2["status"] = 2
+                            compliance_found = 0
+
+                    b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace data
+                    kspace["path"] = getKSpaceFilePath(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    kspace["size"] = getKSpaceFileSize(data["PatientName"],suid, seuid, SCANNERTYPE )
+                    if kspace["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "Kspace data found"
+                    else:
+                        dict4["message"] = "Kspace data Not found"
+                        dict4["status"] = 2
+                    kspacelist.append(kspace)
+                    dict4["file"] = kspacelist
+                    b1_block[data["ClassifyType"][2] + '_run_' + str(bmri_runcounter)+"_KSPACE"] = copy.deepcopy(dict4)
+                    bmri_runcounter = bmri_runcounter + 1
+                elif 'HBCD-LocSVS' in data["ClassifyType"][2]:
+                    mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace datadd
+                    mrs["path"] = getMRSFilePath(data["PatientID"], suid)
+                    mrs["size"] = getMRSFileSize(data["PatientID"], suid)
+                    print("MRS file path :", mrs["path"])
+                    print("MRS file size :", mrs["size"])
+                    if mrs["size"] > 0 :
+                        dict4["status"] = 1
+                        dict4["message"] = "MRS raw data found"
+                    else:
+                        dict4["message"] = "MRS raw data Not found"
+                        dict4["status"] = 2
+                    mrslist.append(mrs)
+                    dict4["file"] = mrslist
+                    mrs_block[data["ClassifyType"][2] + '_run_' + str(mrs_runcounter)+"_MRS"] = copy.deepcopy(dict4)
+                    mrs_runcounter = bmri_runcounter + 1
+                # add Phantom QA
+                elif 'MB-fMRI-QA' in data["ClassifyType"][2]:
+                    mb_fMRI_qa_block[data["ClassifyType"][2] + '_run_' + str(mb_fMRI_qa_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace datadd
+                    mb_fMRI_qa_runcounter = mb_fMRI_qa_runcounter + 1
+                elif 'fBIRN-QA' in data["ClassifyType"][2]:
+                    fbirn_qa_block[data["ClassifyType"][2] + '_run_' + str(fbirn_qa_runcounter)] = copy.deepcopy(dict2)
+                    # check the kspace datadd
+                    fbirn_qa_runcounter = fbirn_qa_runcounter + 1
+
+                else:
+                    others.append(copy.deepcopy(dict2))
+            else:
+                others.append(copy.deepcopy(dict2))
+
+            dict["ManufacturerModelName"] = data["ManufacturerModelName"] 
+ 
 
     #if compliance_found:
         dict["status"] = "1"
