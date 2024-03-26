@@ -111,10 +111,20 @@ for path in os.listdir(dir_path):
                    
 
     
-
 #remove all temp files in /data/site/temp
-print(repacked)
+#get site ID:
+try:
+   os.delete("/data/site/temp/CH*")
+catch:
+   print("delete temp data error out")
+   continue;
 
+try:
+   os.delete("/data/site/temp/PH*")
+catch:
+   continue;
+
+print(repacked)
 
 
 #End time of the script
