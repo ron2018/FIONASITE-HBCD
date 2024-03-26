@@ -1112,15 +1112,6 @@ if __name__ == "__main__":
             dict["ManufacturerModelName"] = data["ManufacturerModelName"] 
  
 
-    #if compliance_found:
-        dict["status"] = "1"
-        dict["shortmessage"] = "C"
-        dict["message"] = "The Serie is ready, please verify before sending to DAIRC. One session based acquisition."
-    #else:
-    #    dict["status"] = "0"
-    #    dict["shortmessage"] = "N"
-    #    dict["message"] = "Some series is not complete, Please re-send them from original sources"
-
 
 
 
@@ -1130,12 +1121,14 @@ if __name__ == "__main__":
        
     else:
         t1_block["message"] = "HBCD-T1 series was not found"
+        compliance_found = 0
         t1_block["status"] = 2
     if len(t2_block) > 1 :
         t2_block["status"] = 1
         t2_block["message"] = "HBCD-T2 series was found"
     else:
         t2_block["status"] = 2
+        compliance_found = 0
         t2_block["message"] = "HBCD-T2 series was not found"
 
     if dti_runcounter > 1 : 
@@ -1143,6 +1136,7 @@ if __name__ == "__main__":
          dti_block["message"] = " HBCD-dMRI component was found"
     else: 
          dti_block["status"] = 2
+         compliance_found = 0
          dti_block["message"] = " HBCD-dMRI component was not found, A  DTI component should include a both AP and PA dMRI field map followed by the dMRI acquisition"
 
     print(midfmri_runcounter, fmAPfmri_runcounter, fmPAfmri_runcounter)
@@ -1152,34 +1146,50 @@ if __name__ == "__main__":
          rsfmri_block["message"] = " rest fMRI task was found."
     else: 
          rsfmri_block["status"] = 2
+         compliance_found = 0
          rsfmri_block["message"] = " rest fMRI task was not found. A  rest fMRI task component should include a fMRI field map followed by the rest fMRI task acquisition"
 
     if fmAPfmri_block:
         fmAPfmri_block["message"] = "fMRI FieldMap AP was found."
     else:
         fmAPfmri_block["status"] = 2
+        compliance_found = 0
         fmAPfmri_block["message"] = "fMRI FieldMap AP was Not found."
     if fmAPfmri_block:
         fmPAfmri_block["message"] = "fMRI FieldMap PA was found."
     else: 
         fmPAfmri_block["status"] = 2
+        compliance_found = 0
         fmPAfmri_block["message"] = "fMRI FieldMap PA was Not found."
 
     if qmri_block:
         qmri_block["message"] = "qMRI was found."
     else:
         qmri_block["status"] = 2
+        compliance_found = 0
         qmri_block["message"] = "qMRI was Not found."
     if b1_block:
         b1_block["message"] = "B1 was found."
     else: 
         b1_block["status"] = 2
         b1_block["message"] = "B1 was Not found."
+        compliance_found = 0
     if mrs_block:
         mrs_block["message"] = "MRS was found."
     else: 
         mrs_block["status"] = 2
         mrs_block["message"] = "MRS was Not found."
+        compliance_found = 0
+
+    if compliance_found:
+        dict["status"] = "1"
+        dict["shortmessage"] = "C"
+        dict["message"] = "The Serie is ready, please verify before sending to DAIRC. One session based acquisition."
+    else:
+        dict["status"] = "0"
+        dict["shortmessage"] = "N"
+        dict["message"] = "Some series is missing or incomplete, Please review and re-send them from original sources, only send to HDCC after confirmation!"
+
 
     dict["T1"] = t1_block
     dict["T2"] = t2_block

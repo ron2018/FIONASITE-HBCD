@@ -2019,7 +2019,7 @@ jQuery(document).ready(function() {
 
             if (dataSec1["status"] == 0) {
                 //jQuery('#study-info-dialog-sendall').removeAttr("disabled");
-               alert("Please review the series in RED, the file count is less than the slice in the dicom header, you may need to re-push the seriese from the source"); 
+               alert("Please review the series in RED, the series is either missing or incomplete, please re-push the series from the source if the series is scanned and is a complete series"); 
             } 
                 //else {
                 //jQuery('#study-info-dialog-sendall').attr("disabled", true);
@@ -2258,13 +2258,13 @@ jQuery(document).ready(function() {
        // check if we are allowed to send yet
        if (jQuery('#session-participant').val() == "" || 
            jQuery('#session-participant').val() == null || 
-         //  jQuery('#session-name').val() == null || 
-         //  jQuery('#session-name').val() == "" || 
            jQuery('#session-run').val() == "" ||
            jQuery('#session-run').val() == null) {
    	  alert("Please select a valid (screened) participant, an event name, and a session type before uploading data!");
 	  return;
        }	
+
+
 
        var suid =  "";
        var tripleId = "";
