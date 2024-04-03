@@ -113,17 +113,9 @@ for path in os.listdir(dir_path):
     
 #remove all temp files in /data/site/temp
 #get site ID:
-try:
-   os.delete("/data/site/temp/CH*")
-catch:
-   print("delete temp data error out")
-   continue;
-
-try:
-   os.delete("/data/site/temp/PH*")
-catch:
-   continue;
-
+os.system("/usr/bin/cd /data/site/temp && /usr/bin/rm -rf /data/site/temp/CH*")
+os.system("/usr/bin/cd /data/site/temp && /usr/bin/rm -rf /data/site/temp/PH*")
+os.system("/usr/bin/cd /data/site/temp && /usr/bin/rm -rf /data/site/temp/QI*")
 print(repacked)
 
 
