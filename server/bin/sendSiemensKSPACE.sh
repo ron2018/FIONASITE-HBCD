@@ -99,6 +99,15 @@ do
        continue;
   fi
    
+  if [ ${#filedir} != 20 ] ; then
+       continue;
+  fi
+
+  if ! [ -d $fdir ]; then
+     continue;
+  fi
+
+
   # if folder files have not been changed.
 
   tripleID="undefined"
@@ -214,7 +223,7 @@ do
   fi
   if [[ ${match} -eq 0 ]]; then
         echo " NO match found, probably the DICOM data has not been processed"
-        break;
+        #break;
   fi
 
 done
