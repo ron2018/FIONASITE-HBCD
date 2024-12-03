@@ -50,7 +50,6 @@ if (isset($_GET['id_redcap']) && $_GET['id_redcap'] != "") {
     return;
 }
 
-
 if (isset($_GET['run']) && $_GET['run'] != "") {
     $run = $_GET['run'];
 } else {
@@ -86,10 +85,19 @@ if (isset($_GET['dob']) && $_GET['dob'] != "") {
     return;
 }
 
+
 $path_info = pathinfo($filename);
 file_put_contents($log, date(DATE_ATOM)." Sending this file(s) to UCSD:  " .$path_info['filename']." \n", FILE_APPEND);
 file_put_contents($log, date(DATE_ATOM)." Check if we need to modify the dicom  " . $modify_participant_name . " with Sex: ".$sex. "  and Age :".$age." and DOB ".$dob." \n", FILE_APPEND);
 
+$lock = '/var/www/html/php/.lock/'.$path_info['filename'];
+file_put_contents($log, "lock file name: ".$lock);
+if (file_exists($lock)) {
+   // lock file exists exit sendToDAIC
+    file_put_contents($log, "lock file exists exit sendToDAIC for ".$filename." \n");
+    return;
+}
+file_put_contents($lock, "");
 
 $f = glob('/data'.$project.'/quarantine/'.$path_info['filename'].'*');
 $oksessions = array();
@@ -122,20 +130,11 @@ foreach($f as $fi) {
    }
 }
 
-// call to pack the raw data
-//$suid=explode ("_", $filename)[0];
-//echo ("SUID :".$suid);
 
-//$command=escapeshellcmd("/var/www/html/server/bin/packRawDicomFiles.sh ".$id_redcap." ".$suid);
-//$output=exec($command);
-
-//if (!$output){
-// $rawdatapack = $suid." raw data pack filed !";
-//} else {
-// $rawdatapack = $suid." raw data packed Sucessfully !";
-//}
-
-
+if (file_exists($lock)) {
+        file_put_contents($log, "Delete Lock File: ".$lock." \n");
+        unlink($lock);
+}
 $output="{ \"ok\": 1, \"ok_series\": \"".implode(",",$oksessions)."\", \"failed_series\": \"".implode(",", $failedsessions)."\"}";
 echo ($output);
 
