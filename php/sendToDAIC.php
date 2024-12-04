@@ -91,10 +91,10 @@ file_put_contents($log, date(DATE_ATOM)." Sending this file(s) to UCSD:  " .$pat
 file_put_contents($log, date(DATE_ATOM)." Check if we need to modify the dicom  " . $modify_participant_name . " with Sex: ".$sex. "  and Age :".$age." and DOB ".$dob." \n", FILE_APPEND);
 
 $lock = '/var/www/html/php/.lock/'.$path_info['filename'];
-file_put_contents($log, "lock file name: ".$lock);
+file_put_contents($log, "lock file name: ".$lock, FILE_APPEND);
 if (file_exists($lock)) {
    // lock file exists exit sendToDAIC
-    file_put_contents($log, "lock file exists exit sendToDAIC for ".$filename." \n");
+    file_put_contents($log, "lock file exists exit sendToDAIC for ".$filename." \n",FILE_APPEND);
     return;
 }
 file_put_contents($lock, "");
@@ -132,7 +132,7 @@ foreach($f as $fi) {
 
 
 if (file_exists($lock)) {
-        file_put_contents($log, "Delete Lock File: ".$lock." \n");
+        file_put_contents($log, "Delete Lock File: ".$lock." \n", FILE_APPEND);
         unlink($lock);
 }
 $output="{ \"ok\": 1, \"ok_series\": \"".implode(",",$oksessions)."\", \"failed_series\": \"".implode(",", $failedsessions)."\"}";
