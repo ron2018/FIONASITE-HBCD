@@ -1,0 +1,587 @@
+[
+  { "type" : "GE",
+    "id" : "GEBYMANUFACTURER",
+    "description" : "This scan is from GE",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^GE MEDICAL"
+      }
+    ]  
+  },
+  { "type" : "SIEMENS",
+    "id" : "SIEMENSBYMANUFACTURER",
+    "description" : "This scan is from SIEMENS",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "(?i)^SIEMENS"
+      }
+    ]  
+  },
+  { "type" : "PHILIPS",
+    "id" : "PHILIPSBYMANUFACTURER",
+    "description" : "This scan is from Philips",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^Philips"
+      }
+    ]  
+  },
+ {
+      "type" : "original",
+      "description": "original Image format (not derived)",
+      "id" : "ORIGINAL",
+      "rules": [
+          {
+             "tag": [ "0x08", "0x08" ],
+             "value": "ORIGINAL",
+             "operator": "contains"
+          }
+      ]
+  },
+  {
+      "type" : "mosaic",
+      "description": "Siemens Mosaic format",
+      "id" : "MOSAIC",
+      "rules": [
+          {
+             "tag": [ "0x08", "0x08" ],
+             "value": "MOSAIC",
+             "operator": "contains"
+          },
+          {
+             "rule": "SIEMENSBYMANUFACTURER"
+          }
+      ]
+  },
+{
+      "type" : "localizer",
+      "description": "A localizer scan, has been classified before as axial, sagittal and coronal",
+      "rules": [
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "axial" ,
+	      "operator": "contains"
+	  },
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "coronal",
+	      "operator": "contains"
+	  },
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "sagittal",
+	      "operator": "contains"
+	  }
+      ]
+  },
+  { 
+    "type" : "ABCD-T1",
+    "description" : "A T1 weighted image from Siemens with ABCD resolution",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+     "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "256"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "256"
+      },
+      {  
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "tfl_me3d1_16ns"
+      },{
+             "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "NORM"
+          },{
+             "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "DIS"
+          }
+
+   ]
+  },
+{
+    "type" : "ABCD-T1-NORM",
+    "description" : "A T1 weighted image from Siemens with ABCD resolution",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+     "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "256"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "256"
+      },
+      {
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "tfl_me3d1_16ns"
+      },{
+             "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "value": "NORM"
+          },{
+             "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "DIS"
+          }
+
+   ]
+  },
+  { 
+    "type" : "ABCD-T2",
+ "description" : "A T2 weighted image from Siemens with ABCD resolution Enhanced DICOM",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "256"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "256"
+      },{
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "spc_200ns"
+      },{
+             "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "NORM"
+      },{
+             "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "DIS"
+     }
+    ]
+  },
+{
+    "type" : "ABCD-T2-NORM",
+    "description" : "A T2 weighted image from Siemens with ABCD resolution Enhanced DICOM",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "256"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "256"
+      },{
+        "tag": [ "0x18", "0x9005" ],
+        "operator": "contains",
+        "value": "spc_200ns"
+      },{
+             "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "value": "NORM"
+      },{
+             "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "DIS"
+     }
+    ]
+  },
+
+{
+    "type" : "ABCD-Diffusion-FM-PA",
+    "description" : "Field Maps for ABCD Diffusion scan",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "140"
+      },{
+        "tag": [ "0x28","0x11" ],
+        "value": "140"
+      },{
+        "tag": [ "0x18", "0x9005" ],
+        "value": "epse2d1_140"
+      },{
+         "tag": ["ImageType" ],
+         "operator": "contains",
+          "value": "DIFFUSION"
+       },{
+         "tag": ["SeriesDescription" ],
+         "operator": "contains",
+          "value": "DistortionMap_PA"
+       }
+    ]
+  },
+{
+    "type" : "ABCD-Diffusion-FM-AP",
+    "description" : "Field Maps for ABCD Diffusion scan",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "140"
+      },{
+        "tag": [ "0x28","0x11" ],
+        "value": "140"
+      },{
+        "tag": [ "0x18", "0x9005" ],
+        "value": "epse2d1_140"
+      },{
+         "tag": ["ImageType" ],
+         "operator": "contains",
+          "value": "DIFFUSION"
+       },{
+         "tag": ["SeriesDescription" ],
+         "operator": "contains",
+          "value": "DistortionMap_AP"
+       }
+    ]
+  },
+{
+    "type" : "ABCD-DTI",
+    "description" : "ABCD Diffusion scan",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "140"
+      },{
+       "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "140"
+      },{
+        "tag": [ "0X18","0X9005" ],
+        "value": "epse2d1_140"
+      },{
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "103"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "FA"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "SBRef"
+      }
+    ]
+  },
+{
+    "type" : "ABCD-rsfMRI",
+    "description" : "ABCD Resting State fMRI scan",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "90"
+      },{
+        "tag": [ "PulseSequenceName" ],
+        "value": "epf..2d1_90"
+      },{
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "383"
+      },{
+
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "fMRI-PA_rest"
+      },{
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "SBRef"
+      }
+    ]
+  },
+  {
+    "type" : "ABCD-fMRI-FM-PA",
+    "description" : "Field Maps for ABCD fMRI scans",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "90"
+      },{
+        "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "90"
+      },{
+         "tag": [ "PulseSequenceName" ],
+         "value": "ep..2d1_90"
+      },{
+      "tag": [ "NumberOfTemporalPositions" ],
+        "value": "1"
+      },{
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "_fMRI_PA"
+      }
+
+    ]
+  },
+  {
+    "type" : "ABCD-fMRI-FM-AP",
+    "description" : "Field Maps for ABCD fMRI scans",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "90"
+      },{
+        "tag": [ "0x28", "0x11" ],
+        "operator": "==",
+        "value": "90"
+      },{
+         "tag": [ "PulseSequenceName" ],
+         "value": "ep..2d1_90"
+      },{
+      "tag": [ "NumberOfTemporalPositions" ],
+        "value": "1"
+      },{
+        "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "_fMRI_AP"
+      }
+    ]
+  },
+  
+   {
+    "type" : "ABCD-SST-fMRI",
+    "description" : "ABCD SST fMRI scan",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+         "tag": [ "0x28","0x10" ],
+        "value": "90"
+      },{
+        "tag": [ "0x28","0x11" ],
+        "value": "90"
+      },{
+        "tag": [ "PulseSequenceName" ],
+        "value": "epf..2d1_90"
+      },{
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "445"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "value": "fMRI-PA"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "_SBRef"
+      }
+    ]
+  },{
+    "type" : "ABCD-nBack-fMRI",
+    "description" : "ABCD nBack fMRI scan",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+       "rule" : "ORIGINAL"
+      },{
+        "tag": [ "0x28","0x10" ],
+        "value": "90"
+      },{
+        "tag": [ "0x28","0x11" ],
+        "value": "90"
+      },{
+        "tag": [ "PulseSequenceName" ],
+        "value": "epf..2d1_90"
+      },{
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "370"
+      },{
+       "tag": [ "ImageType" ],
+        "operator": "contains",
+        "value": "FMRI"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "_SBRef"
+      }
+    ]
+  },
+
+  {
+    "type" : "ABCD-MID-fMRI",
+    "description" : "ABCD MID fMRI scan",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+         "tag": [ "0x28","0x10" ],
+        "value": "90"
+      },{
+        "tag": [ "0x28","0x11" ],
+        "value": "90"
+      },{
+        "tag": [ "PulseSequenceName" ],
+        "value": "epf..2d1_90"
+      },{
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "411"
+      },{
+       "tag": [ "ImageType" ],
+        "operator": "contains",
+        "value": "FMRI"
+      },{
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "_SBRef"
+      }
+
+    ]
+  },
+{
+    "type" : "ABCD-MB-fMRI-QA",
+    "description" : "Multiband ABCD Phantom QA",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
+      },{
+        "tag": [ "0x18", "0x24" ],
+        "value": "epf..2d1_90"
+      },{
+        "tag": [ "NumSlices" ],
+        "value": "60"
+      },{
+        "tag": [ "AcquisitionLength" ],
+        "value": "TA 06:44"
+      }
+    ]
+  },
+{
+    "type" : "ABCD-fBIRN-QA",
+    "description" : "Non-multiband ABCD Phantom QA",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "64, 0, 0, 64"
+      },{
+        "tag": [ "0x18", "0x24" ],
+        "value": "epfid2d1_64"
+      },{
+        "tag": [ "AcquisitionLength" ],
+        "value": "TA 06:44"
+      }
+    ]
+  },{
+      "type" : "ABCD-Coil-QA",
+      "description": "Siemens phantom coil scan",
+      "rules": [
+          {
+         "rule": "SIEMENSBYMANUFACTURER"
+          },{
+        "tag": [ "0x18", "0x24" ],
+        "value": "fl2d1"
+      },{
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "233"
+      },{
+       "tag": [ "0x51", "0x100f" ],
+        "operator": "contains",
+        "negate": "yes",
+        "value": "HEA;HEP"
+      },{
+        "tag": [ "SeriesDescription" ],
+        "value": "_uncombined$"
+      }
+      ]
+  },
+{
+    "type" : "ABCD-Diffusion-QA",
+    "description" : "ABCD Diffusion Phantom QA",
+    "rules" : [
+      {
+        "rule" : "SIEMENSBYMANUFACTURER"
+      },{
+        "rule" : "ORIGINAL"
+      },{
+        "rule" : "MOSAIC"
+      },{
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{
+        "tag": [ "0x18", "0x24" ],
+        "value": "ep_b"
+      },{
+        "tag": [ "SeriesDescription" ],
+        "value": "...._QA_dMRI"
+      }
+    ]
+  }
+
+  
+]
+
