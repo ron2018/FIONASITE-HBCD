@@ -159,6 +159,35 @@
    height: auto;
 }
 
+#modal-kspace-status {
+   width: 90%;
+}
+.item-heigh {
+   width: 10px;
+   height: 50%;
+   min-height: 10px;
+   border: 1px solid gray;
+   border-radius: 3px;
+   color: white;
+   margin: 2px;
+}
+.group-archive {
+   width: 14px;
+   height: auto;
+}
+.group-raw {
+   width: 16px;
+   height: auto;
+}
+.group-quarantine {
+   width: 16px;
+   height: auto;
+}
+.group-outbox {
+   width: 16px;
+   height: auto;
+}
+
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
@@ -368,6 +397,7 @@
             <li class="mdl-menu__item" id="dialog-clean-quarantine-button">Quarantine Data</li>
             <li class="mdl-menu__item" id="dialog-setup-button">Setup</li>
 <?php endif; ?>
+            <li class="mdl-menu__item" id="dialog-kspace-status-button">Kspace Status </li>
             <li class="mdl-menu__item" id="dialog-change-password-button">Change Password</li>
             <li class="mdl-menu__item" onclick="logout();">Logout</li>
           </ul>
@@ -565,6 +595,34 @@ loading configuration file...
     </div>
     <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
         <button type="button" class="mdl-button" id="data-flow-dialog-cancel">ok</button>
+    </div>
+</dialog>
+
+
+<dialog class="mdl-dialog" id="modal-kspace-status">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 32pt; margin-bottom: 25px;">
+           Problematic KSPACE Data:
+        </div>
+        <div>
+
+        </div>
+        <div id="kspace-status-container" style="position: relative;"></div>
+          <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <thead><tr>
+                 <th style="mdl-data-table__cell--non-numeric">Types</th>
+                 <th class="mdl-data-table__cell--non-numeric">Study Name</th>
+                 <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="kspaceData">
+
+            </tbody>
+          </table>
+
+    </div>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="data-kspace-dialog-cancel">ok</button>
     </div>
 </dialog>
 
@@ -1731,6 +1789,26 @@ jQuery(document).ready(function() {
     jQuery('#calendar-loc').on('click', '.fc-title', function() {
        jQuery('#search-list').val(jQuery(this).text()).trigger('keyup');		    
     });
+  
+    jQuery('#modal-kspace-status').on('click', '.item', function(e) {
+        // create a popover for this item
+        if (jQuery(this).hasClass('selected')) {
+            deselect(jQuery(this));
+        } else {
+            jQuery(this).addClass('selected');
+            jQuery('.pop').slideFadeToggle();
+            // move the window to the mouse position
+            jQuery('.pop').css('top', jQuery(this).offset().top + "px");
+            jQuery('.pop').css('left', jQuery(this).offset().left + 'px');
+            jQuery('.pop').css('z-index', 100003);
+            // fill in the contents
+            var title = jQuery(this).attr('title');
+            jQuery('.pop .messagepop-title').html( title.split(' ')[0] );
+            jQuery('.pop .messagepop-content').html( 'SeriesInstanceUID:</br>' + title.split(" ")[1] + '</br>StudyInstanceUID:</br>' + jQuery(this).parent().parent().parent().attr('title'));
+        }
+        return false;
+    }); 
+
 
     jQuery('#modal-data-flow').on('click', '.item', function(e) {
 	// create a popover for this item
@@ -1887,6 +1965,10 @@ jQuery(document).ready(function() {
         if (!dialog.showModal) {
         dialogPolyfill.registerDialog(dialog);
     }
+    var dialog = document.querySelector('#modal-kspace-status');
+        if (!dialog.showModal) {
+        dialogPolyfill.registerDialog(dialog);
+    }
     var dialog = document.querySelector('#modal-study-info');
         if (!dialog.showModal) {
         dialogPolyfill.registerDialog(dialog);
@@ -2010,6 +2092,7 @@ jQuery(document).ready(function() {
 	    // get list of valid participant names from our database	
             getSessionNamesFromREDCap(patientname, studydate);
             
+  
             console.log(dataSec1);
 	
             displayHeaderSection(dataSec1);
@@ -2017,6 +2100,7 @@ jQuery(document).ready(function() {
             displayAdditionalScans(dataSec3, studyinstanceuid);
             console.log("#list-of-subjects: On click: " + dataSec1["status"])
 
+             
             if (dataSec1["status"] == 0) {
                 //jQuery('#study-info-dialog-sendall').removeAttr("disabled");
                alert("Please review the series in RED, the series is either missing or incomplete, please re-push the series from the source if the series is scanned and is a complete series"); 
@@ -2033,6 +2117,13 @@ jQuery(document).ready(function() {
 
     var dialogDF = document.querySelector('#modal-data-flow');
     var closeButton = dialogDF.querySelector('#data-flow-dialog-cancel');
+    var closeClickHandler = function (event) {
+       dialogDF.close();
+    }
+    closeButton.addEventListener('click', closeClickHandler);
+
+    var dialogDF = document.querySelector('#modal-kspace-status');
+    var closeButton = dialogDF.querySelector('#data-kspace-dialog-cancel');
     var closeClickHandler = function (event) {
        dialogDF.close();
     }
@@ -2075,10 +2166,41 @@ jQuery(document).ready(function() {
       dialog.showModal();
     });
 
+    jQuery('#dialog-kspace-status-button').click(function() {
+      var dialog = document.querySelector('#modal-kspace-status');
+      dialog.showModal();
+      // we need to collect data about which files are in which directories on the system
+      jQuery.getJSON('php/getKSPACEStatus.php', function(data) {
+	  items = Object.keys(data);
+          jQuery('#kspaceData').children().remove();
+
+	  for (var i = 0; i < items.length; i++) {
+            var kspace = data[items[i]];
+            console.log(kspace);
+
+            var it = "<tr data=\" KSPACE STATUS: \">";
+ 
+            if ("DICOM without KSPACE data" in kspace) {
+                it = it +  "<td\>"  + " DICOM without KSPACE data:   " + " </td>" ;
+                it = it +  "<td\>" + kspace['DICOM without KSPACE data'] + "</td>";
+            } 
+            else {
+                it = it + "<td\>"  + " Problematic KSPACE data:   " + " </td>" ;
+                it = it + "<td\>" + kspace['Problematic KSPACE data'] + "</td>";
+            }
+            it = it + "<td>" + "<button class=\"btn kspace-detail\" disabled>Detail</button>" + "</td>" 
+                  + "</tr>";
+
+	    jQuery('#kspaceData').append(it);
+          //jQuery('#kspace-status-container').woodmark();
+	  }
+          var wookmark = new Wookmark('#kspace-status-container');
+      });
+    });
+
     jQuery('#dialog-data-flow-button').click(function() {
       var dialog = document.querySelector('#modal-data-flow');
       dialog.showModal();
-
       // we need to collect data about which files are in which directories on the system
       jQuery.getJSON('php/getDataFlow.php', function(data) {
 	  studies = Object.keys(data);

@@ -85,7 +85,7 @@ case $1 in
             --write-xfer-little \
             --exec-on-reception "PleaseLookAtThis '#a' '#c' '#r' '#p' '#f'" \
             --sort-on-study-uid scp \
-            --output-directory "$od" \
+            --output-directory "$od" --log-level debug \
             $port &>${SERVERDIR}/logs/storescpd${projname}.log &
         pid=$!
         echo $pid > $pidfile
