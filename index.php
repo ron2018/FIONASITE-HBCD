@@ -397,6 +397,7 @@
             <li class="mdl-menu__item" id="dialog-clean-quarantine-button">Quarantine Data</li>
             <li class="mdl-menu__item" id="dialog-setup-button">Setup</li>
 <?php endif; ?>
+            <li class="mdl-menu__item" id="dialog-mrs-status-button">MRS Status </li>
             <li class="mdl-menu__item" id="dialog-kspace-status-button">Kspace Status </li>
             <li class="mdl-menu__item" id="dialog-change-password-button">Change Password</li>
             <li class="mdl-menu__item" onclick="logout();">Logout</li>
@@ -623,6 +624,33 @@ loading configuration file...
     </div>
     <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
         <button type="button" class="mdl-button" id="data-kspace-dialog-cancel">ok</button>
+    </div>
+</dialog>
+
+<dialog class="mdl-dialog" id="modal-mrs-status">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 32pt; margin-bottom: 25px;">
+           Problematic MRS Data:
+        </div>
+        <div>
+
+        </div>
+        <div id="kspace-status-container" style="position: relative;"></div>
+          <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <thead><tr>
+                 <th style="mdl-data-table__cell--non-numeric">Types</th>
+                 <th class="mdl-data-table__cell--non-numeric">Study Name</th>
+                 <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="mrsData">
+
+            </tbody>
+          </table>
+
+    </div>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="data-mrs-dialog-cancel">ok</button>
     </div>
 </dialog>
 
@@ -2122,12 +2150,19 @@ jQuery(document).ready(function() {
     }
     closeButton.addEventListener('click', closeClickHandler);
 
-    var dialogDF = document.querySelector('#modal-kspace-status');
-    var closeButton = dialogDF.querySelector('#data-kspace-dialog-cancel');
+    var dialogKS = document.querySelector('#modal-kspace-status');
+    var closeButtonKS = dialogKS.querySelector('#data-kspace-dialog-cancel');
     var closeClickHandler = function (event) {
-       dialogDF.close();
+       dialogKS.close();
     }
-    closeButton.addEventListener('click', closeClickHandler);
+    closeButtonKS.addEventListener('click', closeClickHandler);
+
+    var dialogMS = document.querySelector('#modal-mrs-status');
+    var closeButtonMS = dialogMS.querySelector('#data-mrs-dialog-cancel');
+    var closeClickHandler = function (event) {
+       dialogMS.close();
+    }
+    closeButtonMS.addEventListener('click', closeClickHandler);
 
 
     var dialogCP = document.querySelector('#modal-change-password');
@@ -2166,6 +2201,41 @@ jQuery(document).ready(function() {
       dialog.showModal();
     });
 
+    jQuery('#dialog-mrs-status-button').click(function() {
+      var dialog = document.querySelector('#modal-mrs-status');
+      dialog.showModal();
+      // we need to collect data about which files are in which directories on the system
+      jQuery.getJSON('php/getMRSStatus.php', function(data) {
+	  items = Object.keys(data);
+          jQuery('#mrsData').children().remove();
+
+	  for (var i = 0; i < items.length; i++) {
+            var mrs = data[items[i]];
+            console.log(mrs);
+
+            var it = "<tr data=\" MRS STATUS: \">";
+ 
+            if ("DICOM without MRS data" in mrs) {
+                it = it +  "<td\>"  + " Missing MRS data:   " + " </td>" ;
+                it = it +  "<td\>" + mrs['DICOM without MRS data'] + "</td>";
+            } 
+            else {
+                it = it + "<td\>"  + " Unprocessed MRS data:   " + " </td>" ;
+                it = it + "<td\>" + mrs['Problematic MRS data'] + "</td>";
+            }
+            //it = it + "<td>" + "<button class=\"btn mrs-detail\" disabled>Detail</button>" + "</td>"  + "</tr>";
+            it = it + "</tr>";
+
+	    jQuery('#mrsData').append(it);
+          //jQuery('#kspace-status-container').woodmark();
+
+          }
+          var wookmark = new Wookmark('#kspace-status-container');
+      });
+    });
+
+
+
     jQuery('#dialog-kspace-status-button').click(function() {
       var dialog = document.querySelector('#modal-kspace-status');
       dialog.showModal();
@@ -2181,16 +2251,15 @@ jQuery(document).ready(function() {
             var it = "<tr data=\" KSPACE STATUS: \">";
  
             if ("DICOM without KSPACE data" in kspace) {
-                it = it +  "<td\>"  + " DICOM without KSPACE data:   " + " </td>" ;
+                it = it +  "<td\>"  + " Missing KSPACE data:   " + " </td>" ;
                 it = it +  "<td\>" + kspace['DICOM without KSPACE data'] + "</td>";
             } 
             else {
-                it = it + "<td\>"  + " Problematic KSPACE data:   " + " </td>" ;
+                it = it + "<td\>"  + " Unprocessed KSPACE data:   " + " </td>" ;
                 it = it + "<td\>" + kspace['Problematic KSPACE data'] + "</td>";
             }
-            it = it + "<td>" + "<button class=\"btn kspace-detail\" disabled>Detail</button>" + "</td>" 
-                  + "</tr>";
-
+            // it = it + "<td>" + "<button class=\"btn kspace-detail\" disabled>Detail</button>" + "</td>"    + "</tr>";
+            it = it + "</tr>";
 	    jQuery('#kspaceData').append(it);
           //jQuery('#kspace-status-container').woodmark();
 	  }
