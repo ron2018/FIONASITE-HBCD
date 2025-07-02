@@ -2218,13 +2218,15 @@ jQuery(document).ready(function() {
             if ("DICOM without MRS data" in mrs) {
                 it = it +  "<td\>"  + " Missing MRS data:   " + " </td>" ;
                 it = it +  "<td\>" + mrs['DICOM without MRS data'] + "</td>";
+                it = it + 
+                  // "<td>" + "<button class=\"btn mrs-lost\" >Mark it Lost</button>" + "</td>"  +
+                  "<td>" + "<button class=\"btn mrs-not-acquired\" disabled>Not Acquired</button>" + "</td>"   + "</tr>";
             } 
             else {
                 it = it + "<td\>"  + " Unprocessed MRS data:   " + " </td>" ;
                 it = it + "<td\>" + mrs['Problematic MRS data'] + "</td>";
+                it = it + "</tr>";
             }
-            //it = it + "<td>" + "<button class=\"btn mrs-detail\" disabled>Detail</button>" + "</td>"  + "</tr>";
-            it = it + "</tr>";
 
 	    jQuery('#mrsData').append(it);
           //jQuery('#kspace-status-container').woodmark();
@@ -2234,6 +2236,26 @@ jQuery(document).ready(function() {
       });
     });
 
+
+    jQuery('#mrsData').on('click', '.mrs-not-acquired', function() {
+        // we got a click on a button that asks us to mark it as not acquired
+        var study = jQuery(this).parent().attr('data');
+        console.log("Action: mark this data as not acquired : " + study);
+        var row = jQuery(this).parent();
+        console.log(row)
+        var suid = JSON.stringify(quarantineDataTmp[study]['Missing MRS data']); 
+        jQuery.ajax({
+                      url: 'php/markMRSnotAcquired.php',
+                      data: { "suid": suid},
+                      dataType: 'json',
+                      type: "POST",
+                      success: function(data) {
+                                // request that the files are moved to DAIC with the specified header
+                                console.log(" This MRS has marked as not acquired: " + JSON.stringify(data));
+                                row.hide(); // hide this column
+                      }
+        });
+    });
 
 
     jQuery('#dialog-kspace-status-button').click(function() {
