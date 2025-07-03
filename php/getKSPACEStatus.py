@@ -83,7 +83,13 @@ def get_unique_sent_suid(folder_path):
 
 
 
-sendList = get_unique_sent_suid("/data/site/kspace/processed/" )
+sendList1 = get_unique_sent_suid("/data/site/kspace/processed/" )
+sendList2 =  pd.read_csv("/data/site/kspace/processed/kspacesent.csv" )
+
+#add two lists
+unique_set = set(sendList1 + sendList2["KSPACESENT"].tolist())
+sendList = list(unique_set)
+
 print(sendList)
 
 
