@@ -133,7 +133,7 @@ foreach($g as $f) {
    } else {
       $filenamestem = $path_parts['filename'];
    }
-   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$filenamestem.'md5sum';
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$filenamestem.'.md5sum';
    if (file_exists($md5sumfname)) {
        $gvalid[] = [$f, date ("F d Y H:i:s.", filemtime($md5sumfname))];
    }
@@ -147,7 +147,7 @@ foreach($h as $f) {
    } else {
       $filenamestem = $path_parts['filename'];
    }
-   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$filenamestem.'md5sum';
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$filenamestem.'.md5sum';
    if (file_exists($md5sumfname)) {
        $hvalid[] = [$f, date ("F d Y H:i:s.", filemtime($md5sumfname))];
    }

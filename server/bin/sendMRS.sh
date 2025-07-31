@@ -104,7 +104,7 @@ do
      match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
 
      echo $match
-     suid=`ls /data/DAIC/${tripleID}*.tgz | head -1 | cut -d"_" -f5`
+     suid=`grep mrsLoc /data/DAIC/${tripleID}*.json | head -1 | cut -d"_" -f5`
      #suid=`ls /data/DAIC/PIUCS0023_128918_V02*.tgz | head -1 | cut -d"_" -f5`
      echo $suid
      touch /var/www/html/php/request_compliance_check/$suid

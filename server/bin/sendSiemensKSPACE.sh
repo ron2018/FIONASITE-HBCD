@@ -99,15 +99,6 @@ do
        continue;
   fi
    
-  if [ ${#filedir} != 20 ] ; then
-       continue;
-  fi
-
-  if ! [ -d $fdir ]; then
-     continue;
-  fi
-
-
   # if folder files have not been changed.
 
   tripleID="undefined"
@@ -192,17 +183,27 @@ do
 
      #rsync this files
      tripleID=${filedir}
-     #echo ${tripleID}
+
+     if [[ $tripleID =~ "Session" ]]; then
+         tripleID=${tripleID:0:20}
+         suid=$(ls /data/site/kspace/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f6)
+     fi
+     
+     echo ${tripleID}
      #get SUID from file
      suid=$(ls /data/site/kspace/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f5)
+
+     if [[ $filedir =~ "Session" ]]; then
+         suid=$(ls /data/site/kspace/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f6)
+     fi
      echo $suid
      echo "Before rsyc: rawdata_suid_${suid}*.dat"
 
-     { echo "/usr/bin/rsync -v --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/"
+     { echo "/usr/bin/rsync -v --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/"
        cd /data/site/kspace/${filedir}
        for a in `ls -1 *.dat`; do id=$(sed 's/\.dat//g'  <<< $a);  md5sum  $a >  $id.md5sum; done
 
-       /usr/bin/rsync -v --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${filedir}_KSPACE_${suid}/ 
+       /usr/bin/rsync -v --no-R /data/site/kspace/${filedir}/* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/KSPACE/${tripleID}_KSPACE_${suid}/ 
 
 
      } &&  {
@@ -223,7 +224,7 @@ do
   fi
   if [[ ${match} -eq 0 ]]; then
         echo " NO match found, probably the DICOM data has not been processed"
-        #break;
+#        break;
   fi
 
 done
