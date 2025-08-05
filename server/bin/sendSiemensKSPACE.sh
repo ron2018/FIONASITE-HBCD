@@ -186,7 +186,6 @@ do
 
      if [[ $tripleID =~ "Session" ]]; then
          tripleID=${tripleID:0:20}
-         suid=$(ls /data/site/kspace/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f6)
      fi
      
      echo ${tripleID}
@@ -194,7 +193,8 @@ do
      suid=$(ls /data/site/kspace/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f5)
 
      if [[ $filedir =~ "Session" ]]; then
-         suid=$(ls /data/site/kspace/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f6)
+         suid=$(ls /data/DAIC/${filedir}_*.tgz |   head -1 | cut -d"_" -f5)
+         #suid=$(ls /data/site/kspace/${filedir}/rawdata_suid_* | head -1 | cut -d"_" -f6)
      fi
      echo $suid
      echo "Before rsyc: rawdata_suid_${suid}*.dat"
