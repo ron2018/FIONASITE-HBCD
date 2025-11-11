@@ -104,25 +104,32 @@ do
      match=`ls /data/DAIC/$tripleID*.tgz | wc -l`
 
      echo $match
-     suid=`grep mrsLoc /data/DAIC/${tripleID}*.json | head -1 | cut -d"_" -f5`
+     suid=`ls /data/DAIC/${tripleID}*.tgz | head -1 | cut -d"_" -f5`
      #suid=`ls /data/DAIC/PIUCS0023_128918_V02*.tgz | head -1 | cut -d"_" -f5`
      echo $suid
      touch /var/www/html/php/request_compliance_check/$suid
-
+     
      if [[ ${match} -gt 0 ]]; then
          # triple ID are correct and should send the MRS datat to UMN
-         #register the files to UMN
-         {  
+	 # check mrs_status.csv file for code = 0, any other set the match to -1
+	 mrsStatusCode=-1
+         mrsStatusCode=`grep ${tripleID} /data/site/mrs/umn/mrs_status.csv | cut -f2 -d","`
+	 echo $mrsStatusCode
+
+	 if [[ -n "${mrsStatusCode}" && "${mrsStatusCode}" -eq "0" ]]; then
+             #register the files to UMN
+             {  
 		 /usr/bin/md5sum  $datfile  >  /data/site/mrs/${tripleID}_MRS_${suid}.md5sum; 
                  mv $datfile ${tripleID}_MRS_${suid}.zip
-         echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_MRS_${suid}.zip --token=$token --type=MRS"
+             echo "/usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_MRS_${suid}.zip --token=$token --type=MRS"
                  /usr/bin/python /var/www/html/server/bin/registerRawFileUpload.py --filename=${tripleID}_MRS_${suid}.zip  --token=$token --type=MRS >> $log 2>&1 
-         } &&
-         {
+             } &&
+             {
                 echo "/usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS_${suid}* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/"
-         /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS_${suid}* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/  
-         /bin/mv ${tripleID}_MRS_${suid}* /data/site/mrs/umn/ || error_exit
-         }
+               /usr/bin/rsync -LptgoDv0 --no-R /data/site/mrs/${tripleID}_MRS_${suid}* hbcd_${user}_fiona@${endpoint}:/home/hbcd_${user}_fiona/MRS/  
+               /bin/mv ${tripleID}_MRS_${suid}* /data/site/mrs/umn/ || error_exit
+             }
+         fi
      fi
 
 done

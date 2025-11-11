@@ -13,6 +13,8 @@ from datetime import datetime
 import argparse
 import glob
 from pydicom.filereader import InvalidDicomError
+import numpy as np
+import pandas as pd
 
 # LOGGING
 ROOT_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)))
@@ -140,7 +142,26 @@ def getMRSFileSize(tripleID,suid):
     else:
         return 0
 
- 
+def getMRSStatus(mrsStatusPd, patientName):
+    print(mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)])
+    print(mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item())
+
+
+    if (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == 0 ):
+        return 1, "MRS file is normal"
+    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -11 ):
+        return 2," MRS file format is incorrect!"
+    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -12 ):
+        return 2," MRS has more than one format files!" 
+    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -21 ):
+        return 2," MRS file has more than one archive!"
+    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -22 ):
+        return 2," MRS file is empty!" 
+    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -23 ):
+        return 2," MRS file failed to unzip!!" 
+    else:
+        return 2," MRS file has non-specific error!" 
+
 
 # take SUID as first parameter, project name as optional second parameter
 if __name__ == "__main__":
@@ -159,7 +180,6 @@ if __name__ == "__main__":
     settings = {}
     with open(configFilename,'r') as f:
         settings = json.load(f)
-
 
     with open('/var/www/html/server/bin/compliances.json','r') as f:
         complianceSetting = json.load(f)
@@ -184,6 +204,10 @@ if __name__ == "__main__":
         currentTime = datetime.now().strftime("%d-%m-%y-%H-%M-%S")
         shutil.move(os.path.join("/data/site/output/scp_"+SUID, "series_compliance/compliance_output.json"),
                 os.path.join("/data/site/output/scp_"+SUID, "series_compliance/compliance_output" + currentTime + ".json"))
+
+    # read MRS status file
+    mrs_status = pd.read_csv("/data/site/mrs/umn/mrs_status.csv")
+    print(mrs_status)
 
 
     datadir = '/data/quarantine/'    
@@ -495,11 +519,12 @@ if __name__ == "__main__":
                     # check the kspace datadd
                     mrs["path"] = getMRSFilePath(data["PatientID"], suid)
                     mrs["size"] = getMRSFileSize(data["PatientID"], suid)
-                    print("MRS file path :", mrs["path"])
-                    print("MRS file size :", mrs["size"])
+                    print("MRS ##### file path :", mrs["path"])
+                    print("MRS ##### file size :", mrs["size"])
                     if mrs["size"] > 0 :
-                        dict4["status"] = 1
-                        dict4["message"] = "MRS raw data found"
+                        dict4["status"], dict4["message"] = getMRSStatus(mrs_status, data["PatientName"])
+                        #dict4["message"] = "MRS raw data found"
+
                     else:
                         dict4["message"] = "MRS raw data Not found"
                         dict4["status"] = 2
@@ -792,8 +817,9 @@ if __name__ == "__main__":
                     print("MRS file path :", mrs["path"])
                     print("MRS file size :", mrs["size"])
                     if mrs["size"] > 0 :
-                        dict4["status"] = 1 
-                        dict4["message"] = "MRS raw data found" 
+                        dict4["status"], dict4["message"] = getMRSStatus(mrs_status, data["PatientName"])
+
+
                     else:
                         dict4["message"] = "MRS raw data Not found" 
                         dict4["status"] = 2
@@ -1085,8 +1111,10 @@ if __name__ == "__main__":
                     print("MRS file path :", mrs["path"])
                     print("MRS file size :", mrs["size"])
                     if mrs["size"] > 0 :
-                        dict4["status"] = 1
-                        dict4["message"] = "MRS raw data found"
+                        #dict4["status"] = 1
+                        #dict4["message"] = "MRS raw data found"
+                        dict4["status"], dict4["message"] = getMRSStatus(mrs_status, data["PatientName"])
+
                     else:
                         dict4["message"] = "MRS raw data Not found"
                         dict4["status"] = 2
