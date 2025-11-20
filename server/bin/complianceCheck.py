@@ -143,25 +143,29 @@ def getMRSFileSize(tripleID,suid):
         return 0
 
 def getMRSStatus(mrsStatusPd, patientName):
-    print(mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)])
-    print(mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item())
+    # check if mrsStatusPd is empty since the file is found in processed umn folder, we will return status 1
+    if mrsStatusPd.empty:
+        return 1, "MRS file is normal"   
+    print(mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'])
 
+    if mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].empty:
+       return 1, "MRS file is normal"
+    else:  
 
-    if (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == 0 ):
-        return 1, "MRS file is normal"
-    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -11 ):
-        return 2," MRS file format is incorrect!"
-    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -12 ):
-        return 2," MRS has more than one format files!" 
-    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -21 ):
-        return 2," MRS file has more than one archive!"
-    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -22 ):
-        return 2," MRS file is empty!" 
-    elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -23 ):
-        return 2," MRS file failed to unzip!!" 
-    else:
-        return 2," MRS file has non-specific error!" 
-
+        if (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == 0 ):
+            return 1, "MRS file is normal"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -11 ):
+            return 2," MRS file format is incorrect!"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -12 ):
+            return 2," MRS has more than one format files!" 
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -21 ):
+            return 2," MRS file has more than one archive!"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -22 ):
+            return 2," MRS file is empty!" 
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -23 ):
+            return 2," MRS file failed to unzip!!" 
+        else:
+            return 2," MRS file has non-specific error!" 
 
 # take SUID as first parameter, project name as optional second parameter
 if __name__ == "__main__":

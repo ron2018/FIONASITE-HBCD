@@ -744,11 +744,16 @@ individual = {}
 
 for ff in listContent:
     basename, errCode = main(os.path.join(dirSource, ff), os.path.join(dirOutput, os.path.basename(ff)))
-    individual = { "hbcd_id": basename.replace("_MRS.zip", ""), "code": errCode}
-    print(basename.replace("_MRS.zip", ""), errCode)
+    individual = { "hbcd_id": basename.replace("_MRS.zip", "").replace("_mrs.zip", ""), "code": errCode}
+    print(basename.replace("_MRS.zip", "").replace("_mrs.zip", ""), errCode)
     allData.append(individual)
-    
+
+if not allData:
+    individual = { "hbcd_id":"" , "code":0}
+    allData.append(individual)     
+
 result = pd.DataFrame(allData)
+result = result[result["hbcd_id"].str.strip() != ""]
 print (result)
 result.to_csv("/data/site/mrs/umn/mrs_status.csv", index=False)
 
