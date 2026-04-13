@@ -155,15 +155,49 @@ def getMRSStatus(mrsStatusPd, patientName):
         if (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == 0 ):
             return 1, "MRS file is normal"
         elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -11 ):
-            return 2," MRS file format is incorrect!"
+            return 2,"No MRS file(s) found"
         elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -12 ):
-            return 2," MRS has more than one format files!" 
+            return 2,"Multiple MRS file formats found"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -13 ):
+            return 2,"MRS: corresponding SDAT file missing"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -14 ):
+            return 2,"MRS: corresponding list file missing"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -15 ):
+            return 2,"MRS: corresponding data file missing"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -16 ):
+            return 2,"MRS: corresponding sin  file missing"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -17 ):
+            return 2,"MRS: corresponding json file missing"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -18 ):
+            return 2,"MRS: corresponding txt  file missing"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -19 ):
+            return 2,"MRS: corresponding dcm  folder missing"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -20 ):
+            return 2,"MRS: both data and list files are missing (when .raw file is present)"
         elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -21 ):
-            return 2," MRS file has more than one archive!"
+            return 2," MRS: multiple Philips data files found"
         elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -22 ):
-            return 2," MRS file is empty!" 
-        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -23 ):
-            return 2," MRS file failed to unzip!!" 
+            return 2," MRS: multiple matching text/JSON/sin files found"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -31 ):
+            return 2," MRS: multiple archive files within a folder"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -32 ):
+            return 2," MRS: empty archive"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -33 ):
+            return 2," MRS: general unzipping error" 
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -34 ):
+            return 2," MRS: zip bomb"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -41 ):
+            return 2," MRS: no NIfTI files were generated"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -42 ):
+            return 2," MRS: one or more NIfTI header is invalid"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -43 ):
+            return 2," MRS: main NIfTI file not found"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -44 ):
+            return 2," MRS: short TE NIfTI file not found"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -45 ):
+            return 2," MRS: ref NIfTI file not found"
+        elif (mrsStatusPd[mrsStatusPd['hbcd_id'].str.contains(patientName)]['code'].item() == -46 ):
+            return 2," MRS: one or more combinations of NIfTI files not present"
         else:
             return 2," MRS file has non-specific error!" 
 

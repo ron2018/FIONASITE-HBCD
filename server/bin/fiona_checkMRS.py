@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 30 12:14:30 2025
+Created on Wed Jul 30 2025
+Updated on Fri Jan 30 2026
+Updated on Mon Feb 02 2026
+Updated on Mon Feb 16 2026
 
-@author: praveshp
+@author: Parekh, Pravesh [JCVI, pparekh@jcvi.org]
 """
 
 # To do list
@@ -11,6 +14,8 @@ Created on Wed Jul 30 12:14:30 2025
 # * figure out what to do if more than one set of .data files exist (which ones map to which?)
 # * figure out how to deal with multiple zip files within a single input folder
 # * improve robustness of picking the centers from Philips data/list format
+# * handle multiple Philips data files
+# * improve robustness of checking whether complete NIfTI set is present
 
 # =============================================================================
 # Documentation of all exit codes
@@ -31,17 +36,36 @@ Created on Wed Jul 30 12:14:30 2025
 # -18:  corresponding txt  file missing
 # -19:  corresponding dcm  folder missing
 # -20:  both data and list files are missing (when .raw file is present)
+# -21:  multiple Philips data files found
+# -22:  multiple matching text/JSON/sin files found
 
 # Archive related exit codes
-# ===========================
-# -21:   multiple archive files within a folder
-# -22:   empty archive
-# -23:   any general unzipping error
-# -24:   zip bomb
+# ==========================
+# -31:  multiple archive files within a folder
+# -32:  empty archive
+# -33:  any general unzipping error
+# -34:  zip bomb
 
-# NIfTI related exit codes:
-# -31:  one or more NIfTI header is invalid
+# NIfTI related exit codes
+# ========================
+# -41:  no NIfTI files were generated
+# -42:  one or more NIfTI header is invalid
+# -43:  "main" NIfTI file not found
+# -44:  "short TE" NIfTI file not found
+# -45:  "ref" NIfTI file not found
+# -46:  one or more combinations of NIfTI files not present
+
 # =============================================================================
+
+# =============================================================================
+# Update notes: 30-Jan-2026 / 02-Feb-2026 / 16-Feb-2026
+# Allowing multiple scans to be sent
+# Allowing localisers to be sent
+# Checking for file names
+# Exit code -12 is now used for scenarios where more than one file format is found
+# Updated exit codes
+# Delete output directory if it already exists prior to unarchiving
+
 
 # First, import any modules that we may need
 import os
@@ -53,7 +77,6 @@ import glob
 import nibabel
 import datetime
 import shutil
-import numpy as np
 import pandas as pd
 
 # =============================================================================
@@ -82,7 +105,7 @@ def archiveModule(inputArg, outDir):
         fList = getArchiveFile(inputArg)
         
         # If multiple zip files found, exit
-        if exitCode == -21:
+        if exitCode == -31:
             return ""
         
         # If no archives found, possibly a case of unzipped files in a folder; stop
@@ -110,7 +133,7 @@ def archiveModule(inputArg, outDir):
         with open(logName) as f:
             print("Possible zip bomb; aborting", file = f)
         warn_msgs.append("Possible zip bomb; aborting")
-        exitCode = -4
+        exitCode = -34
         return ""
 
 
@@ -144,7 +167,7 @@ def doUnarchive(inFile, outDir):
             unzip_res = subprocess.run(command, shell = True, capture_output = True)
         except:
             warn_msgs.append("One or more error during unarchiving")
-            exitCode = -23;
+            exitCode = -33;
         
         print("Stdout: \n", file = f)
         print(unzip_res.stdout, file = f)
@@ -159,7 +182,7 @@ def doUnarchive(inFile, outDir):
         if len(newList) == 0:
             print("No files found inside the archive; aborting", file = f)
             warn_msgs.append("No files found inside the archive; aborting")
-            exitCode = -22
+            exitCode = -32
             return outDir
         else:
             # If the length of newList is 1, then check if a folder
@@ -199,7 +222,8 @@ def getArchiveFile(inputArg):
     # If input is a directory, search recursively; else return as such
     if os.path.isdir(inputArg):
         zip_files = glob.glob(os.path.join(inputArg, "**", "*.zip"),  recursive=True)
-        tar_files = glob.glob(os.path.join(inputArg, "**", "*.tar*"), recursive=True) + glob.glob(os.path.join(inputArg, "**", "*.tgz*"), recursive=True)
+        tar_files = glob.glob(os.path.join(inputArg, "**", "*.tar*"), recursive=True) + \
+                    glob.glob(os.path.join(inputArg, "**", "*.tgz*"), recursive=True)
     
         # Ideally only one of these should exist
         fileList = []
@@ -208,7 +232,7 @@ def getArchiveFile(inputArg):
     
         if len(fileList) > 1:
             warn_msgs.append("More than one archive found in the folder; aborting")
-            exitCode = -21
+            exitCode = -31
             return []
         else:
             return fileList
@@ -220,13 +244,18 @@ def getArchiveFile(inputArg):
             return []
 
 # Function to prepare output directory
-def prepOutDir(outDir):
+def prepOutDir(outDir, delete=True):
     # Make output directory if it does not exist
     if not(os.path.exists(outDir)):
         os.mkdir(outDir)
+    else:
+        if delete:
+            shutil.rmtree(outDir, ignore_errors=True)
+            os.mkdir(outDir)
 
             
-# Function that parses a directory, makes a list of files, decides modality, and generates the spec2nii command to be run
+# Function that parses a directory, makes a list of files, decides modality, 
+# and generates the spec2nii command to be run
 def makeCommand(inDir, outDir):
     global warn_msgs, fname_dl, fname_data, fname_list, fname_SPAR, fname_SDAT, pathSpec2nii, exitCode
     
@@ -249,15 +278,6 @@ def makeCommand(inDir, outDir):
     
     toDelete = []
     if list_data:
-        # # Remove any coil survey, B0, or SENSE files
-        # coilFiles = []
-        # # coilFiles_txt  = []
-        # for files in range(0, len(list_data)):
-        #     if "CoilSurvey" in list_data[files] or "B0" in list_data[files] or "Sense" in list_data[files]:
-        #         coilFiles.append(list_data[files])
-        
-        # list_data = list(set(list_data) - set(coilFiles))
-        
         for idx, files in enumerate(list_data):
             if not(check_Philips_data(inDir, (files.replace(".data", "")))):
                 toDelete.append(idx)
@@ -279,36 +299,56 @@ def makeCommand(inDir, outDir):
             exitCode = -11
             return command
     else:
-        if temp > 1:
+        # Check if more than one imaging format is found as opposed to more 
+        # than one file of the same format; for example, are there .7 and .twix 
+        # files present at the same time? Shouldn't be allowed. If, on the other 
+        # hand, say multiple .7 files are present, this is allowed
+        tmp_listAll = [list_dat, list_ima, list_SPAR, list_data, list_dcm, list_7]
+        listCount   = 0
+        idx = []
+        for ii, item in enumerate(tmp_listAll):
+            if item != []:
+                listCount = listCount + 1 
+        if listCount > 1:
             # Not handled
-            warn_msgs.append("Multiple MRS data types found; not currently handled")
+            warn_msgs.append("Multiple MRS file formats found; not currently handled")
             exitCode = -12
         else:
-            # Make commands
-            if len(list_dat) == 1:
-                command = "twix -e image " + list_dat[0]
-                exitCode = 0
+            # Currently, not able to handle multiple Philips data format
+            if len(list_data) > 1:
+                warn_msgs.append("Multiple Philips data files found; not currently handled")
+                exitCode = -21
             else:
-                if len(list_ima) == 1:
-                    command = "dicom " + list_ima[0]
+                # Make commands
+                command = []
+                if list_dat:
+                    for img in list_dat:
+                        command.append("twix -e image " + img) 
                     exitCode = 0
                 else:
-                    if len(list_SPAR) == 1:
-                        command = "philips " + fname_SDAT + " " + fname_SPAR
+                    if list_ima:
+                        for img in list_ima:
+                            command.append("dicom " + img)
                         exitCode = 0
                     else:
-                        if len(list_data) == 1:
-                            command = "philips_dl " + fname_data + " " + fname_list + " " + fname_dl
+                        if list_SPAR:
+                            for ii, img in enumerate(list_SPAR):
+                                command.append("philips " + fname_SDAT[ii] + " " + img)
                             exitCode = 0
                         else:
-                            if len(list_dcm) == 1:
-                                command = "philips_dcm " + list_ima[0]
+                            if len(list_data) == 1:
+                                command.append("philips_dl " + fname_data + " " + fname_list + " " + fname_dl)
                                 exitCode = 0
                             else:
-                                if len(list_7) == 1:
-                                    command = "ge " + list_7[0]
+                                if list_dcm:
+                                    for img in list_dcm:
+                                        command.append("philips_dcm " + img)
                                     exitCode = 0
-        
+                                else:
+                                    if list_7:
+                                        for img in list_7:
+                                            command.append("ge " + img)
+                                        exitCode = 0
     return command
 
 
@@ -328,16 +368,7 @@ def suffix_spec2nii(command, outDir):
 # Check completeness of Philips SPAR/SDAT files
 def check_Philips_SPAR(inDir, baseName):
     global warn_msgs, fname_SPAR, fname_SDAT, exitCode
-    # exist_SPAR = os.path.exists(os.path.join(inDir, baseName + ".SPAR"))
     exist_SDAT = os.path.exists(os.path.join(inDir, baseName + ".SDAT"))
-    
-    # # Either of the files must exist since this module is invoked
-    # output = True
-    
-    # if not(exist_SPAR):
-    #     warn_msgs.append(baseName + ": SPAR file missing")
-    #     output = False
-    #     exitCode = -13
         
     if not(exist_SDAT):
         warn_msgs.append(baseName + ": SDAT file missing")
@@ -351,8 +382,6 @@ def check_Philips_data(inDir, baseName):
     global warn_msgs, fname_data, fname_list, exitCode
     output = True
     
-    # fname_data = os.path.join(inDir, baseName + ".data")
-    # fname_list = os.path.join(inDir, baseName + ".list")
     fname_data = baseName + ".data"
     fname_list = baseName + ".list"
     
@@ -383,7 +412,6 @@ def check_Philips_data(inDir, baseName):
     # Now, look for .sin and .json files; additionally look for .dcm folder
     list_sin  = glob.glob(os.path.join(inDir, "*.sin"))
     list_json = glob.glob(os.path.join(inDir, "*.json"))
-    # list_txt  = glob.glob(os.path.join(inDir, "*.txt"))
     
     # Remove any coil survey, B0, or SENSE files
     coilFiles_sin  = []
@@ -396,14 +424,9 @@ def check_Philips_data(inDir, baseName):
     for files in range(0, len(list_json)):            
         if "CoilSurvey" in list_json[files] or "B0" in list_json[files] or "Sense" in list_json[files]:
             coilFiles_json.append(list_json[files])
-            
-    # for files in range(0, len(list_txt)):
-    #     if "CoilSurvey" in list_txt[files] or "B0" in list_txt[files] or "Sense" in list_txt[files]:
-    #         coilFiles_txt.append(list_txt[files])
         
     list_sin  = list(set(list_sin)  - set(coilFiles_sin))
     list_json = list(set(list_json) - set(coilFiles_json))
-    # list_txt  = list(set(list_txt)  - set(coilFiles_txt))
     
     # At least one sin, json, and txt file should exist
     if not(list_sin):
@@ -417,11 +440,6 @@ def check_Philips_data(inDir, baseName):
         output = False
         exitCode = -17
         return output
-    
-    # if not(list_txt):
-    #     warn_msgs.append("No txt file found")
-    #     exitCode = -18
-    #     return output
     
     # For every sin file, check if lab and raw files exist
     for files in list_sin:
@@ -465,7 +483,7 @@ def check_Philips_data(inDir, baseName):
     if len(list_txt) != 1 or len(list_json) != 1 or len(list_sin) != 1:
             warnings.warn("Incorrect number of files exist")
             output = False
-            exitCode = -20
+            exitCode = -22
             return output
         
     # Now generate dcm file name: updates global variable    
@@ -626,19 +644,90 @@ def checkNIfTI(workDir):
     global exitCode, logName
     
     listFiles = glob.glob(os.path.join(workDir, "*.nii*"))
-    validHeader = [False] * len(listFiles)
+    if not(listFiles):
+        exitCode = -41
+        return
+    else:
+        validHeader = [False] * len(listFiles)
+        
+        with open(logName, "a") as f:
+            for idx, files in enumerate(listFiles):
+                try:
+                    img = nibabel.load(files)
+                    print("Image Header: \n", file = f)
+                    print(img.header, file = f)
+                    validHeader[idx] = True
+                except:
+                    validHeader[idx] = False
+                    warn_msgs.append(files, ": invalid header")
+                    exitCode = -42
+
+
+def checkNIfTInames(workDir):
+    # This module checks if the following three sets of NIfTI files are generated:
+    # "*edited*:    corresponds to the main scan
+    # "*short*te*": corresponds to the short TE scan
+    # "*ref*":      corresponds to reference scan(s)
+    # The above is quite simplistic and will fail most of the time; using logic from:
+    # https://github.com/DCAN-Labs/hbcd_mrs_to_nii_conversion/blob/main/spec2nii_HBCD_batch.sh#L499
+    # Do we need to additionally make sure we are not double counting the same file?
+    # Don't think this is particularly robust and clearly misses out on cases (use protocol name?)
     
-    with open(logName, "w") as f:
-        for idx, files in enumerate(listFiles):
-            try:
-                img = nibabel.load(files)
-                print("Image Header: \n")
-                print(img.header, file = f)
-                validHeader[idx] = True
-            except:
-                validHeader[idx] = False
-                warn_msgs.append(files, ": invalid header")
-                exitCode = -21
+    global warn_msgs, exitCode
+        
+    # Configuring case-insensitive patterns
+    pat_hyper   = "*[hH][yY][pP][eE][rR]*"
+    pat_isthmus = "*[iI][sS][tT][hH][mM][uU][sS]*"
+    pat_edited  = "*[eE][dD][iI][tT][eE][dD]*"
+    pat_ref     = "*[rR][eE][fF]*"
+    pat_shortTE = "*[sS][hH][oO][rR][tT]*[tT][eE]"
+    pat_nii     = ".nii*"
+    
+    # Now look for "ref" scans:
+    list_ref = list(set(glob.glob(os.path.join(workDir, pat_hyper + pat_ref + pat_nii))   + \
+                        glob.glob(os.path.join(workDir, pat_isthmus + pat_ref + pat_nii)) + \
+                        glob.glob(os.path.join(workDir, pat_edited + pat_ref + pat_nii))))
+    
+    # Now look for "TE" scans:
+    list_TE  = list(set(glob.glob(os.path.join(workDir, pat_hyper + pat_shortTE + pat_nii))   + \
+                        glob.glob(os.path.join(workDir, pat_isthmus + pat_shortTE + pat_nii)) + \
+                        glob.glob(os.path.join(workDir, pat_edited + pat_shortTE + pat_nii))))
+               
+    # Now look for "main" scans:
+    list_main = list(set(glob.glob(os.path.join(workDir, pat_hyper + pat_nii))   + \
+                         glob.glob(os.path.join(workDir, pat_isthmus + pat_nii)) + \
+                         glob.glob(os.path.join(workDir, pat_edited + pat_nii))))
+    
+    if list_main:
+        hasMainFile = True
+    else:
+        hasMainFile = False
+        
+    if list_TE:
+        hasTEFile = True
+    else:
+        hasTEFile = False
+        
+    if list_ref:
+        hasRefFile = True
+    else:
+        hasRefFile = False
+        
+    tmp_sum = hasMainFile + hasTEFile + hasRefFile
+    if tmp_sum == 3:
+        return
+    else:
+        if tmp_sum == 2:
+            if not(hasMainFile):
+                exitCode = -43
+            else:
+                if not(hasTEFile):
+                    exitCode = -44
+                else:
+                    exitCode = -45
+        else:
+            exitCode = -46
+
     
 # Main module
 def main(inputArg, outDir):
@@ -657,7 +746,7 @@ def main(inputArg, outDir):
                            + "-" + str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
                            + ".txt")
     
-    prepOutDir(dir_Logs)
+    prepOutDir(dir_Logs, False)
     
     # Start logging
     with open(logName, "w") as f:
@@ -680,7 +769,7 @@ def main(inputArg, outDir):
         if not(command):
             returned_inutArg = archiveModule(inputArg, outDir)
             
-            if exitCode == 0:            
+            if exitCode == 0:
                 # Updated output directory
                 outDir = returned_inutArg + "_output"
                 prepOutDir(outDir)
@@ -691,22 +780,50 @@ def main(inputArg, outDir):
                     command = makeCommand(returned_inutArg, outDir)
                     
                     if command:
-                        command = prefix_spec2nii(command)
-                        command = suffix_spec2nii(command, outDir)
-                        print("Command generated: \n", file = f)
-                        print(command, file = f)
-                        f.flush()                    
-                        cmd_res = subprocess.run(command, shell=True, capture_output = True)
+                        for cmd in command:
+                            command_toRun = prefix_spec2nii(cmd)
+                            command_toRun = suffix_spec2nii(command_toRun, outDir)
+                            print("Command generated: \n", file = f)
+                            print(command_toRun, file = f)
+                            f.flush()                    
+                            cmd_res = subprocess.run(command_toRun, shell=True, capture_output = True)
+                            
+                            print("Stdout: \n",   file = f)
+                            print(cmd_res.stdout, file = f)
+                            print("\nStderr: \n", file = f)
+                            print(cmd_res.stderr, file = f)
+                            
+                        # Now check if the NIfTI files are valid
+                        checkNIfTI(outDir)
                         
-                        print("Stdout: \n",   file = f)
-                        print(cmd_res.stdout, file = f)
-                        print("\nStderr: \n", file = f)
-                        print(cmd_res.stderr, file = f)
+                        # Now check if the NIfTI file set is complete
+                        if exitCode == 0:
+                            checkNIfTInames(outDir)
                 else:
                     if exitCode == 0:
                         # No MRS data found
                         warn_msgs.append("No relevant MRS data found")
                         exitCode = -11
+        else:
+            for cmd in command:
+                command_toRun = prefix_spec2nii(cmd)
+                command_toRun = suffix_spec2nii(command_toRun, outDir)
+                print("Command generated: \n", file = f)
+                print(command_toRun, file = f)
+                f.flush()                    
+                cmd_res = subprocess.run(command_toRun, shell=True, capture_output = True)
+                
+                print("Stdout: \n",   file = f)
+                print(cmd_res.stdout, file = f)
+                print("\nStderr: \n", file = f)
+                print(cmd_res.stderr, file = f)
+                
+            # Now check if the NIfTI files are valid
+            checkNIfTI(outDir)
+            
+            if exitCode == 0:
+                # Now check if the NIfTI file set is complete
+                checkNIfTInames(outDir)
                     
     if exitCode == 0:
         print(backup_inputArg + ": Exited normally")
@@ -725,11 +842,8 @@ dirSource   = "/data/site/mrs/"
 dirOutput   = "/home/processing/output_spec2nii"
 
 # clean dirOutput otherwise program will hung on unzip
-shutil.rmtree(dirOutput, ignore_errors=True)
-os.makedirs(dirOutput)
-
-
-
+# shutil.rmtree(dirOutput, ignore_errors=True)
+# os.makedirs(dirOutput)
 
 
 # only work for zip file in Siemens.
@@ -739,7 +853,6 @@ listContent = [f for f in os.listdir(dirSource)
 
 allData = []
 individual = {}
-
 
 
 for ff in listContent:
@@ -756,4 +869,3 @@ result = pd.DataFrame(allData)
 result = result[result["hbcd_id"].str.strip() != ""]
 print (result)
 result.to_csv("/data/site/mrs/umn/mrs_status.csv", index=False)
-
